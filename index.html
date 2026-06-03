@@ -267,6 +267,20 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .gb-t small{font-size:11px;color:rgba(255,255,255,.7);margin-top:1px;display:block}
 .gb-arr{color:rgba(255,255,255,.6);font-size:20px}
 
+/* WORKER BOARD TEASER (guest) */
+.wk-teaser{position:relative;margin:14px 16px 0;padding:20px 18px;border-radius:18px;background:linear-gradient(135deg,var(--p800),var(--p600));box-shadow:0 8px 28px rgba(60,30,130,.3);overflow:hidden;text-align:center}
+.wk-teaser::after{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(232,200,106,.18),transparent 70%);pointer-events:none}
+.wk-teaser-head{font-family:'Prompt',sans-serif;font-size:21px;font-weight:800;color:#fff;line-height:1.25;position:relative}
+.wk-teaser-head b{color:var(--gold2)}
+.wk-teaser-sub{font-size:12.5px;color:var(--p200);margin:8px 0 16px;line-height:1.6;position:relative}
+.wk-teaser-cta{position:relative;width:100%;padding:13px;border:none;border-radius:12px;background:#fff;color:var(--p700);font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:.18s}
+.wk-teaser-cta:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.wk-locked{position:relative;margin-top:8px;overflow:hidden}
+.wk-locked .cards{filter:blur(5px) saturate(.9);pointer-events:none;user-select:none;opacity:.85}
+.wk-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:2;background:linear-gradient(to bottom,rgba(244,240,252,.1),rgba(244,240,252,.55));pointer-events:none}
+.wk-lock-badge{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--p700),var(--p500));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 22px rgba(46,26,126,.45)}
+.wk-lock-txt{font-size:12.5px;font-weight:700;color:var(--p700);background:#fff;padding:7px 16px;border-radius:20px;box-shadow:0 4px 14px rgba(60,30,130,.2);border:1px solid var(--border)}
+
 /* MANAGE */
 .stat4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 16px}
 .s4{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center}
@@ -781,6 +795,8 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .onboard-paths{grid-template-columns:1fr 1fr;gap:14px}
   .onboard-path{padding:13px 15px}
   .onboard-cta{max-width:280px}
+  .wk-teaser{margin:22px 34px 6px}
+  .wk-locked{margin:0 0 8px}
   .gbanner:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(60,30,130,.3)}
   .gb-t strong{font-size:14px}
 
@@ -968,11 +984,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <button id="search-tcj-clear" onclick="clearSearch('tcj')" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);width:38px;height:34px;align-items:center;justify-content:center;background:none;border:none;font-size:16px;color:var(--ink4);cursor:pointer;padding:0;display:none">✕</button>
         </div>
       </div>
-      <div class="gbanner" onclick="openSheet('s-login')">
-        <div class="gb-icon">🔑</div>
-        <div class="gb-t"><strong>เข้าสู่ระบบเพื่อ Add LINE / ส่งคำเชิญ</strong><small>ฟรี — ใช้เวลา 1 นาที</small></div>
-        <div class="gb-arr">›</div>
-      </div>
       <div class="sec-hdr"><h2>💼 งานที่เปิดรับ</h2><span id="tcj-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="tcj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')">
@@ -1011,29 +1022,18 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
     </div>
     <!-- WORKERS -->
     <div class="tab-content" id="tc-workers">
-      <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('tcw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('tcw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('tcw',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
-        <div class="chip-row" id="tcw-skills"><div class="chip" onclick="chipToggle(this)">GP</div><div class="chip" onclick="chipToggle(this)">Orthodontic</div><div class="chip" onclick="chipToggle(this)">Endodontic</div><div class="chip" onclick="chipToggle(this)">Surgery</div><div class="chip" onclick="chipToggle(this)">Implant</div><div class="chip" onclick="chipToggle(this)">Prosthodontic</div><div class="chip" onclick="chipToggle(this)">Pediatric</div><div class="chip" onclick="chipToggle(this)">Periodontic</div></div>
-        <div class="chip-row"><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
-        <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')">🔍 จังหวัดอื่น...</button></div>
+      <!-- teaser CTA -->
+      <div class="wk-teaser">
+        <div class="wk-teaser-head">👥 <b>94</b> บุคลากรกำลังหาคลินิก</div>
+        <div class="wk-teaser-sub">ทันตแพทย์ · ผู้ช่วยฯ · เคาน์เตอร์ พร้อมรับงาน part-time<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
+        <button class="wk-teaser-cta" onclick="openSheet('s-login')">🔑 สมัคร / เข้าสู่ระบบเพื่อดูบุคลากรทั้งหมด</button>
       </div>
-      <div class="sec-hdr"><h2>🦷 ทันตบุคลากร</h2><span class="cnt-pill">94 คน</span></div>
-      <div class="cards">
-        <div class="wcard" onclick="goView('v-worker-detail')">
-          <div class="wcard-top"><div class="av av-g0"><div class="av-content"><span class="av-icon">🦷</span><span class="av-lbl">4829</span></div><div class="av-dot"></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr">ทันตแพทย์</span><span class="w-exp">ประสบการณ์ 5 ปี</span></div><div class="w-loc">📍 กรุงเทพฯ (บางนา)</div></div></div>
-          <div class="skills"><span class="sk">GP</span><span class="sk">Orthodontic</span><span class="sk">Extraction</span></div>
-          <div class="quote">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</div>
-          <div class="trust"><span class="tr ok">✅ ผ่าน DentMatch 8 ครั้ง</span><span class="tr">🗓 14 เดือน</span></div>
-          <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d">จ</div><div class="d">อ</div><div class="d">พ</div><div class="d">พฤ</div><div class="d">ศ</div><div class="d on">ส</div><div class="d on">อา</div></div></div>
-          <button class="btn-lock" style="width:100%;justify-content:center" onclick="event.stopPropagation();openSheet('s-login')">🔒 เข้าสู่ระบบเพื่อส่งคำเชิญ</button>
-        </div>
-        <div class="wcard" onclick="goView('v-worker-detail')">
-          <div class="wcard-top"><div class="av av-g5"><div class="av-content"><span class="av-icon">🦷</span><span class="av-lbl">7731</span></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr">ทันตแพทย์</span><span class="w-exp">ประสบการณ์ 8 ปี</span></div><div class="w-loc">📍 นนทบุรี</div></div></div>
-          <div class="skills"><span class="sk">Implant</span><span class="sk">Surgery</span><span class="sk">GP</span></div>
-          <div class="quote">เชี่ยวชาญ Implant และ Surgery รับงาน part-time เพิ่มเติม มีอุปกรณ์ส่วนตัว</div>
-          <div class="trust"><span class="tr ok">✅ ผ่าน DentMatch 21 ครั้ง</span><span class="tr">🗓 26 เดือน</span></div>
-          <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d on">จ</div><div class="d">อ</div><div class="d on">พ</div><div class="d">พฤ</div><div class="d on">ศ</div><div class="d on">ส</div><div class="d">อา</div></div></div>
-          <button class="btn-lock" style="width:100%;justify-content:center" onclick="event.stopPropagation();openSheet('s-login')">🔒 เข้าสู่ระบบเพื่อส่งคำเชิญ</button>
+      <!-- blurred sample (locked) -->
+      <div class="wk-locked">
+        <div class="cards" id="wk-preview-cards"></div>
+        <div class="wk-lock-overlay">
+          <div class="wk-lock-badge">🔒</div>
+          <div class="wk-lock-txt">เข้าสู่ระบบเพื่อดูบุคลากร</div>
         </div>
       </div>
     </div>
@@ -1443,6 +1443,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   </div>
   <div class="tab-bar">
     <button class="tb on" onclick="workerTab('jobs',this)"><span class="ti">💼</span>งาน</button>
+    <button class="tb" onclick="workerTab('workers',this)"><span class="ti">🦷</span>บุคลากร</button>
     <button class="tb" onclick="workerTab('inbox',this)"><span class="ti">📬</span>คำเชิญ</button>
     <button class="tb" onclick="workerTab('profile',this)"><span class="ti">👤</span>โปรไฟล์</button>
   </div>
@@ -1600,6 +1601,17 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="card-ft"><div class="wage">฿4,200 <span>/ วัน</span></div><button class="btn-line" onclick="event.stopPropagation();openAddLine(this,'The Smile Dental Clinic','ทันตแพทย์จัดฟัน Part-time','@thesmile')"><span class="llogo">L</span>Add LINE</button></div>
         </div>
       </div>
+    </div>
+    <!-- WORKERS (read-only — ใช้การ์ด/ข้อมูลชุดเดียวกับ cc-workers ผ่าน buildWorkerBoards) -->
+    <div class="tab-content" id="wt-workers">
+      <div class="filter-wrap">
+        <div class="chip-row"><div class="chip" onclick="filterPos('wtw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('wtw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('wtw',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row" id="wtw-skills"><div class="chip" onclick="chipToggle(this)">GP</div><div class="chip" onclick="chipToggle(this)">Orthodontic</div><div class="chip" onclick="chipToggle(this)">Endodontic</div><div class="chip" onclick="chipToggle(this)">Surgery</div><div class="chip" onclick="chipToggle(this)">Implant</div><div class="chip" onclick="chipToggle(this)">Prosthodontic</div><div class="chip" onclick="chipToggle(this)">Pediatric</div><div class="chip" onclick="chipToggle(this)">Periodontic</div></div>
+        <div class="chip-row"><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
+        <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')">🔍 จังหวัดอื่น...</button></div>
+      </div>
+      <div class="sec-hdr"><h2>🦷 ทันตบุคลากร</h2><span class="cnt-pill">94 คน</span></div>
+      <div class="cards" id="wtw-cards"></div>
     </div>
   </div>
   <div class="bot-nav">
@@ -2186,6 +2198,8 @@ function goView(id){
     const cta=document.getElementById('jd-cta-wrap');
     if(cta) cta.style.display = currentRole==='clinic' ? 'none' : '';
   }
+  // ปุ่มส่งคำเชิญใน worker-detail = โชว์เฉพาะ clinic
+  if(id==='v-worker-detail') updateWdCta();
 }
 function goBack(){
   if(!viewStack.length)return;
@@ -2232,9 +2246,12 @@ function clinicTab(name,el){
   const t=document.getElementById('cc-'+name); if(t)t.classList.add('on');
 }
 function workerTab(name,el){
-  document.querySelectorAll('#v-worker .tab-bar .tb').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
-  ['profile','inbox','jobs'].forEach(n=>{const e=document.getElementById('wt-'+n);if(e)e.classList.remove('on')});
+  // highlight tab by name (robust ต่อจำนวน/ลำดับแท็บ — ไม่พึ่ง nth-child)
+  document.querySelectorAll('#v-worker .tab-bar .tb').forEach(b=>{
+    const oc=b.getAttribute('onclick')||'';
+    b.classList.toggle('on', oc.indexOf("workerTab('"+name+"'")>-1);
+  });
+  ['profile','inbox','jobs','workers'].forEach(n=>{const e=document.getElementById('wt-'+n);if(e)e.classList.remove('on')});
   const t=document.getElementById('wt-'+name); if(t)t.classList.add('on');
 }
 /* ── NOTIFICATION SYSTEM ── */
@@ -2566,6 +2583,30 @@ function updateJdCta(){
     btn.onclick = () => openSheet('s-login');
     btn.className = 'btn-primary';
   }
+}
+// ปุ่มส่งคำเชิญใน v-worker-detail: โชว์เฉพาะ clinic, role อื่นซ่อน
+function updateWdCta(){
+  const btn=document.getElementById('wd-cta'); if(!btn)return;
+  if(currentRole==='clinic'){
+    btn.style.display='';
+    btn.className='btn-primary';
+    btn.textContent='📨 ส่งคำเชิญ';
+    btn.onclick=()=>openSheet('s-invite');
+  } else {
+    btn.style.display='none';   // worker/guest = อ่านอย่างเดียว ไม่มีปุ่มเชิญ
+  }
+}
+// worker board (wt-workers) + teaser preview: ใช้การ์ดชุดเดียวกับ cc-workers เพื่อกันข้อมูลเพี้ยน
+function buildWorkerBoards(){
+  const src=document.querySelector('#cc-workers .cards');
+  if(!src)return;
+  const html=src.innerHTML;
+  ['wtw-cards','wk-preview-cards'].forEach(id=>{
+    const dst=document.getElementById(id);
+    if(!dst)return;
+    dst.innerHTML=html;
+    dst.querySelectorAll('.btn-invite').forEach(b=>b.remove());   // read-only: ไม่มีปุ่มส่งคำเชิญ
+  });
 }
 function toggleProfile(el){
   el.classList.toggle('off');
@@ -3202,6 +3243,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(wd)wd.value=new Date().toISOString().split('T')[0];
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
   renderSkills('editSkillChips','editSkillLabel','dentist',true);
+  buildWorkerBoards();
   hideZeroTrust();
   initA11y();
   initFilters();
