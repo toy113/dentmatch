@@ -1438,20 +1438,18 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   <div class="profile-hero">
     <div class="phero-top">
       <div class="logo"><div class="logo-box">🦷</div><div class="logo-name">Dent<b>Match</b></div></div>
-      <div class="phero-acct">
-        <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative">🔔<div class="notif-pip" id="worker-noti-pip"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
-        <div class="wkr-pill" onclick="toggleWorkerMenu(event)">
-          <div class="profile-av-lg av-g0"><div class="av-content"><span style="font-size:17px">🦷</span><span class="av-lbl">4829</span></div></div>
-          <div class="wkr-pill-info">
-            <div class="profile-name">ทันตแพทย์ · ไม่ระบุชื่อ</div>
-            <div class="profile-sub"><span>📍 กรุงเทพฯ (บางนา)</span><span>·</span><span>5 ปี</span></div>
-          </div>
-          <span class="wkr-caret">▾</span>
-          <div id="worker-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:160px;overflow:hidden;z-index:999">
-            <div onclick="logoutWorker()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''">🚪 ออกจากระบบ</div>
-          </div>
+      <div class="wkr-pill" onclick="toggleWorkerMenu(event)">
+        <div class="profile-av-lg av-g0"><div class="av-content"><span style="font-size:17px">🦷</span><span class="av-lbl">4829</span></div></div>
+        <div class="wkr-pill-info">
+          <div class="profile-name">ทันตแพทย์ · ไม่ระบุชื่อ</div>
+          <div class="profile-sub"><span>📍 กรุงเทพฯ (บางนา)</span><span>·</span><span>5 ปี</span></div>
+        </div>
+        <span class="wkr-caret">▾</span>
+        <div id="worker-menu" style="display:none;position:absolute;top:calc(100% + 8px);left:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:160px;overflow:hidden;z-index:999">
+          <div onclick="logoutWorker()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''">🚪 ออกจากระบบ</div>
         </div>
       </div>
+      <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative">🔔<div class="notif-pip" id="worker-noti-pip"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
     </div>
     <div class="profile-tog-wrap on">
       <div class="profile-tog-txt"><div class="profile-tog-title">🟢 เปิดรับงานอยู่</div><div class="profile-tog-sub">✓ คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ</div></div>
