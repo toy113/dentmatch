@@ -70,9 +70,10 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .hdr::after{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(155,125,212,0.2) 0%,transparent 70%);pointer-events:none}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .logo{display:flex;align-items:center;gap:9px}
-.logo-box{display:none}
-.logo-name{font-family:'Prompt',sans-serif;font-size:30px;font-weight:800;color:#fff;letter-spacing:-.8px}
+.logo-box{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));font-size:17px;box-shadow:0 3px 12px rgba(201,168,76,.5);flex-shrink:0}
+.logo-name{font-family:'Prompt',sans-serif;font-size:30px;font-weight:800;color:#fff;letter-spacing:-.8px;text-shadow:0 2px 14px rgba(232,200,106,.3)}
 .logo-name b{color:var(--gold2);font-weight:800}
+.beta-tag{display:inline-flex;align-items:center;font-family:'Prompt',sans-serif;font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--gold2);background:rgba(232,200,106,.16);border:1px solid rgba(232,200,106,.45);padding:2px 6px;border-radius:6px;line-height:1;margin-left:7px;align-self:center;flex-shrink:0;white-space:nowrap}
 .hdr-right{display:flex;gap:8px;align-items:center}
 .role-pill{background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 13px;font-size:12px;color:rgba(255,255,255,0.9);cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;font-weight:500}
 .rp-full{display:none}
@@ -1025,7 +1026,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <!-- teaser CTA -->
       <div class="wk-teaser">
         <div class="wk-teaser-head">👥 <b>94</b> บุคลากรกำลังหาคลินิก</div>
-        <div class="wk-teaser-sub">ทันตแพทย์ · ผู้ช่วยฯ · เคาน์เตอร์ พร้อมรับงาน part-time<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
+        <div class="wk-teaser-sub">ทันตแพทย์ · ผู้ช่วยฯ · เคาน์เตอร์<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
         <button class="wk-teaser-cta" onclick="openSheet('s-login')">🔑 สมัคร / เข้าสู่ระบบเพื่อดูบุคลากรทั้งหมด</button>
       </div>
       <!-- blurred sample (locked) -->
@@ -1085,7 +1086,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       </div>
       <div id="jd-cta-wrap">
         <button class="btn-primary" id="jd-cta" onclick="openSheet('s-login')">🔒 เข้าสู่ระบบเพื่อ Add LINE คลินิก</button>
-        <div style="text-align:center;font-size:12px;color:var(--ink4);margin-top:-8px">ติดต่อคลินิกโดยตรงผ่าน LINE ภายนอก</div>
       </div>
     </div>
   </div>
@@ -3244,12 +3244,25 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
   renderSkills('editSkillChips','editSkillLabel','dentist',true);
   buildWorkerBoards();
+  initBeta();
   hideZeroTrust();
   initA11y();
   initFilters();
   if(window.innerWidth>=1024) initDesktop();
   window.addEventListener('resize',()=>{ if(window.innerWidth>=1024) initDesktop(); });
 });
+
+// แสดงป้าย BETA ทุกหน้า (inject เข้าทุกชนิด header: logo / mini-hdr / profile-hero)
+function initBeta(){
+  const mk=()=>{const b=document.createElement('span');b.className='beta-tag';b.textContent='BETA';return b;};
+  document.querySelectorAll('.logo').forEach(l=>{ if(!l.querySelector('.beta-tag')) l.appendChild(mk()); });
+  document.querySelectorAll('.mini-hdr').forEach(h=>{ if(!h.querySelector('.beta-tag')) h.appendChild(mk()); });
+  document.querySelectorAll('.profile-hero').forEach(h=>{
+    if(h.querySelector('.beta-tag'))return;
+    const name=h.querySelector('.profile-name');
+    (name||h).appendChild(mk());
+  });
+}
 
 // Make non-native clickable elements (div[onclick]) reachable & operable by keyboard
 function initA11y(){
@@ -3352,7 +3365,7 @@ function initDesktop(){
       const ons=[...fw.querySelectorAll('.chip.on')].map(c=>c.textContent.trim()).filter(Boolean);
       badge.textContent=ons.length;
       badge.style.display=ons.length?'inline-flex':'none';
-      summary.textContent=ons.length?ons.join('  ·  '):'แสดงทั้งหมด';
+      summary.textContent=ons.length?ons.join('  ·  '):'';
     };
     toggle.addEventListener('click',()=>fw.classList.toggle('dt-open'));
     clearBtn.addEventListener('click',(e)=>{
@@ -3380,7 +3393,7 @@ function initDesktop(){
       const guest=!tb.closest('#v-clinic') && !tb.closest('#v-worker');
       const contact=`<a class="dt-contact" onclick="openSheet('s-contact')">\u{1F4AC} ติดต่อเรา / ช่วยเหลือ</a>`;
       f.innerHTML = guest
-        ? `<button class="dt-login-btn" onclick="openSheet('s-login')">\u{1F511} เข้าสู่ระบบ / สมัคร</button>${contact}<div class="dt-copy">© DentMatch 2026</div>`
+        ? `${contact}<div class="dt-copy">© DentMatch 2026</div>`
         : `${contact}<div class="dt-copy">© DentMatch 2026 · All rights reserved</div>`;
       tb.appendChild(f);
     }
