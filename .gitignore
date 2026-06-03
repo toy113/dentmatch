@@ -1,0 +1,31 @@
+# Internal reference files — keep local only, do NOT deploy/publish
+dentmatch-premium.html
+DentMatch-Build-Spec.md
+
+# Claude Code / local agent config & secrets
+.claude/
+.claude/settings.local.json
+
+# Env / secrets
+.env
+.env.*
+*.local
+secrets.*
+*.key
+*.pem
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs / temp
+*.log
+node_modules/
+tmp/
