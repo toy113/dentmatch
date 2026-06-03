@@ -1350,7 +1350,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>
         </div>
         <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.4);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
-          <span>🔥</span><span style="font-size:12px;color:var(--orange2);font-weight:600">วันงานใกล้มาก — เหลือ 1 วัน · บันทึกได้หลังวันงาน</span>
+          <span>🔥</span><span style="font-size:12px;color:var(--orange2);font-weight:600">วันงานใกล้มาก — เหลือ 1 วัน</span>
         </div>
         <div class="tog-row">
           <div class="tog" id="tog-urg" onclick="event.stopPropagation();mToggle(this,'mcard-urg')"></div>
@@ -1703,7 +1703,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
     <div class="sheet-sub" id="addline-clinic-name">คลินิกทันตกรรมสยาม</div>
     <!-- message preview -->
     <div style="background:var(--p25);border:1.5px solid var(--p200);border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📋 ข้อความที่จะส่ง</div>
+      <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📋 ข้อความที่จะส่ง · ✏️ แก้ไขได้</div>
       <textarea id="addline-msg" class="inp" rows="4" style="background:#fff;font-size:13.5px;line-height:1.65;border-color:var(--p200)"></textarea>
     </div>
 
@@ -1712,7 +1712,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <span style="width:18px;height:18px;background:#fff;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--green)">L</span>
       คัดลอกข้อความ + เปิด LINE
     </button>
-    <button class="btn-outline" onclick="skipMsgAndLine()" style="font-size:13px">เปิด LINE เลย (ไม่ส่งข้อความ)</button>
     <div style="text-align:center;margin-top:10px;font-size:11.5px;color:var(--ink5)">วางข้อความใน LINE หลังจากเพิ่มเพื่อน</div>
   </div>
 </div>
@@ -2767,7 +2766,7 @@ function openAddLine(btn, clinic, jobName, lineId) {
   const clinicEl = document.getElementById('addline-clinic-name');
   if(clinicEl) clinicEl.textContent = clinic;
   const msg = document.getElementById('addline-msg');
-  if(msg) msg.value = `สวัสดี ${ANON_ID} จาก DentMatch\nสนใจงาน\n${jobName}`;
+  if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${ANON_ID})`;
   openSheet('s-add-line');
 }
 function _copyText(text) {
