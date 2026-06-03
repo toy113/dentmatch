@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>DentMatch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 
 .shell{
   display:flex;justify-content:center;align-items:center;
-  min-height:100vh;padding:16px;
+  min-height:100vh;min-height:100dvh;padding:16px;
   background:linear-gradient(145deg,var(--p950) 0%,var(--p700) 55%,var(--p400) 100%);
   position:relative;overflow:hidden;
 }
@@ -43,14 +43,14 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
              radial-gradient(ellipse 60% 50% at 80% 20%,rgba(155,125,212,0.12) 0%,transparent 60%);
 }
 .phone{
-  width:100%;max-width:430px;height:calc(100vh - 32px);max-height:900px;
+  width:100%;max-width:430px;height:calc(100vh - 32px);height:calc(100dvh - 32px);max-height:900px;
   background:var(--off-white);border-radius:44px;
   box-shadow:var(--sh-float),0 0 0 1px rgba(255,255,255,0.08) inset;
   display:flex;flex-direction:column;overflow:hidden;position:relative;
 }
 @media(max-width:460px){
   .shell{padding:0}
-  .phone{border-radius:0;height:100vh;max-height:none}
+  .phone{border-radius:0;height:100vh;height:100dvh;max-height:none}
 }
 
 
@@ -62,7 +62,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .view.active{opacity:1;pointer-events:all;transform:translateX(0)}
 .view.slide-out{opacity:0;transform:translateX(-24px)}
 
-.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:20px}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
 .scroll::-webkit-scrollbar{display:none}
 
 /* HEADER */
@@ -502,7 +502,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .phone{
     position:relative;z-index:3;
     width:100%;max-width:474px;
-    height:calc(100vh - 92px);max-height:892px;
+    height:calc(100vh - 92px);height:calc(100dvh - 92px);max-height:892px;
     background:var(--off-white);
     border-radius:46px;border:1px solid rgba(255,255,255,.05);
     box-shadow:
@@ -1669,7 +1669,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <div class="form-group"><label id="editSkillLabel">สาขาหลัก / ทักษะ</label>
         <div class="chip-row" style="flex-wrap:wrap" id="editSkillChips"></div>
       </div>
-      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp"><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
+      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp"><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
       <div class="form-group">
         <label>จังหวัดที่รับงาน <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายจังหวัด)</span></label>
         <div id="editProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
@@ -2011,7 +2011,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         <label id="regSkillLabel" style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">ทักษะ / สาขา</label>
         <div class="chip-row" style="flex-wrap:wrap" id="regWorkerSkillChips"><span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span></div>
       </div>
-      <select class="inp" style="margin-bottom:9px"><option value="">ประสบการณ์ *</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
+      <select class="inp" style="margin-bottom:9px"><option value="">ประสบการณ์ *</option><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
       <div class="form-group" style="margin-bottom:9px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">จังหวัดที่รับงาน <span style="font-size:10px;font-weight:400;color:var(--ink4)">(เลือกได้หลายจังหวัด)</span></label>
         <div id="regProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:4px"></div>
@@ -2190,7 +2190,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 </div>
 
 <!-- โหมดตัวอย่าง / Demo — สลับมุมมอง Guest/Clinic/Worker โดยไม่ต้องล็อกอิน (จะลบตอนต่อ backend จริง) -->
-<div id="devbar" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:5px;background:rgba(20,10,50,.85);backdrop-filter:blur(6px);padding:5px 6px 5px 10px;border-radius:14px;box-shadow:0 8px 24px rgba(8,3,34,.5)">
+<div id="devbar" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:5px;background:rgba(20,10,50,.85);backdrop-filter:blur(6px);padding:5px 6px 5px 10px;border-radius:14px;box-shadow:0 8px 24px rgba(8,3,34,.5)">
   <span style="font-family:'Sarabun',sans-serif;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.3px;margin-right:2px">✨ โหมดตัวอย่าง</span>
   <button onclick="devView('v-main')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer">👁 Guest</button>
   <button onclick="devView('v-clinic')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer">🏥 Clinic</button>
@@ -2458,11 +2458,19 @@ function inboxTab(name,el){
   ['new','saved','all'].forEach(n=>{const d=document.getElementById('inbox-'+n);if(d)d.classList.remove('on')});
   const t=document.getElementById('inbox-'+name); if(t)t.classList.add('on');
 }
+let _sheetZ = 1000;
 function openSheet(id){
-  document.getElementById(id).classList.add('open');
+  const el=document.getElementById(id); if(!el)return;
+  el.style.zIndex = (++_sheetZ);   // sheet ที่เปิดทีหลังอยู่บนสุดเสมอ (กันซ้อนหลัง sheet อื่น/navbar เดสก์ท็อป)
+  el.classList.add('open');
   if(id==='s-province'){renderProvList();renderSelTags();}
 }
-function closeSheet(id){document.getElementById(id).classList.remove('open')}
+function closeSheet(id){
+  const el=document.getElementById(id); if(!el)return;
+  el.classList.remove('open');
+  el.style.zIndex='';
+  if(!document.querySelector('.overlay.open')) _sheetZ=1000;   // ปิดหมดแล้วรีเซ็ตตัวนับ
+}
 function overlayClose(e,id){if(e.target===document.getElementById(id))closeSheet(id)}
 
 let _loginMode = 'login';
