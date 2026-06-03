@@ -113,6 +113,21 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .profile-tog-wrap.on .profile-tog-sub{color:#a8f0c4}
 .profile-tog-wrap.off{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
 .profile-tog-wrap.off .profile-tog-sub{color:var(--p300)}
+/* worker hero: โลโก้ซ้าย + account pill ขวา */
+.phero-top{display:flex;align-items:center;gap:10px}
+.phero-acct{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.wkr-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:4px 11px 4px 5px;cursor:pointer;position:relative;transition:.2s}
+.wkr-pill:hover{background:rgba(255,255,255,.2)}
+.wkr-pill .profile-av-lg{width:32px;height:32px;border-radius:9px;box-shadow:none;flex-shrink:0}
+.wkr-pill-info{min-width:0;text-align:left;display:none}
+.wkr-pill-info .profile-name{font-size:12.5px;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.wkr-pill-info .profile-sub{font-size:10px;gap:4px}
+.wkr-caret{color:rgba(255,255,255,.7);font-size:11px;flex-shrink:0;line-height:1}
+@media(max-width:480px){
+  #v-worker .phero-top .logo-name{font-size:23px}
+  #v-worker .phero-top .logo-box{width:28px;height:28px;font-size:15px}
+  #v-worker .phero-top{gap:8px}
+}
 
 /* TAB BAR */
 .tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 2px;position:sticky;top:0;z-index:8;box-shadow:0 2px 10px rgba(60,30,130,0.06)}
@@ -578,6 +593,8 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   }
   .profile-tog-title{font-size:12px}
   .profile-tog-sub{font-size:10px}
+  .profile-hero > .phero-top{flex:1;min-width:0}
+  .wkr-pill-info{display:block}   /* เดสก์ท็อปมีที่ว่าง → โชว์ชื่อใน account pill */
 
   .hdr-right{gap:9px;margin-left:auto;z-index:1}
   .role-pill{padding:8px 15px;font-size:12.5px;border-radius:22px;font-weight:600}
@@ -1419,17 +1436,19 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 <!-- ════════ VIEW: WORKER ════════ -->
 <div class="view" id="v-worker">
   <div class="profile-hero">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="profile-av-lg av-g0"><div class="av-content"><span style="font-size:20px">🦷</span><span class="av-lbl">4829</span></div></div>
-      <div style="flex:1;min-width:0">
-        <div class="profile-name">ทันตแพทย์ · ไม่ระบุชื่อ</div>
-        <div class="profile-sub"><span>📍 กรุงเทพฯ (บางนา)</span><span>·</span><span>5 ปี</span></div>
-      </div>
-      <div style="flex-shrink:0;display:flex;gap:8px;align-items:center">
+    <div class="phero-top">
+      <div class="logo"><div class="logo-box">🦷</div><div class="logo-name">Dent<b>Match</b></div></div>
+      <div class="phero-acct">
         <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative">🔔<div class="notif-pip" id="worker-noti-pip"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
-        <div class="role-pill" style="background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);cursor:pointer;position:relative;font-size:11.5px;padding:5px 11px" onclick="toggleWorkerMenu(event)">🦷 ▾
+        <div class="wkr-pill" onclick="toggleWorkerMenu(event)">
+          <div class="profile-av-lg av-g0"><div class="av-content"><span style="font-size:17px">🦷</span><span class="av-lbl">4829</span></div></div>
+          <div class="wkr-pill-info">
+            <div class="profile-name">ทันตแพทย์ · ไม่ระบุชื่อ</div>
+            <div class="profile-sub"><span>📍 กรุงเทพฯ (บางนา)</span><span>·</span><span>5 ปี</span></div>
+          </div>
+          <span class="wkr-caret">▾</span>
           <div id="worker-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:160px;overflow:hidden;z-index:999">
-            <div onclick="workerTab('profile',document.querySelector('#v-worker .tb:nth-child(3)'));closeWorkerMenu()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background=''">👤 โปรไฟล์</div>
+            <div onclick="workerTab('profile',document.querySelector('#v-worker .tb:nth-child(4)'));closeWorkerMenu()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background=''">👤 โปรไฟล์</div>
             <div style="height:1px;background:var(--border);margin:0 12px"></div>
             <div onclick="logoutWorker()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''">🚪 ออกจากระบบ</div>
           </div>
@@ -3257,11 +3276,6 @@ function initBeta(){
   const mk=()=>{const b=document.createElement('span');b.className='beta-tag';b.textContent='BETA';return b;};
   document.querySelectorAll('.logo').forEach(l=>{ if(!l.querySelector('.beta-tag')) l.appendChild(mk()); });
   document.querySelectorAll('.mini-hdr').forEach(h=>{ if(!h.querySelector('.beta-tag')) h.appendChild(mk()); });
-  document.querySelectorAll('.profile-hero').forEach(h=>{
-    if(h.querySelector('.beta-tag'))return;
-    const name=h.querySelector('.profile-name');
-    (name||h).appendChild(mk());
-  });
 }
 
 // Make non-native clickable elements (div[onclick]) reachable & operable by keyboard
