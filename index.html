@@ -77,6 +77,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .hdr-right{display:flex;gap:8px;align-items:center}
 .role-pill{background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 13px;font-size:12px;color:rgba(255,255,255,0.9);cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;font-weight:500}
 .rp-full{display:none}
+/* มือถือ role คลินิก: pill เหลือ 🏥 ▾ (ชื่อเต็มอยู่ในกล่องเขียวด้านล่างแล้ว) */
+#v-clinic .role-pill .rp-short{display:none}
 .dt-filterbar{display:none}
 .role-pill:active{background:rgba(255,255,255,0.22)}
 .icon-btn{width:42px;height:42px;background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.18);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:.2s;position:relative}
@@ -86,6 +88,9 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .hdr-sub{font-size:11.5px;color:var(--p300);letter-spacing:.6px;margin-bottom:2px}
 .hdr-title{font-family:'Prompt',sans-serif;font-size:23px;font-weight:700;color:#fff;line-height:1.2}
 .hdr-title em{color:var(--gold2);font-style:normal}
+/* role คลินิก: ชื่อคลินิกด้านบน = ตัวขาว + กรอบเขียว (คลีน เน้นเส้นขอบ) */
+#v-clinic .hdr-title{display:inline-block;color:#fff;border:1.5px solid var(--green);background:rgba(6,199,85,.08);border-radius:13px;padding:7px 15px;margin-top:8px}
+#v-clinic .hdr-title em{color:#fff}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat-box{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.13);border-radius:12px;padding:10px 8px;text-align:center}
 .stat-n{font-family:'Prompt',sans-serif;font-size:21px;font-weight:700;color:#fff;line-height:1}
@@ -115,6 +120,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .profile-tog-wrap.off .profile-tog-sub{color:var(--p300)}
 /* worker hero: โลโก้ซ้าย + account pill ขวา */
 .phero-top{display:flex;align-items:center;gap:10px}
+.phero-top #worker-bell{margin-left:auto}   /* ดันกระดิ่งชิดขอบขวา */
 .phero-acct{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
 .wkr-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:4px 11px 4px 5px;cursor:pointer;position:relative;transition:.2s}
 .wkr-pill:hover{background:rgba(255,255,255,.2)}
@@ -1474,6 +1480,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="avail-card"><div class="avail-days-big"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
         </div>
         <button class="btn-edit-profile" onclick="goView('v-edit-profile')">✏️ แก้ไขโปรไฟล์</button>
+        <button onclick="openSheet('s-contact')" style="width:100%;background:#fff;color:var(--ink4);border:1.5px solid var(--border2);border-radius:var(--rb);padding:12px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background='#fff'">💬 ติดต่อเรา</button>
       </div>
     </div>
     <!-- INBOX -->
@@ -1928,7 +1935,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <span style="color:var(--ink5);margin:0 5px">·</span>
           <a href="#" onclick="openSheet('s-privacy');return false" style="color:var(--p600);font-weight:600;text-decoration:none">Privacy Policy</a>
         </div>
-        <a href="#" onclick="openSheet('s-contact');return false" style="font-size:11.5px;color:var(--ink4);text-decoration:none;display:inline-flex;align-items:center;gap:4px">💬 ติดต่อเรา / ช่วยเหลือ</a>
+        <a href="#" onclick="openSheet('s-contact');return false" style="font-size:11.5px;color:var(--ink4);text-decoration:none;display:inline-flex;align-items:center;gap:4px">💬 ติดต่อเรา</a>
         <div style="font-size:10.5px;color:var(--ink5);margin-top:8px">© DentMatch 2026 · All rights reserved</div>
       </div>
     </div>
@@ -3532,7 +3539,7 @@ function initDesktop(){
       const f=document.createElement('div');
       f.className='dt-sf';
       const guest=!tb.closest('#v-clinic') && !tb.closest('#v-worker');
-      const contact=`<a class="dt-contact" onclick="openSheet('s-contact')">\u{1F4AC} ติดต่อเรา / ช่วยเหลือ</a>`;
+      const contact=`<a class="dt-contact" onclick="openSheet('s-contact')">\u{1F4AC} ติดต่อเรา</a>`;
       f.innerHTML = guest
         ? `${contact}<div class="dt-copy">© DentMatch 2026</div>`
         : `${contact}<div class="dt-copy">© DentMatch 2026 · All rights reserved</div>`;
