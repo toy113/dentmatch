@@ -147,7 +147,10 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 
 /* CHIPS */
 .filter-wrap{padding:12px 16px 0}
-.chip-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:7px;scrollbar-width:none}
+.chip-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:7px;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent)}
+/* cue ว่าการ์ดกดดูรายละเอียดได้ */
+.jcard-go{text-align:right;font-size:11px;font-weight:600;color:var(--ink5);margin-top:8px;transition:.15s}
+.jcard:hover .jcard-go{color:var(--p600)}
 .chip-row::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:8px 14px;border-radius:var(--rc);font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:500;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);cursor:pointer;transition:.18s;white-space:nowrap}
 .chip:active{transform:scale(.94)}
@@ -674,7 +677,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
     padding:16px 34px;position:sticky;top:0;z-index:50;
     box-shadow:0 1px 0 rgba(54,26,120,.05);
   }
-  .chip-row{gap:8px;padding-bottom:0;margin-bottom:9px;flex-wrap:wrap;overflow:visible}
+  .chip-row{gap:8px;padding-bottom:0;margin-bottom:9px;flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
   .chip-row:last-child{margin-bottom:0}
 
   /* collapsible filter panel */
@@ -1017,7 +1020,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <!-- teaser CTA -->
       <div class="wk-teaser">
         <div class="wk-teaser-head">👥 <b>94</b> บุคลากรกำลังหาคลินิก</div>
-        <div class="wk-teaser-sub">ทันตแพทย์ · ผู้ช่วยฯ · เคาน์เตอร์<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
+        <div class="wk-teaser-sub">🦷 ทันตแพทย์ 40 · 🤝 ผู้ช่วยฯ 35 · 🖥 เคาน์เตอร์ 19<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
         <button class="wk-teaser-cta" onclick="openSheet('s-login')">🔑 สมัคร / เข้าสู่ระบบเพื่อดูบุคลากรทั้งหมด</button>
       </div>
       <!-- blurred sample (locked) -->
@@ -1216,7 +1219,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="chip-row" style="flex-wrap:wrap" id="postSkillChips"></div>
         </div>
         <div class="form-group"><label>รูปแบบวันทำงาน <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน)</span></label>
-          <div class="chip-row" style="flex-wrap:wrap">
+          <div class="chip-row" id="postDays" style="flex-wrap:wrap">
             <div class="chip" onclick="chipMulti(this)">จันทร์</div>
             <div class="chip" onclick="chipMulti(this)">อังคาร</div>
             <div class="chip" onclick="chipMulti(this)">พุธ</div>
@@ -1227,7 +1230,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
             <div class="chip" onclick="chipMulti(this)">ตามตกลง</div>
           </div>
         </div>
-        <div class="form-group"><label>วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(optional)</span></label><input type="date" class="inp" id="workdate" placeholder="เว้นว่างถ้าไม่ระบุ"></div>
+        <div class="form-group"><label>วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input type="date" class="inp" id="workdate" placeholder="เว้นว่างถ้าไม่ระบุ" onchange="showThaiDate(this)"><div id="workdate-th" style="display:none;font-size:12.5px;color:var(--p700);font-weight:600;margin-top:6px"></div></div>
         <div class="form-group"><label>เวลา <span style="font-size:11px;color:var(--ink4);font-weight:400">(24 ชม. · HH:MM)</span></label><div class="inp-row"><input type="text" class="inp" value="10:00" inputmode="numeric" maxlength="5" placeholder="เริ่ม เช่น 10:00" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"><input type="text" class="inp" value="19:30" inputmode="numeric" maxlength="5" placeholder="เลิก เช่น 19:30" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"></div></div>
         <div class="form-group">
           <label>ค่าตอบแทน</label>
@@ -1242,7 +1245,10 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           </div>
         </div>
         <div class="form-group"><label>รายละเอียดเพิ่มเติม</label><textarea class="inp" rows="3" placeholder="scope งาน, สิ่งที่คลินิกมีให้, ข้อกำหนด..."></textarea></div>
-        <button class="btn-primary" onclick="openSheet('s-post-success')">🚀 ลงประกาศงาน</button>
+        <button class="btn-outline" type="button" onclick="previewPost()" style="margin-bottom:8px">👁 ดูตัวอย่างการ์ด</button>
+        <div id="post-preview" style="display:none;margin-bottom:8px"></div>
+        <div id="post-err" style="font-size:12.5px;color:var(--red);margin-bottom:8px;display:none;font-weight:600"></div>
+        <button class="btn-primary" onclick="validatePost()">🚀 ลงประกาศงาน</button>
 
       </div>
     </div>
@@ -1273,7 +1279,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         </div>
         <div class="past-banner">🗓 วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
         <div class="act-row">
-          <button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openSheet('s-log')">📝 ลงบันทึกงาน</button>
+          <button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)">📝 ลงบันทึกงาน</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)" style="flex:none">🗑️</button>
         </div>
       </div>
@@ -1310,7 +1316,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         </div>
         <div class="act-row">
           <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
-          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️</button>
+          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
       </div>
 
@@ -1332,11 +1338,11 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         </div>
         <div class="act-row">
           <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
-          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️</button>
+          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
       </div>
 
-      <!-- ⑤ ปิดแล้ว -->
+      <!-- ⑤ ปิดแล้ว (ใช้ toggle เปิด/ปิด เหมือนการ์ดอื่น — เปิด toggle = เปิดรับใหม่) -->
       <div class="mcard mf-open" id="mcard-closed" style="opacity:.85;border-color:rgba(229,83,58,.2)" onclick="goView('v-job-detail')" style="cursor:pointer">
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
@@ -1345,12 +1351,14 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           </div>
           <div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดแล้ว</div>
         </div>
-        <div style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div style="display:flex;align-items:center;gap:6px"><span>🔴</span><span style="font-size:12px;color:var(--red);font-weight:600">ปิดรับแล้ว — ไม่แสดงใน job board</span></div>
-          <button onclick="event.stopPropagation();mReopen(this,'mcard-closed')" style="background:var(--red);border:none;border-radius:7px;padding:7px 13px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap">↩ เปิดใหม่</button>
+        <div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600">🔴 ปิดรับแล้ว — ไม่แสดงใน job board</div>
+        <div class="tog-row">
+          <div class="tog off" id="tog-closed" onclick="event.stopPropagation();mToggle(this,'mcard-closed')"></div>
+          <span class="tog-lbl">ปิดรับสมัคร (ปิดอยู่)</span>
         </div>
         <div class="act-row">
-          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)" style="width:100%;justify-content:center">🗑️ ลบถาวร</button>
+          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
+          <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
       </div>
 
@@ -1440,6 +1448,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
     <!-- PROFILE -->
     <div class="tab-content" id="wt-profile">
       <div class="profile-body">
+        <div class="profile-section"><div class="ps-title">📊 ภาพรวมโปรไฟล์</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+            <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">142</div><div style="font-size:12px;color:var(--ink4);margin-top:5px">👁 โปรไฟล์ถูกดู</div></div>
+            <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">7</div><div style="font-size:12px;color:var(--ink4);margin-top:5px">📨 ได้รับคำเชิญ</div></div>
+          </div>
+        </div>
         <div class="profile-section"><div class="ps-title">🛡 Trust Indicators</div>
           <div class="trust-card">
             <div class="trust-item"><div class="trust-icon ti-green">✅</div><div class="trust-info"><div class="trust-label">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
@@ -1542,7 +1556,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
             <span style="font-size:10.5px;color:var(--green2);background:#fff;padding:3px 8px;border-radius:8px;font-weight:700;border:1px solid rgba(6,199,85,.4)">💚 Add LINE แล้ว</span>
           </div>
           <div class="inv-job-chip">📋 ทันตแพทย์ GP อาทิตย์ — ฿3,200/วัน</div>
-          <div style="font-size:12px;color:var(--green2);padding:6px 0">✓ ติดต่อผ่าน LINE คลินิกได้เลย</div>
+          <div style="font-size:12px;color:var(--green2);padding:6px 0">✓ Add LINE แล้ว เมื่อ 3 วันที่แล้ว · ติดต่อต่อใน LINE ได้เลย</div>
         </div>
         <!-- 3: บันทึก -->
         <div class="inv-card" style="border-left:3.5px solid var(--gold)">
@@ -2136,7 +2150,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon">📨</div><div class="success-title">ส่งคำเชิญแล้ว!</div><button class="btn-primary" onclick="closeSheet('s-invite-success');closeSheet('s-invite')">เสร็จสิ้น</button></div></div>
 </div>
 <div class="overlay" id="s-log-success" onclick="overlayClose(event,'s-log-success')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon">✅</div><div class="success-title">บันทึกงานสำเร็จ!</div><div class="success-sub">Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น</div><button class="btn-primary" onclick="closeSheet('s-log-success');closeSheet('s-log')">เสร็จสิ้น</button></div></div>
+  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon">✅</div><div class="success-title">บันทึกงานสำเร็จ!</div><div class="success-sub">Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น</div><button class="btn-primary" onclick="finishWorkLog()">เสร็จสิ้น</button></div></div>
 </div>
 <div class="overlay" id="s-save-success" onclick="overlayClose(event,'s-save-success')">
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon">💾</div><div class="success-title">บันทึกโปรไฟล์แล้ว!</div><div class="success-sub">โปรไฟล์ของคุณอัปเดตแล้ว คลินิกจะเห็นข้อมูลใหม่ใน worker board</div><button class="btn-primary" onclick="closeSheet('s-save-success');goBack()">กลับหน้าโปรไฟล์</button></div></div>
@@ -2358,6 +2372,16 @@ function fmtTime(el){
   if(d.length>=4){ let m=parseInt(d.slice(2,4),10); if(m>59) d=d.slice(0,2)+'59'; }
   el.value = d.length>2 ? d.slice(0,2)+':'+d.slice(2) : d;
 }
+/* แสดงวันที่ที่เลือกเป็นภาษาไทย (เดือนไทย + ปี พ.ศ.) ใต้ช่อง type=date */
+const _thMonths=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function showThaiDate(inp){
+  const out=document.getElementById('workdate-th'); if(!out)return;
+  const p=(inp.value||'').split('-');
+  if(p.length!==3){ out.style.display='none'; out.textContent=''; return; }
+  const y=+p[0], m=+p[1], d=+p[2];
+  out.textContent='📅 '+d+' '+(_thMonths[m-1]||'')+' พ.ศ. '+(y+543);
+  out.style.display='block';
+}
 
 
 function mFilter(type,btn){
@@ -2374,22 +2398,56 @@ function mToggle(tog,cardId){
   const card=document.getElementById(cardId); if(!card)return;
   const statusEl=card.querySelector('.mstatus');
   const togLbl=card.querySelector('.tog-lbl');
+  let banner=card.querySelector('.closed-banner');
   if(isOff){
     if(statusEl){statusEl.innerHTML='<div class="dot dot-r"></div>ปิดแล้ว';statusEl.style.color='var(--red)';}
-    if(togLbl)togLbl.textContent='ปิดรับสมัคร';
+    if(togLbl)togLbl.textContent='ปิดรับสมัคร (ปิดอยู่)';
     card.style.opacity='.85';card.style.borderColor='rgba(229,83,58,.2)';
+    if(!banner){                                   // โชว์ banner เหมือนการ์ด "ปิดแล้ว" (#5 ให้ consistent)
+      banner=document.createElement('div'); banner.className='closed-banner';
+      banner.style.cssText='background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600';
+      banner.textContent='🔴 ปิดรับแล้ว — ไม่แสดงใน job board';
+      const togRow=card.querySelector('.tog-row');
+      if(togRow)card.insertBefore(banner,togRow); else card.appendChild(banner);
+    }
   } else {
     if(statusEl){statusEl.innerHTML='<div class="dot dot-g"></div>เปิดรับ';statusEl.style.color='var(--green)';}
     if(togLbl)togLbl.textContent='เปิดรับสมัคร';
     card.style.opacity='';card.style.borderColor='';
+    if(banner)banner.remove();
   }
 }
+/* ลบ: ยืนยัน 2 จังหวะ (กดครั้งแรก = เตือน, กดอีกครั้งใน 3 วิ = ลบจริง) #2 */
 function mDelete(btn){
+  if(btn.dataset.confirm!=='1'){
+    btn.dataset.confirm='1';
+    btn.dataset.orig=btn.innerHTML;
+    btn.dataset.ocss=btn.style.cssText;
+    btn.innerHTML='⚠️ กดอีกครั้งเพื่อลบ';
+    btn.style.background='var(--red)';btn.style.borderColor='var(--red)';btn.style.color='#fff';btn.style.whiteSpace='nowrap';
+    btn._t=setTimeout(function(){ btn.dataset.confirm='0'; btn.innerHTML=btn.dataset.orig; btn.style.cssText=btn.dataset.ocss; },3000);
+    return;
+  }
+  clearTimeout(btn._t);
   const card=btn.closest('.mcard'); if(!card)return;
   card.style.transition='opacity .3s,transform .3s';
   card.style.opacity='0';card.style.transform='translateX(40px)';
   setTimeout(()=>card.remove(),300);
   showToast('\u{1F5D1}️ ลบประกาศแล้ว');
+}
+/* work-log: จำการ์ดที่เปิด → หลังบันทึกสำเร็จเปลี่ยนเป็น "บันทึกแล้ว" + ซ่อนปุ่ม (กันบันทึกซ้ำ) #1 */
+let _logCard=null;
+function openLogFromCard(btn){ _logCard=btn.closest('.mcard'); openSheet('s-log'); }
+function finishWorkLog(){
+  closeSheet('s-log-success'); closeSheet('s-log');
+  const card=_logCard; _logCard=null;
+  if(!card)return;
+  const st=card.querySelector('.mstatus');
+  if(st){st.innerHTML='<div class="dot" style="background:var(--green)"></div>✓ บันทึกแล้ว';st.style.color='var(--green)';}
+  const pb=card.querySelector('.past-banner');
+  if(pb){pb.style.cssText='background:var(--green-bg);border:1px solid rgba(6,199,85,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--green2);display:flex;align-items:center;gap:6px;margin-bottom:9px;font-weight:600';pb.textContent='✅ บันทึกผลการทำงานแล้ว';}
+  const logBtn=card.querySelector('.btn-sm.log'); if(logBtn)logBtn.remove();
+  const del=card.querySelector('.act-row .btn-sm.del'); if(del){del.style.flex='1';del.style.width='100%';del.innerHTML='🗑️ ลบ';}
 }
 function mEdit(btn){
   clinicTab('post',document.querySelector('#v-clinic .tb:nth-child(3)'));
@@ -2604,6 +2662,14 @@ function buildWorkerBoards(){
     dst.querySelectorAll('.btn-invite').forEach(b=>b.remove());   // read-only: ไม่มีปุ่มส่งคำเชิญ
   });
 }
+/* cue "ดูรายละเอียด ›" ใต้การ์ดงาน (กดดูรายละเอียดได้) */
+function addCardHints(){
+  document.querySelectorAll('.jcard').forEach(function(c){
+    if(c.querySelector('.jcard-go'))return;
+    var g=document.createElement('div'); g.className='jcard-go'; g.textContent='ดูรายละเอียด ›';
+    c.appendChild(g);
+  });
+}
 function toggleProfile(el){
   el.classList.toggle('off');
   const txt=el.previousElementSibling;
@@ -2809,7 +2875,7 @@ function markLineAdded(btn){
   card.style.background='var(--green-bg)';
   card.style.borderColor='rgba(6,199,85,.2)';
   const ft = card.querySelector('.inv-ft');
-  if(ft) ft.innerHTML='<div style="font-size:12px;color:var(--green2);padding:4px 0">✓ ติดต่อผ่าน LINE คลินิกได้เลย</div>';
+  if(ft) ft.innerHTML='<div style="font-size:12px;color:var(--green2);padding:4px 0">✓ Add LINE แล้ว เมื่อสักครู่ · ติดต่อต่อใน LINE ได้เลย</div>';
   const top = card.querySelector('.inv-top');
   if(top){
     const badge=top.querySelector('.new-dot,.badge-new');
@@ -2929,6 +2995,48 @@ function setPayType(type) {
   if(monBtn) monBtn.style.cssText += ';' + (type==='month'?on:off);
   if(negoBtn) negoBtn.style.cssText += ';' + (type==='nego'?on:off);
   if(wrap) wrap.style.display = type==='nego' ? 'none' : 'block';
+}
+/* validate ฟอร์มลงงาน: ต้องเลือกวันทำงาน ≥1 + ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") */
+function validatePost(){
+  const days=document.getElementById('postDays');
+  const wage=document.getElementById('wage-input');
+  const err=document.getElementById('post-err');
+  let ok=true, msgs=[];
+  if(days && !days.querySelector('.chip.on')){
+    days.style.outline='2px solid var(--red)'; days.style.borderRadius='8px';
+    setTimeout(()=>days.style.outline='',2500); ok=false; msgs.push('เลือกวันทำงาน');
+  }
+  if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
+    showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
+  }
+  if(!ok){ if(err){ err.textContent='⚠️ กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
+  if(err) err.style.display='none';
+  openSheet('s-post-success');
+}
+/* ดูตัวอย่างการ์ดงานจากค่าที่กรอก (toggle) */
+function previewPost(){
+  const box=document.getElementById('post-preview'); if(!box)return;
+  if(box.style.display==='block'){ box.style.display='none'; box.innerHTML=''; return; }
+  const post=document.getElementById('cc-post');
+  const pos=((post.querySelector('.pos-card.on .pos-name')||{}).textContent||'ตำแหน่ง').trim();
+  const skills=[].map.call(post.querySelectorAll('#postSkillChips .chip.on'),c=>c.textContent.trim());
+  const days=[].map.call(post.querySelectorAll('#postDays .chip.on'),c=>c.textContent.trim());
+  const times=[].map.call(post.querySelectorAll('.inp-row input'),i=>i.value).filter(Boolean);
+  const wage=(document.getElementById('wage-input')||{}).value;
+  const nego=(typeof _payType!=='undefined'&&_payType==='nego');
+  const month=(typeof _payType!=='undefined'&&_payType==='month');
+  const payHtml = nego ? 'ตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
+  const sched = (days.length?days.join(' '):'ตามตกลง') + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
+  box.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 ตัวอย่างที่จะแสดงใน job board</div>'
+    +'<div class="jcard" style="cursor:default;animation:none">'
+    +'<div class="badges"><span class="bdg bdg-role">'+pos+'</span>'+(skills[0]?'<span class="bdg bdg-br">'+skills[0]+'</span>':'')+'</div>'
+    +'<div class="jcard-title" style="margin-bottom:3px">'+pos+(skills[0]?(' '+skills[0]):'')+'</div>'
+    +'<div class="jcard-clinic">🏥 คลินิกทันตกรรมสยาม</div>'
+    +'<div class="sched-strip"><span>🗓</span><span class="sched-txt">'+sched+'</span></div>'
+    +'<div class="meta"><span class="pill pill-p">📍 กรุงเทพฯ</span>'+(skills[0]?'<span class="pill pill-b">'+skills[0]+'</span>':'')+'</div>'
+    +'<div class="card-ft"><div class="wage">'+payHtml+'</div></div>'
+    +'</div>';
+  box.style.display='block';
 }
 
 let editProvs = new Set(['กรุงเทพมหานคร']);
@@ -3107,6 +3215,16 @@ function applyFilters(fw){
   cards.forEach(c=>{ if(_cardMatches(c,f)){c.classList.remove('hidden');visible++;} else c.classList.add('hidden'); });
   const active=!!(pos||skills.length||provs.length||wantUrgent||days.length||q);
   _showBoardEmpty(tc,view,visible,active);
+  _updateCount(tc,visible,active);
+}
+/* อัปเดตเลขจำนวน (sec-hdr .cnt-pill + dt-toolbar .pill) ตามผลกรอง — เก็บค่าเดิมไว้ใน data-total */
+function _updateCount(tc,visible,active){
+  [tc.querySelector('.sec-hdr .cnt-pill'), tc.querySelector('.dt-toolbar .pill')].forEach(function(p){
+    if(!p)return;
+    if(!p.dataset.total) p.dataset.total = p.textContent.trim();
+    var unit = p.dataset.total.replace(/[\d,]+/,'').trim();   // "งาน" หรือ "คน"
+    p.textContent = active ? (visible + ' ' + unit) : p.dataset.total;
+  });
 }
 function _showBoardEmpty(tc,view,visible,active){
   const cont=tc.querySelector('[id$="-cards"], .cards')||tc;
@@ -3236,10 +3354,11 @@ function applyProvince() {
 
 window.addEventListener('DOMContentLoaded',()=>{
   const wd=document.getElementById('workdate');
-  if(wd)wd.value=new Date().toISOString().split('T')[0];
+  if(wd){ wd.value=new Date().toISOString().split('T')[0]; showThaiDate(wd); }
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
   renderSkills('editSkillChips','editSkillLabel','dentist',true);
   buildWorkerBoards();
+  addCardHints();
   initBeta();
   hideZeroTrust();
   initA11y();
