@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DentMatch</title>
+<!-- Supabase config: publishable (anon) key ใส่ frontend ได้ (RLS คุม) · ห้ามใส่ service_role/secret -->
+<script>
+  window.DM_CFG = {
+    SUPABASE_URL: 'https://zbaedgczudbamfkpeloo.supabase.co',
+    SUPABASE_KEY: 'sb_publishable_sEehrAazbTyP-Ib13iPHqw_uih-_tCe'
+  };
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1937,7 +1944,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" style="padding-right:90px">
-          <button onclick="goLoginStep('ls-otp')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ขอ OTP →</button>
+          <button onclick="emailLoginRequestOtp()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ขอ OTP →</button>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:4px">รหัส OTP จะส่งไปยัง Email ที่ลงทะเบียนไว้</div>
       </div>
@@ -2073,7 +2080,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <input class="otp-box" maxlength="1" oninput="otpNext(this,4)">
         <input class="otp-box" maxlength="1" oninput="otpDone(this)">
       </div>
-      <button class="btn-primary" onclick="loginSuccess()"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ยืนยันและเข้าใช้งาน</button>
+      <button class="btn-primary" onclick="emailOtpConfirm()"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ยืนยันและเข้าใช้งาน</button>
       <div class="sheet-link">ไม่ได้รับ OTP? <a href="#">ส่งใหม่</a></div>
     </div>
     <div id="ls-success" style="display:none">
@@ -2376,6 +2383,7 @@ function closeWorkerMenu(){
 }
 function logoutWorker(){
   closeWorkerMenu();
+  if(typeof dmSignOut==='function') dmSignOut();
   currentRole='guest'; selectedLoginRole=null;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('v-main').classList.add('active');
@@ -2399,6 +2407,7 @@ function closeClinicMenu(){
 }
 function logoutClinic(){
   closeClinicMenu();
+  if(typeof dmSignOut==='function') dmSignOut();
   currentRole='guest'; selectedLoginRole=null;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('v-main').classList.add('active');
@@ -2646,15 +2655,36 @@ function validateRegWorker(){
   nextAfterRegWorker();
 }
 
-function nextAfterRegClinic() {
-  const email = document.getElementById('reg-email');
-  if(email && email.value.trim()) goLoginStep('ls-otp');
-  else loginSuccess();
+async function nextAfterRegClinic() {
+  const email=(document.getElementById('reg-email').value||'').trim();
+  if(!email){ loginSuccess(); return; }   // ไม่มี email = mock fallback
+  pendingSignup={ role:'clinic', email,
+    name:(document.getElementById('rc-name').value||'').trim(),
+    province:document.getElementById('rc-province').value||'',
+    line_id:(document.getElementById('rc-line').value||'').trim() };
+  _otpEmail=email; _otpMode='register';
+  if(await dmSendEmailOtp(email,true)){
+    const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
+    goLoginStep('ls-otp');
+  }
 }
-function nextAfterRegWorker() {
-  const email = document.getElementById('reg-email');
-  if(email && email.value.trim()) goLoginStep('ls-otp');
-  else loginSuccess();
+async function nextAfterRegWorker() {
+  const email=(document.getElementById('reg-email').value||'').trim();
+  if(!email){ loginSuccess(); return; }
+  const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
+  const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
+  const bio=document.getElementById('rw-bio');
+  pendingSignup={ role:'worker', email,
+    first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
+    phone:(document.getElementById('rw-phone').value||'').trim(),
+    position:document.getElementById('regWorkerPos').value||'assistant',
+    province:[...regProvs][0]||'',   // worker_profiles เก็บจังหวัดหลักเดียว (multi-province ไว้ทีหลัง)
+    bio:bio?bio.value.trim():'' };
+  _otpEmail=email; _otpMode='register';
+  if(await dmSendEmailOtp(email,true)){
+    const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
+    goLoginStep('ls-otp');
+  }
 }
 function goLoginStep(stepId){
   ['ls-login','ls-role','ls-reg-clinic','ls-reg-worker','ls-otp','ls-success'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
@@ -2685,7 +2715,8 @@ function otpNext(el,idx){
 }
 function otpDone(el){
   if(el.value.length!==1) return;
-  // login ที่ยังไม่รู้ role → ให้เลือก role ก่อน (กันตกหน้า guest); ที่เหลือไปหน้าสำเร็จ
+  // มี email path (Supabase) → verify จริง ; ไม่มี = mock fallback (LINE/dev)
+  if(_otpEmail){ setTimeout(emailOtpConfirm,150); return; }
   if(_loginMode==='login' && !selectedLoginRole) setTimeout(enterRolePick,300);
   else setTimeout(loginSuccess,300);
 }
@@ -2720,6 +2751,98 @@ function finishLogin(){
   updateJdCta();
   setTimeout(()=>goLoginStep('ls-login'), 500);
 }
+
+/* ════════ Supabase Email auth (Batch 2) ════════
+   currentRole/selectedLoginRole = ของเดิม (mock dev ใช้ร่วม) · dmUser = session จริงจาก Supabase */
+let dmUser = null;          // { id, role } เมื่อล็อกอินจริง ; null = mock/guest
+let _otpEmail = null;       // อีเมลที่ขอ OTP
+let _otpMode = null;        // 'login' | 'register'
+let pendingSignup = null;   // ข้อมูลสมัครรอ verify
+function dmSb(){ return window.sb || null; }
+
+async function dmSendEmailOtp(email, createUser){
+  if(!dmSb()){ showToast('ระบบยังโหลดไม่เสร็จ ลองใหม่อีกครั้ง'); return false; }
+  const { error } = await dmSb().auth.signInWithOtp({ email, options:{ shouldCreateUser: !!createUser } });
+  if(error){ showToast('ส่ง OTP ไม่สำเร็จ: '+error.message); return false; }
+  return true;
+}
+// ปุ่ม "ขอ OTP →" (login)
+async function emailLoginRequestOtp(){
+  const email=(document.getElementById('login-email').value||'').trim();
+  if(!email){ showToast('กรอกอีเมลก่อน'); return; }
+  _otpEmail=email; _otpMode='login'; pendingSignup=null;
+  if(await dmSendEmailOtp(email,false)){
+    const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
+    goLoginStep('ls-otp');
+  }
+}
+// ยืนยัน OTP (auto เมื่อครบ 6 หลัก หรือกดปุ่ม)
+async function emailOtpConfirm(){
+  const code=[...document.querySelectorAll('#otpRow .otp-box')].map(b=>b.value).join('');
+  if(code.length!==6){ showToast('กรอกรหัส 6 หลักให้ครบ'); return; }
+  if(!_otpEmail){ setTimeout(loginSuccess,150); return; }   // mock fallback (ไม่มี email path)
+  const { data, error } = await dmSb().auth.verifyOtp({ email:_otpEmail, token:code, type:'email' });
+  if(error){ showToast('รหัสไม่ถูกต้อง/หมดอายุ: '+error.message); return; }
+  const uid = data.user.id;
+  let role;
+  try{
+    if(_otpMode==='register' && pendingSignup){
+      role = pendingSignup.role;
+      await dmCreateRecords(uid, pendingSignup);
+    } else {
+      const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
+      if(e || !prof){ showToast('ยังไม่มีโปรไฟล์ — กรุณาสมัครก่อน'); return; }
+      role = prof.role;
+    }
+  }catch(ex){ showToast('สร้าง/ดึงโปรไฟล์ไม่สำเร็จ: '+(ex.message||ex)); return; }
+  dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role;
+  pendingSignup=null;
+  await dmLoadProfile();
+  loginSuccess();
+}
+// สร้าง record ตอนสมัคร (RLS: id=auth.uid())
+async function dmCreateRecords(uid, s){
+  const ins = async (tbl,row)=>{ const {error}=await dmSb().from(tbl).insert(row);
+    if(error && !/duplicate|already exists/i.test(error.message)) throw error; };
+  await ins('profiles', { id:uid, role:s.role });
+  if(s.role==='clinic'){
+    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null });
+  } else {
+    // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
+    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null });
+    await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone });
+  }
+}
+// โหลดโปรไฟล์จริงจาก DB มาแสดงบนหัว (พิสูจน์ว่าไม่ใช่ mock)
+async function dmLoadProfile(){
+  if(!dmUser || !dmSb()) return;
+  try{
+    if(dmUser.role==='worker'){
+      const { data } = await dmSb().from('worker_profiles').select('anon_id, position, province').eq('id',dmUser.id).single();
+      if(data){ document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id); }
+    } else if(dmUser.role==='clinic'){
+      const { data } = await dmSb().from('clinics').select('name, province').eq('id',dmUser.id).single();
+      if(data){
+        document.querySelectorAll('#v-clinic .rp-full').forEach(e=>e.textContent=data.name);
+        const t=document.querySelector('#v-clinic .hdr-title'); if(t)t.textContent=data.name;
+      }
+    }
+  }catch(e){ console.warn('dmLoadProfile', e); }
+}
+// restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
+async function dmInitSession(){
+  if(!dmSb()) return;
+  const { data } = await dmSb().auth.getSession();
+  if(!data || !data.session) return;
+  const uid=data.session.user.id;
+  const { data:prof } = await dmSb().from('profiles').select('role').eq('id',uid).single();
+  if(!prof) return;
+  dmUser={ id:uid, role:prof.role }; currentRole=prof.role; selectedLoginRole=prof.role;
+  await dmLoadProfile();
+  finishLogin();
+}
+// logout จริง (เรียกจาก logoutClinic/logoutWorker)
+async function dmSignOut(){ try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
 
 function updateJdCta(){
   const wrap = document.getElementById('jd-cta-wrap');
@@ -3655,5 +3778,14 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
 </script>
 <script src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.min.js" onload="refreshIcons()"></script>
 <script>window.addEventListener('load',refreshIcons);</script>
+<!-- Supabase client (Email auth · Batch 2) -->
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
+  window.sb = createClient(window.DM_CFG.SUPABASE_URL, window.DM_CFG.SUPABASE_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+  });
+  window.dmSbReady = true;
+  try { if (typeof dmInitSession === 'function') await dmInitSession(); } catch(e){ console.warn('dmInitSession', e); }
+</script>
 </body>
 </html>
