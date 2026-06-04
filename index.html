@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DentMatch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -924,6 +924,10 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 @media(min-width:768px){
   .addline-lineid{display:inline;margin-left:8px;font-size:12px;font-weight:600;color:var(--green2);background:var(--green-bg);padding:2px 8px;border-radius:6px;white-space:nowrap}
 }
+/* a11y: เคารพการตั้งค่าลดการเคลื่อนไหว (กันเวียนหัว + ลดภาระ render) */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
@@ -1503,7 +1507,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="inv-job-chip">📋 ทันตแพทย์ GP เสาร์ 24 พ.ค. — ฿3,500/วัน</div>
           <div class="inv-msg">"สวัสดีครับ เห็นโปรไฟล์แล้วสนใจมากเลยครับ ตำแหน่งเสาร์-อาทิตย์นี้ว่างไหมครับ?"</div>
           <div class="inv-ft">
-            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ GP เสาร์ 24 พ.ค.')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
+            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ GP เสาร์ 24 พ.ค.','@siamdental')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
             <button class="btn-save" onclick="event.stopPropagation();markSaved(this)">🔖 บันทึก</button>
 
           </div>
@@ -1518,7 +1522,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="inv-job-chip">🏥 Smile Perfect Clinic · พระโขนง กรุงเทพฯ</div>
           <div class="inv-msg">"ขอเรียนเชิญพิจารณาร่วมงานพาร์ทไทม์กับคลินิกเราครับ มีที่นั่งว่างหลายวัน สะดวกคุยได้เลยครับ"</div>
           <div class="inv-ft">
-            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ GP เสาร์ 24 พ.ค.')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
+            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'Smile Perfect Clinic','พาร์ทไทม์ที่ Smile Perfect Clinic','@smileperfect')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
             <button class="btn-save" onclick="event.stopPropagation();markSaved(this)">🔖 บันทึก</button>
 
           </div>
@@ -1536,7 +1540,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           </div>
           <div class="inv-job-chip">📋 ทันตแพทย์ Orthodontic จันทร์-พุธ — ฿4,000/วัน</div>
           <div class="inv-ft">
-            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ GP เสาร์ 24 พ.ค.')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
+            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'DentPlus สาขานนทบุรี','ทันตแพทย์ Orthodontic จันทร์-พุธ','@dentplus')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>
             <button class="btn-save" style="color:var(--gold);border-color:rgba(201,168,76,.4)">🔖 ยกเลิกบันทึก</button>
           </div>
         </div>
@@ -1553,7 +1557,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           </div>
           <div class="inv-job-chip">📋 ทันตแพทย์ GP เสาร์ 24 พ.ค. — ฿3,500/วัน</div>
           <div class="inv-ft">
-            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'DentPlus สาขานนทบุรี','ทันตแพทย์ Orthodontic จันทร์-พุธ')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE</button>
+            <button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ GP เสาร์ 24 พ.ค.','@siamdental')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE</button>
             <button class="btn-save" onclick="event.stopPropagation();markSaved(this)">🔖</button>
 
           </div>
@@ -1695,20 +1699,37 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 <div class="overlay" id="s-add-line" onclick="overlayClose(event,'s-add-line')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">💬 ส่งข้อความแนะนำตัว</div>
-    <div class="sheet-sub" id="addline-clinic-name">คลินิกทันตกรรมสยาม</div>
-    <!-- message preview -->
-    <div style="background:var(--p25);border:1.5px solid var(--p200);border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📋 ข้อความที่จะส่ง · ✏️ แก้ไขได้</div>
-      <textarea id="addline-msg" class="inp" rows="4" style="background:#fff;font-size:13.5px;line-height:1.65;border-color:var(--p200)"></textarea>
+    <!-- STEP 1: เขียน/แก้ข้อความ -->
+    <div id="addline-step1">
+      <div class="sheet-title">💬 ส่งข้อความแนะนำตัว</div>
+      <div class="sheet-sub" id="addline-clinic-name">คลินิกทันตกรรมสยาม</div>
+      <!-- message preview -->
+      <div style="background:var(--p25);border:1.5px solid var(--p200);border-radius:12px;padding:14px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📋 ข้อความที่จะส่ง · ✏️ แก้ไขได้</div>
+        <textarea id="addline-msg" class="inp" rows="4" style="background:#fff;font-size:13.5px;line-height:1.65;border-color:var(--p200)"></textarea>
+      </div>
+      <!-- action buttons -->
+      <button class="btn-primary" onclick="copyAndLine()" style="margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px">
+        <span style="width:18px;height:18px;background:#fff;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--green)">L</span>
+        คัดลอกข้อความ + เปิด LINE
+      </button>
+      <div style="text-align:center;margin-top:10px;font-size:11.5px;color:var(--ink5)">วางข้อความใน LINE หลังจากเพิ่มเพื่อน</div>
     </div>
-
-    <!-- action buttons -->
-    <button class="btn-primary" onclick="copyAndLine()" style="margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px">
-      <span style="width:18px;height:18px;background:#fff;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--green)">L</span>
-      คัดลอกข้อความ + เปิด LINE
-    </button>
-    <div style="text-align:center;margin-top:10px;font-size:11.5px;color:var(--ink5)">วางข้อความใน LINE หลังจากเพิ่มเพื่อน</div>
+    <!-- STEP 2: ยืนยัน / ลองใหม่ (กัน dead-end ถ้า LINE ไม่เปิด หรือยังไม่ได้วาง) -->
+    <div id="addline-step2" style="display:none">
+      <div class="sheet-title">📋 คัดลอกข้อความแล้ว</div>
+      <div class="sheet-sub">เปิด LINE → เพิ่มเพื่อน → <b>วางข้อความ</b> แล้วกดส่งได้เลย</div>
+      <div style="background:var(--green-bg);border:1.5px solid rgba(6,199,85,.3);border-radius:12px;padding:14px;margin:12px 0;font-size:13px;color:#1a5c2a;line-height:1.7">
+        <div>✅ คัดลอกข้อความเรียบร้อย</div>
+        <div>2️⃣ ไปที่ LINE แล้ว <b>วาง (paste)</b> ข้อความในแชทคลินิก</div>
+        <div>3️⃣ กดส่งใน LINE</div>
+      </div>
+      <button class="btn-primary" onclick="confirmLineSent()" style="margin-bottom:9px">ส่งใน LINE แล้ว ✓</button>
+      <div style="display:flex;gap:8px">
+        <button onclick="_openLine()" style="flex:1;background:#fff;color:var(--ink3);border:1.5px solid var(--border2);border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">↗️ เปิด LINE อีกครั้ง</button>
+        <button onclick="copyMsgAgain()" style="flex:1;background:#fff;color:var(--ink3);border:1.5px solid var(--border2);border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">📋 คัดลอกอีกครั้ง</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1900,7 +1921,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 
       <!-- ── LOGIN ── -->
       <div id="login-panel">
-        <button class="btn-soc btn-line-login" onclick="loginSuccess()">💚 เข้าสู่ระบบด้วย LINE</button>
+        <button class="btn-soc btn-line-login" onclick="enterRolePick()">💚 เข้าสู่ระบบด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" style="padding-right:90px">
@@ -1911,11 +1932,11 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 
       <!-- ── REGISTER ── -->
       <div id="register-panel" style="display:none">
-        <button class="btn-soc btn-line-login" onclick="goLoginStep('ls-role')">💚 สมัครด้วย LINE</button>
+        <button class="btn-soc btn-line-login" onclick="enterRolePick()">💚 สมัครด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="reg-email" placeholder="your@email.com" style="padding-right:90px">
-          <button onclick="goLoginStep('ls-role')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ถัดไป →</button>
+          <button onclick="enterRolePick()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ถัดไป →</button>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:4px">จะส่ง OTP ยืนยันไปยัง Email</div>
       </div>
@@ -1940,7 +1961,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         <div class="role-card" onclick="selectRole(this,'clinic')"><div class="rc-icon">🏥</div><div class="rc-title">คลินิก</div><div class="rc-sub">ลงประกาศ ส่งคำเชิญ</div></div>
         <div class="role-card" onclick="selectRole(this,'worker')"><div class="rc-icon">🦷</div><div class="rc-title">ทันตบุคลากร</div><div class="rc-sub">ค้นหางาน</div></div>
       </div>
-      <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:5px"><span>🔒</span><span>เลือกแล้วเปลี่ยนภายหลังไม่ได้ — โปรดเลือกให้ถูกต้อง</span></div>
+      <div id="roleLockNote" style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:5px"><span>🔒</span><span>เลือกแล้วเปลี่ยนภายหลังไม่ได้ — โปรดเลือกให้ถูกต้อง</span></div>
       <button class="btn-primary" id="nextRoleBtn" onclick="nextRole()" style="opacity:.5">ถัดไป →</button>
     </div>
     <div id="ls-reg-clinic" style="display:none">
@@ -2234,8 +2255,16 @@ function goBack(){
   if(!viewStack.length)return;
   const prev=viewStack.pop();
   document.getElementById(currentView).classList.remove('active');
-  document.getElementById(prev).classList.add('active');
+  const next=document.getElementById(prev);
+  next.classList.add('active');
   currentView=prev;
+  const sc=next.querySelector('.scroll'); if(sc)sc.scrollTop=0;
+  // คำนวณปุ่มตาม role ใหม่ ถ้ากลับมาที่หน้า detail (กันปุ่มค้างจาก role อื่น)
+  if(prev==='v-job-detail'){
+    const cta=document.getElementById('jd-cta-wrap');
+    if(cta) cta.style.display = currentRole==='clinic' ? 'none' : '';
+  }
+  if(prev==='v-worker-detail' && typeof updateWdCta==='function') updateWdCta();
 }
 /* โหมดตัวอย่าง / Demo — เปิด view ตรง ๆ โดยไม่ต้อง login (ลบเมื่อต่อ backend จริง) */
 function devView(id){
@@ -2519,17 +2548,31 @@ function inboxTab(name,el){
   const t=document.getElementById('inbox-'+name); if(t)t.classList.add('on');
 }
 let _sheetZ = 1000;
+let _sheetReturnFocus = null;
+const _SHEET_FOCUSABLE = 'button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])';
 function openSheet(id){
   const el=document.getElementById(id); if(!el)return;
   el.style.zIndex = (++_sheetZ);   // sheet ที่เปิดทีหลังอยู่บนสุดเสมอ (กันซ้อนหลัง sheet อื่น/navbar เดสก์ท็อป)
   el.classList.add('open');
+  // a11y: ทำให้เป็น dialog จริง + ย้าย focus เข้า sheet + จำ focus เดิมไว้คืน
+  el.setAttribute('role','dialog');
+  el.setAttribute('aria-modal','true');
+  el.setAttribute('tabindex','-1');
+  const _sheet = el.querySelector('.sheet') || el;
+  const _title = _sheet.querySelector('.sheet-title');
+  if(_title) el.setAttribute('aria-label', _title.textContent.trim());
+  _sheetReturnFocus = document.activeElement;
   if(id==='s-province'){renderProvList();renderSelTags();}
+  setTimeout(()=>{ const f=el.querySelector(_SHEET_FOCUSABLE); (f||_sheet).focus&&(f||_sheet).focus(); }, 60);
 }
 function closeSheet(id){
   const el=document.getElementById(id); if(!el)return;
   el.classList.remove('open');
   el.style.zIndex='';
+  el.removeAttribute('aria-modal');
   if(!document.querySelector('.overlay.open')) _sheetZ=1000;   // ปิดหมดแล้วรีเซ็ตตัวนับ
+  // a11y: คืน focus ให้ปุ่มที่กดเปิด sheet
+  if(_sheetReturnFocus && _sheetReturnFocus.focus){ try{_sheetReturnFocus.focus();}catch(e){} _sheetReturnFocus=null; }
 }
 function overlayClose(e,id){if(e.target===document.getElementById(id))closeSheet(id)}
 
@@ -2611,14 +2654,29 @@ function selectRole(el,role){
   selectedLoginRole=role;
   document.getElementById('nextRoleBtn').style.opacity='1';
 }
+// เข้าสู่ขั้นเลือก role — ใช้ทั้ง login และ register (login: ซ่อนโน้ต "เปลี่ยนไม่ได้")
+function enterRolePick(){
+  selectedLoginRole=null;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('on'));
+  const nb=document.getElementById('nextRoleBtn'); if(nb) nb.style.opacity='.5';
+  const note=document.getElementById('roleLockNote'); if(note) note.style.display = (_loginMode==='login') ? 'none' : '';
+  goLoginStep('ls-role');
+}
 function nextRole(){
   if(!selectedLoginRole)return;
+  // login = ผู้ใช้เดิม → เข้าหน้า dashboard ตาม role ที่เลือกเลย (ไม่ต้องกรอกฟอร์มสมัคร)
+  if(_loginMode==='login'){ loginSuccess(); return; }
   goLoginStep(selectedLoginRole==='clinic'?'ls-reg-clinic':'ls-reg-worker');
 }
 function otpNext(el,idx){
   if(el.value.length===1){const b=document.querySelectorAll('#otpRow .otp-box');if(b[idx+1])b[idx+1].focus()}
 }
-function otpDone(el){if(el.value.length===1)setTimeout(loginSuccess,300)}
+function otpDone(el){
+  if(el.value.length!==1) return;
+  // login ที่ยังไม่รู้ role → ให้เลือก role ก่อน (กันตกหน้า guest); ที่เหลือไปหน้าสำเร็จ
+  if(_loginMode==='login' && !selectedLoginRole) setTimeout(enterRolePick,300);
+  else setTimeout(loginSuccess,300);
+}
 function loginSuccess(){
   const title=document.getElementById('success-title-txt');
   const sub=document.getElementById('success-sub-txt');
@@ -2829,7 +2887,7 @@ function dayToggle(el){el.classList.toggle('on')}
 /* ── ADD LINE + AUTO MESSAGE ── */
 let _addLineBtn = null;
 let _addLineId = '@dentmatch';
-const ANON_ID = '4829';
+let currentWorkerId = '4829';   // production: ดึงจาก auth session ของ worker ที่ล็อกอิน
 
 function openAddLine(btn, clinic, jobName, lineId) {
   _addLineBtn = btn;
@@ -2837,7 +2895,10 @@ function openAddLine(btn, clinic, jobName, lineId) {
   const clinicEl = document.getElementById('addline-clinic-name');
   if(clinicEl){ clinicEl.textContent = clinic; clinicEl.insertAdjacentHTML('beforeend', ' <span class="addline-lineid">'+_addLineId+'</span>'); }
   const msg = document.getElementById('addline-msg');
-  if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${ANON_ID})`;
+  if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${currentWorkerId})`;
+  // เริ่มที่ขั้นตอน 1 (เขียนข้อความ) เสมอ
+  const s1=document.getElementById('addline-step1'), s2=document.getElementById('addline-step2');
+  if(s1) s1.style.display=''; if(s2) s2.style.display='none';
   openSheet('s-add-line');
 }
 function _copyText(text) {
@@ -2858,10 +2919,21 @@ function _openLine() {
 function copyAndLine() {
   const msg = document.getElementById('addline-msg');
   if(msg) _copyText(msg.value);
+  _openLine();
+  // ไปขั้นยืนยัน — ยังไม่พลิกการ์ด/ปิด sheet จนกว่าผู้ใช้ยืนยันว่าส่งแล้ว (กัน dead-end)
+  const s1=document.getElementById('addline-step1'), s2=document.getElementById('addline-step2');
+  if(s1) s1.style.display='none'; if(s2) s2.style.display='';
+  showToast('✅ คัดลอกข้อความแล้ว — วางใน LINE ได้เลย');
+}
+function copyMsgAgain() {
+  const msg = document.getElementById('addline-msg');
+  if(msg) _copyText(msg.value);
+  showToast('✅ คัดลอกข้อความอีกครั้งแล้ว');
+}
+function confirmLineSent() {
   if(_addLineBtn) markLineAdded(_addLineBtn);
   closeSheet('s-add-line');
-  showToast('✅ คัดลอกข้อความแล้ว — วางใน LINE ได้เลย');
-  setTimeout(_openLine, 400);
+  showToast('🎉 ติดต่อคลินิกผ่าน LINE แล้ว');
 }
 function showToast(msg){
   const host=document.getElementById('app')||document.body;
@@ -3428,6 +3500,19 @@ function initA11y(){
     if(a.matches('button,a,input,select,textarea')) return;
     e.preventDefault();
     a.click();
+  });
+  // a11y: Esc ปิด sheet บนสุด + Tab วน focus อยู่ใน sheet (focus trap)
+  document.addEventListener('keydown',e=>{
+    const open=[...document.querySelectorAll('.overlay.open')].pop();
+    if(!open) return;
+    if(e.key==='Escape'){ e.preventDefault(); closeSheet(open.id); return; }
+    if(e.key==='Tab'){
+      const f=open.querySelectorAll(_SHEET_FOCUSABLE);
+      if(!f.length) return;
+      const first=f[0], last=f[f.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
   });
 }
 
