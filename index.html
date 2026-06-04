@@ -755,7 +755,8 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .chip.on:hover{transform:none}
   .chip-more:hover{background:var(--p50)}
 
-  .clinic-search-wrap{display:none!important}
+  .clinic-search-wrap{display:block!important;padding:6px 34px 12px!important}
+  .clinic-search-wrap > div{max-width:520px}
   .clinic-search-inp{border-radius:22px!important}
   .clinic-search-inp:focus{border-color:var(--p500)!important;box-shadow:0 0 0 3px rgba(124,92,191,.12)!important}
 
@@ -3302,16 +3303,7 @@ function initDesktop(){
   if(document.body.classList.contains('dt-initialized')) return;
   document.body.classList.add('dt-initialized');
 
-  // 1) Global search injected into every top bar
-  document.querySelectorAll('.hdr,.mini-hdr').forEach(hdr=>{
-    if(hdr.querySelector('.dt-gsearch')) return;
-    const s=document.createElement('div');
-    s.className='dt-gsearch';
-    s.innerHTML='<span>\u{1F50D}</span><input oninput="dtSearch(this)" placeholder="ค้นหาคลินิก ตำแหน่ง ทักษะ...">';
-    const right=hdr.querySelector('.hdr-right');
-    if(right && right.parentElement){ right.parentElement.insertBefore(s,right); }
-    else hdr.appendChild(s);
-  });
+  // 1) (เดิม) search ใน navbar — ย้ายลงเป็นกล่องใต้ตัวกรอง (แท็บงานเท่านั้น) ผ่าน .clinic-search-wrap แทน
 
   // 2) Premium stats band on guest job tab
   const tcJobs=document.getElementById('tc-jobs');
