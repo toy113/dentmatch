@@ -1367,7 +1367,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           </div>
           <div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดแล้ว</div>
         </div>
-        <div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600">🔴 ปิดรับแล้ว — ไม่แสดงใน job board</div>
+        <div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
         <div class="tog-row">
           <div class="tog off" id="tog-closed" onclick="event.stopPropagation();mToggle(this,'mcard-closed')"></div>
           <span class="tog-lbl" style="display:none">ปิดรับสมัคร (ปิดอยู่)</span>
@@ -1451,7 +1451,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative"><i data-lucide="bell"></i><div class="notif-pip" id="worker-noti-pip"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
     </div>
     <div class="profile-tog-wrap on">
-      <div class="profile-tog-txt"><div class="profile-tog-title">🟢 เปิดรับงานอยู่</div><div class="profile-tog-sub"><i data-lucide="check"></i> คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ</div></div>
+      <div class="profile-tog-txt"><div class="profile-tog-title"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงานอยู่</div><div class="profile-tog-sub"><i data-lucide="check"></i> คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ</div></div>
       <div class="tog" id="profileTog" onclick="toggleProfile(this)"></div>
     </div>
   </div>
@@ -2466,7 +2466,7 @@ function mToggle(tog,cardId){
     if(!banner){                                   // โชว์ banner เหมือนการ์ด "ปิดแล้ว" (#5 ให้ consistent)
       banner=document.createElement('div'); banner.className='closed-banner';
       banner.style.cssText='background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600';
-      banner.textContent='🔴 ปิดรับแล้ว — ไม่แสดงใน job board';
+      banner.innerHTML='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board';
       const togRow=card.querySelector('.tog-row');
       if(togRow)card.insertBefore(banner,togRow); else card.appendChild(banner);
     }
@@ -2772,15 +2772,15 @@ function toggleProfile(el){
   if(!txt)return;
   const title=txt.querySelector('.profile-tog-title'), sub=txt.querySelector('.profile-tog-sub');
   if(el.classList.contains('off')){
-    title.textContent='🔴 ปิดรับงานอยู่';
+    title.innerHTML='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับงานอยู่';
     sub.textContent='คลินิกหาคุณไม่เจอ — เปิดเพื่อรับคำเชิญ';
     if(wrap){wrap.classList.remove('on');wrap.classList.add('off');}
-    showToast('🔴 ปิดรับงาน — โปรไฟล์ซ่อนจากคลินิกแล้ว');
+    showToast('<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับงาน — โปรไฟล์ซ่อนจากคลินิกแล้ว');
   } else {
-    title.textContent='🟢 เปิดรับงานอยู่';
+    title.innerHTML='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงานอยู่';
     sub.innerHTML='<i data-lucide="check"></i> คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ';
     if(wrap){wrap.classList.remove('off');wrap.classList.add('on');}
-    showToast('🟢 เปิดรับงาน — คลินิกเห็นโปรไฟล์คุณแล้ว');
+    showToast('<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงาน — คลินิกเห็นโปรไฟล์คุณแล้ว');
   }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
@@ -3645,7 +3645,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
       if(n.nodeType===1 && ((n.matches&&n.matches('[data-lucide]'))||(n.querySelector&&n.querySelector('[data-lucide]')))){ refreshIcons(); return; } } }
 }) : null;
 </script>
-<script src="https://unpkg.com/lucide@latest" onload="refreshIcons()"></script>
+<script src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.min.js" onload="refreshIcons()"></script>
 <script>window.addEventListener('load',refreshIcons);</script>
 </body>
 </html>
