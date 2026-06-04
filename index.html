@@ -909,6 +909,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   .dt-toolbar,.sec-hdr,.filter-wrap,.dt-stats,.cards,.gbanner,.onboard-card,.ftabs,.inline-tabs,.stat4,.sinv-stat{padding-left:22px;padding-right:22px}
   .gbanner,.onboard-card{margin-left:22px;margin-right:22px}
 }
+
+/* LINE ID ต่อท้ายชื่อคลินิกใน sheet ส่งข้อความ — เฉพาะ tablet/desktop (≥768px) */
+.addline-lineid{display:none}
+@media(min-width:768px){
+  .addline-lineid{display:inline;margin-left:8px;font-size:12px;font-weight:600;color:var(--green2);background:var(--green-bg);padding:2px 8px;border-radius:6px;white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -973,7 +979,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <div class="sec-hdr"><h2>💼 งานที่เปิดรับ</h2><span id="tcj-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="tcj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')">
-          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>ด่วนมาก</span></div>
+          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic">🏥 คลินิกทันตกรรมสยาม</div>
           <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
@@ -997,7 +1003,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <div class="card-ft"><div class="wage">฿1,200 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')">🔒 Add LINE</button></div>
         </div>
         <div class="jcard urg" data-clinic="DentCare Clinic เชียงใหม่" onclick="goView('v-job-detail')">
-          <div class="badges"><span class="bdg bdg-role">เคาน์เตอร์</span><span class="bdg bdg-urg"><div class="pd"></div>ด่วน</span></div>
+          <div class="badges"><span class="bdg bdg-role">เคาน์เตอร์</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">เจ้าหน้าที่เคาน์เตอร์ / นัดหมาย</div><span class="jcard-ts">🕐 2 วันที่แล้ว</span></div>
           <div class="jcard-clinic">🏥 DentCare Clinic เชียงใหม่</div>
           <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–18:00 น.</span></div>
@@ -1041,7 +1047,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
     <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
       <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border);position:relative;overflow:hidden">
         <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--orange),#FFB26B);border-radius:4px 0 0 4px"></div>
-        <div class="badges" style="margin-bottom:12px"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>ด่วนมาก</span></div>
+        <div class="badges" style="margin-bottom:12px"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
         <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">ทันตแพทย์ General Practice</div>
         <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px">🏥 คลินิกทันตกรรมสยาม · สาทร กรุงเทพฯ</div>
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
@@ -1150,7 +1156,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <div class="sec-hdr"><h2>💼 งานที่เปิดรับ</h2><span id="ccf-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="ccf-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
-          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>ด่วนมาก</span></div>
+          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic">🏥 คลินิกทันตกรรมสยาม</div>
           <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
@@ -1568,7 +1574,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
       <div class="sec-hdr"><h2>💼 งานที่เปิดรับ</h2><span id="wtj-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="wtj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
-          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-urg"><div class="pd"></div>ด่วนมาก</span></div>
+          <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic">🏥 คลินิกทันตกรรมสยาม</div>
           <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
@@ -2730,7 +2736,7 @@ function openAddLine(btn, clinic, jobName, lineId) {
   _addLineBtn = btn;
   _addLineId = lineId || '@siamdental';
   const clinicEl = document.getElementById('addline-clinic-name');
-  if(clinicEl) clinicEl.textContent = clinic;
+  if(clinicEl){ clinicEl.textContent = clinic; clinicEl.insertAdjacentHTML('beforeend', ' <span class="addline-lineid">'+_addLineId+'</span>'); }
   const msg = document.getElementById('addline-msg');
   if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${ANON_ID})`;
   openSheet('s-add-line');
