@@ -936,7 +936,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
     <div class="hdr-greeting">
       <div class="hdr-sub">Smart Dental Matching</div>
     </div>
-    <div class="stat-row">
+    <div class="stat-row" id="statRow">
       <div class="stat-box"><div class="stat-n">248<sub> งาน</sub></div><div class="stat-l">เปิดรับอยู่</div></div>
       <div class="stat-box"><div class="stat-n">94<sub> คน</sub></div><div class="stat-l">หาคลินิก</div></div>
       <div class="stat-box"><div class="stat-n">🔥 23</div><div class="stat-l">งานด่วน</div></div>
@@ -1315,6 +1315,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <span class="tog-lbl">เปิดรับสมัคร</span>
         </div>
         <div class="act-row">
+          <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)">✏️ แก้ไข</button>
           <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
@@ -1337,6 +1338,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
           <span class="tog-lbl">เปิดรับสมัคร</span>
         </div>
         <div class="act-row">
+          <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)">✏️ แก้ไข</button>
           <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
@@ -1354,9 +1356,10 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
         <div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--red);font-weight:600">🔴 ปิดรับแล้ว — ไม่แสดงใน job board</div>
         <div class="tog-row">
           <div class="tog off" id="tog-closed" onclick="event.stopPropagation();mToggle(this,'mcard-closed')"></div>
-          <span class="tog-lbl">ปิดรับสมัคร (ปิดอยู่)</span>
+          <span class="tog-lbl" style="display:none">ปิดรับสมัคร (ปิดอยู่)</span>
         </div>
         <div class="act-row">
+          <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)">✏️ แก้ไข</button>
           <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)">✓ ได้คนแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)">🗑️ ลบ</button>
         </div>
@@ -2138,6 +2141,25 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   </div>
 </div>
 
+<!-- EDIT JOB (แก้ได้เฉพาะรายละเอียดเพิ่มเติม) -->
+<div class="overlay" id="s-edit-job" onclick="overlayClose(event,'s-edit-job')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">✏️ แก้ไขประกาศ</div>
+    <div class="sheet-sub" id="editjob-title">ประกาศงาน</div>
+    <!-- ล็อค -->
+    <div style="background:var(--p50);border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--ink5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🔒 เงื่อนไขหลัก (แก้ไม่ได้)</div>
+      <div id="editjob-locked" style="font-size:12.5px;color:var(--ink3);line-height:1.7"></div>
+      <div style="font-size:11px;color:var(--ink5);margin-top:8px">ต้องการเปลี่ยนตำแหน่ง/วัน/เวลา/ค่าตอบแทน? <a href="#" onclick="openSheet('s-contact');return false" style="color:var(--p600);font-weight:600">ติดต่อแอดมิน</a></div>
+    </div>
+    <!-- แก้ได้ -->
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">รายละเอียดเพิ่มเติม <span style="color:var(--green2);font-weight:700">✏️ แก้ได้</span></label>
+    <textarea id="editjob-desc" class="inp" rows="4" style="margin-bottom:16px">รับทันตแพทย์ช่วย cover คลินิก งานหลัก ถอน/อุด/ขูดหินปูน มีเครื่องมือ + ผู้ช่วยพร้อม บรรยากาศดี</textarea>
+    <button class="btn-primary" onclick="saveJobDetails()">💾 บันทึก</button>
+  </div>
+</div>
+
 <!-- SUCCESS SHEETS -->
 <div class="overlay" id="s-renew-success" onclick="overlayClose(event,'s-renew-success')">
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon">🔄</div><div class="success-title">ต่ออายุสำเร็จ!</div><div class="success-sub">โพสของคุณจะแสดงใน job board อีก 60 วัน<br>หมดอายุใหม่: 4 ก.ค. 68</div><button class="btn-primary" onclick="closeSheet('s-renew-success')">รับทราบ</button></div></div>
@@ -2185,6 +2207,11 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 
 <script>
 let currentView='v-main', viewStack=[], currentRole=null, selectedLoginRole=null, selectedOutcome='came';
+/* ตัวเลขจริงของแพลตฟอร์ม (production: ดึงจาก backend) */
+const STATS = { jobs:248, workers:94, urgent:23, provinces:12 };
+const STATS_THRESHOLD = 50;   // โชว์ตัวเลขเมื่อมีงาน ≥ เกณฑ์นี้
+/* (D) ต่ำกว่าเกณฑ์ = ช่วงเปิดใหม่ (งานน้อย) → ซ่อนแถบสถิติทั้งหมดอัตโนมัติ */
+const LAUNCH_MODE = STATS.jobs < STATS_THRESHOLD;
 
 function goView(id){
   const cur=document.getElementById(currentView), next=document.getElementById(id);
@@ -2401,7 +2428,7 @@ function mToggle(tog,cardId){
   let banner=card.querySelector('.closed-banner');
   if(isOff){
     if(statusEl){statusEl.innerHTML='<div class="dot dot-r"></div>ปิดแล้ว';statusEl.style.color='var(--red)';}
-    if(togLbl)togLbl.textContent='ปิดรับสมัคร (ปิดอยู่)';
+    if(togLbl)togLbl.style.display='none';   // ซ่อน label (banner "ปิดรับแล้ว" บอกอยู่แล้ว)
     card.style.opacity='.85';card.style.borderColor='rgba(229,83,58,.2)';
     if(!banner){                                   // โชว์ banner เหมือนการ์ด "ปิดแล้ว" (#5 ให้ consistent)
       banner=document.createElement('div'); banner.className='closed-banner';
@@ -2412,7 +2439,7 @@ function mToggle(tog,cardId){
     }
   } else {
     if(statusEl){statusEl.innerHTML='<div class="dot dot-g"></div>เปิดรับ';statusEl.style.color='var(--green)';}
-    if(togLbl)togLbl.textContent='เปิดรับสมัคร';
+    if(togLbl){togLbl.style.display='';togLbl.textContent='เปิดรับสมัคร';}
     card.style.opacity='';card.style.borderColor='';
     if(banner)banner.remove();
   }
@@ -2450,8 +2477,14 @@ function finishWorkLog(){
   const del=card.querySelector('.act-row .btn-sm.del'); if(del){del.style.flex='1';del.style.width='100%';del.innerHTML='🗑️ ลบ';}
 }
 function mEdit(btn){
-  clinicTab('post',document.querySelector('#v-clinic .tb:nth-child(3)'));
+  const card=btn.closest('.mcard'); if(!card)return;
+  const title=((card.querySelector('.mcard-title')||{}).textContent||'ประกาศงาน').trim();
+  const t=document.getElementById('editjob-title'); if(t)t.textContent=title;
+  const lk=document.getElementById('editjob-locked');
+  if(lk)lk.innerHTML='<div style="font-weight:600;color:var(--ink);margin-bottom:3px">📋 '+title+'</div>ตำแหน่ง · วันทำงาน · เวลา · ค่าตอบแทน — กำหนดไว้ตอนลงประกาศ';
+  openSheet('s-edit-job');
 }
+function saveJobDetails(){ closeSheet('s-edit-job'); showToast('✅ บันทึกรายละเอียดแล้ว'); }
 function mReopen(btn,cardId){
   const card=document.getElementById(cardId); if(!card)return;
   const statusEl=card.querySelector('.mstatus');
@@ -3360,6 +3393,13 @@ window.addEventListener('DOMContentLoaded',()=>{
   buildWorkerBoards();
   addCardHints();
   initBeta();
+  // stats band (D): เติมตัวเลขจาก STATS · โชว์เมื่อ ≥ เกณฑ์ · ต่ำกว่า = ซ่อนทั้งแถบ
+  var _sn=document.querySelectorAll('#statRow .stat-n');
+  if(_sn[0])_sn[0].innerHTML=STATS.jobs+'<sub> งาน</sub>';
+  if(_sn[1])_sn[1].innerHTML=STATS.workers+'<sub> คน</sub>';
+  if(_sn[2])_sn[2].innerHTML='🔥 '+STATS.urgent;
+  var _sr=document.getElementById('statRow');
+  if(_sr)_sr.style.display=LAUNCH_MODE?'none':'';
   hideZeroTrust();
   initA11y();
   initFilters();
@@ -3397,14 +3437,14 @@ function initDesktop(){
 
   // 1) (เดิม) search ใน navbar — ย้ายลงเป็นกล่องใต้ตัวกรอง (แท็บงานเท่านั้น) ผ่าน .clinic-search-wrap แทน
 
-  // 2) Premium stats band on guest job tab
+  // 2) Guest job tab: stats ตัวเลข (โชว์เมื่อ ≥ เกณฑ์ · ช่วงเปิดใหม่งานน้อย = ไม่โชว์)
   const tcJobs=document.getElementById('tc-jobs');
-  if(tcJobs && !tcJobs.querySelector('.dt-stats')){
+  if(tcJobs && !LAUNCH_MODE && !tcJobs.querySelector('.dt-stats')){
     const data=[
-      ['248','งานที่เปิดรับ','\u{1F4BC}',''],
-      ['94','บุคลากรหาคลินิก','\u{1F9B7}',''],
-      ['23','งานด่วน','\u{1F525}','urg'],
-      ['12','จังหวัดทั่วไทย','\u{1F4CD}','']
+      [String(STATS.jobs),'งานที่เปิดรับ','\u{1F4BC}',''],
+      [String(STATS.workers),'บุคลากรหาคลินิก','\u{1F9B7}',''],
+      [String(STATS.urgent),'งานด่วน','\u{1F525}','urg'],
+      [String(STATS.provinces),'จังหวัดทั่วไทย','\u{1F4CD}','']
     ];
     const bar=document.createElement('div');
     bar.className='dt-stats';
