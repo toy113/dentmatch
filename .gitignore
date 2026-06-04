@@ -31,3 +31,7 @@ desktop.ini
 *.log
 node_modules/
 tmp/
+
+# Supabase CLI local artifacts (keep migrations/functions; ignore temp/local state)
+supabase/.temp/
+supabase/.branches/

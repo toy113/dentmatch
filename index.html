@@ -8,7 +8,8 @@
 <script>
   window.DM_CFG = {
     SUPABASE_URL: 'https://zbaedgczudbamfkpeloo.supabase.co',
-    SUPABASE_KEY: 'sb_publishable_sEehrAazbTyP-Ib13iPHqw_uih-_tCe'
+    SUPABASE_KEY: 'sb_publishable_sEehrAazbTyP-Ib13iPHqw_uih-_tCe',
+    LINE_CHANNEL_ID: '2010259716'   // public (LINE Login channel) · secret อยู่ฝั่ง Edge Function
   };
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1940,7 +1941,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 
       <!-- ── LOGIN ── -->
       <div id="login-panel">
-        <button class="btn-soc btn-line-login" onclick="enterRolePick()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
+        <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" style="padding-right:90px">
@@ -1951,7 +1952,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 
       <!-- ── REGISTER ── -->
       <div id="register-panel" style="display:none">
-        <button class="btn-soc btn-line-login" onclick="enterRolePick()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
+        <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="reg-email" placeholder="your@email.com" style="padding-right:90px">
@@ -2656,6 +2657,7 @@ function validateRegWorker(){
 }
 
 async function nextAfterRegClinic() {
+  if(_lineSignup){ return dmFinishLineSignup('clinic'); }   // LINE signup → สร้าง record ตรง
   const email=(document.getElementById('reg-email').value||'').trim();
   if(!email){ loginSuccess(); return; }   // ไม่มี email = mock fallback
   pendingSignup={ role:'clinic', email,
@@ -2669,6 +2671,7 @@ async function nextAfterRegClinic() {
   }
 }
 async function nextAfterRegWorker() {
+  if(_lineSignup){ return dmFinishLineSignup('worker'); }   // LINE signup → สร้าง record ตรง
   const email=(document.getElementById('reg-email').value||'').trim();
   if(!email){ loginSuccess(); return; }
   const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
@@ -2810,7 +2813,7 @@ async function dmCreateRecords(uid, s){
   } else {
     // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
     await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null });
-    await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone });
+    await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
   }
 }
 // โหลดโปรไฟล์จริงจาก DB มาแสดงบนหัว (พิสูจน์ว่าไม่ใช่ mock)
@@ -2843,6 +2846,66 @@ async function dmInitSession(){
 }
 // logout จริง (เรียกจาก logoutClinic/logoutWorker)
 async function dmSignOut(){ try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
+
+/* ════════ LINE Login (Batch 3 · ผ่าน Edge Function line-auth) ════════ */
+let _lineSignup = null;   // { uid, name, lid } เมื่อผู้ใช้ LINE ใหม่ต้องเลือก role+กรอกฟอร์ม
+// ปุ่ม "เข้าสู่ระบบ/สมัครด้วย LINE" → สร้าง authorize URL เอง (Channel ID public), redirect_uri = Edge Function /callback
+function _b64url(o){ return btoa(JSON.stringify(o)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function startLineLogin(){
+  const ret = location.origin + location.pathname;
+  const cb  = window.DM_CFG.SUPABASE_URL + '/functions/v1/line-auth/callback';
+  const u = new URL('https://access.line.me/oauth2/v2.1/authorize');
+  u.searchParams.set('response_type','code');
+  u.searchParams.set('client_id', window.DM_CFG.LINE_CHANNEL_ID);
+  u.searchParams.set('redirect_uri', cb);
+  u.searchParams.set('state', _b64url({ ret }));
+  u.searchParams.set('scope','openid profile');
+  window.location.href = u.toString();
+}
+// จัดการ callback ตอนโหลดหน้า (#line=1&email&otp&new&name&lid)
+async function dmHandleLineCallback(){
+  const hash = location.hash || '';
+  if(hash.indexOf('line_error=')>=0){ history.replaceState(null,'',location.pathname); showToast('เข้าสู่ระบบ LINE ไม่สำเร็จ'); return false; }
+  if(hash.indexOf('line=1')<0) return false;
+  const h=new URLSearchParams(hash.slice(1));
+  const email=h.get('email'), otp=h.get('otp'), isNew=h.get('new')==='1', name=h.get('name')||'', lid=h.get('lid')||null;
+  history.replaceState(null,'',location.pathname);   // ล้าง hash กัน reuse
+  if(!email||!otp){ showToast('ข้อมูล LINE ไม่ครบ'); return false; }
+  const { data, error } = await dmSb().auth.verifyOtp({ email, token:otp, type:'magiclink' });
+  if(error){ showToast('LINE: แลก session ไม่สำเร็จ: '+error.message); return false; }
+  const uid=data.user.id;
+  if(isNew){
+    _lineSignup={ uid, name, lid };
+    openSheet('s-login'); _loginMode='register'; loginTab('register'); enterRolePick();
+    showToast('ยินดีต้อนรับ'+(name?' '+name:'')+' — เลือกบทบาทเพื่อสมัคร');
+    return true;
+  }
+  const { data:prof } = await dmSb().from('profiles').select('role').eq('id',uid).single();
+  if(!prof){ showToast('ไม่พบโปรไฟล์ — ลองสมัครใหม่'); return false; }
+  dmUser={ id:uid, role:prof.role }; currentRole=prof.role; selectedLoginRole=prof.role;
+  await dmLoadProfile(); finishLogin();
+  return true;
+}
+// ผู้ใช้ LINE ใหม่ กรอกฟอร์มเสร็จ → สร้าง record ตรง ๆ (session มีแล้ว ไม่ต้อง OTP)
+async function dmFinishLineSignup(role){
+  const uid=_lineSignup.uid; let s;
+  if(role==='clinic'){
+    s={ role, name:(document.getElementById('rc-name').value||'').trim(),
+        province:document.getElementById('rc-province').value||'',
+        line_id:(document.getElementById('rc-line').value||'').trim() };
+  } else {
+    const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
+    const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
+    const bio=document.getElementById('rw-bio');
+    s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
+        phone:(document.getElementById('rw-phone').value||'').trim(),
+        position:document.getElementById('regWorkerPos').value||'assistant',
+        province:[...regProvs][0]||'', bio:bio?bio.value.trim():'', line_user_id:_lineSignup.lid };
+  }
+  try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
+  dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
+  await dmLoadProfile(); loginSuccess();
+}
 
 function updateJdCta(){
   const wrap = document.getElementById('jd-cta-wrap');
@@ -3785,7 +3848,11 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
   });
   window.dmSbReady = true;
-  try { if (typeof dmInitSession === 'function') await dmInitSession(); } catch(e){ console.warn('dmInitSession', e); }
+  try {
+    let handled = false;
+    if (typeof dmHandleLineCallback === 'function') handled = await dmHandleLineCallback();   // LINE redirect กลับมา?
+    if (!handled && typeof dmInitSession === 'function') await dmInitSession();                // ไม่ใช่ → restore session เดิม
+  } catch(e){ console.warn('auth init', e); }
 </script>
 </body>
 </html>
