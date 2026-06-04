@@ -1,6 +1,8 @@
 # Internal reference files — keep local only, do NOT deploy/publish
 dentmatch-premium.html
 DentMatch-Build-Spec.md
+DentMatch-Pre-Backend-Decisions.md
+DentMatch-Supabase-Schema.md
 
 # Claude Code / local agent config & secrets
 .claude/
