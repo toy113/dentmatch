@@ -78,7 +78,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .hdr-right{display:flex;gap:8px;align-items:center}
 .role-pill{background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 13px;font-size:12px;color:rgba(255,255,255,0.9);cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;font-weight:500}
 .rp-full{display:none}
-/* มือถือ role คลินิก: pill เหลือ <i data-lucide="hospital"></i> ▾ (ชื่อเต็มอยู่ในกล่องเขียวด้านล่างแล้ว) */
+/* มือถือ role คลินิก: pill เหลือ <i data-lucide="hospital"></i> <i data-lucide="chevron-down"></i> (ชื่อเต็มอยู่ในกล่องเขียวด้านล่างแล้ว) */
 #v-clinic .role-pill .rp-short{display:none}
 .dt-filterbar{display:none}
 .role-pill:active{background:rgba(255,255,255,0.22)}
@@ -944,7 +944,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="hdr-row">
       <div class="logo"><div class="logo-box"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></div><div class="logo-name">Dent<b>Match</b></div></div>
       <div class="hdr-right">
-        <div class="role-pill" id="rolePill" onclick="openSheet('s-login')"><i data-lucide="eye"></i> Guest ▾</div>
+        <div class="role-pill" id="rolePill" onclick="openSheet('s-login')"><i data-lucide="eye"></i> Guest <i data-lucide="chevron-down"></i></div>
       </div>
     </div>
     <div class="hdr-greeting">
@@ -965,7 +965,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="tab-content on" id="tc-jobs">
       <div class="onboard-card" id="guestOnboard">
         <button class="onboard-x" onclick="document.getElementById('guestOnboard').remove()" aria-label="ปิด"><i data-lucide="x"></i></button>
-        <div class="onboard-head">👋 เริ่มต้นใช้งาน DentMatch</div>
+        <div class="onboard-head"><i data-lucide="hand"></i> เริ่มต้นใช้งาน DentMatch</div>
         <div class="onboard-sub">จับคู่คลินิก ↔ ทันตบุคลากร แล้วคุยต่อผ่าน LINE</div>
         <div class="onboard-paths">
           <div class="onboard-path">
@@ -997,33 +997,33 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="cards" id="tcj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span><span class="pill pill-b">GP</span></div>
           <div class="card-ft"><div class="wage">฿3,500 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> Add LINE</button></div>
         </div>
         <div class="jcard" data-clinic="The Smile Dental Clinic" onclick="goView('v-job-detail')">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">Orthodontic</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts">🕐 1 สัปดาห์ที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 1 สัปดาห์ที่แล้ว</span></div>
           <div class="jcard-clinic" data-clinic="The Smile Dental Clinic"><i data-lucide="hospital"></i> The Smile Dental Clinic</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> นนทบุรี</span><span class="pill pill-b">Orthodontic</span></div>
           <div class="card-ft"><div class="wage">฿4,200 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> Add LINE</button></div>
         </div>
         <div class="jcard" data-clinic="Implant Center Bangkok" onclick="goView('v-job-detail')">
           <div class="badges"><span class="bdg bdg-role">ผู้ช่วยทันตแพทย์</span><span class="bdg bdg-br">Implant</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ผู้ช่วยทันตแพทย์ Implant</div><span class="jcard-ts">🕐 5 วันที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ผู้ช่วยทันตแพทย์ Implant</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 5 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> Implant Center Bangkok</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">อังคาร พฤหัส · 08:00–17:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">อังคาร พฤหัส · 08:00–17:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span><span class="pill pill-b">Implant</span></div>
           <div class="card-ft"><div class="wage">฿1,200 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> Add LINE</button></div>
         </div>
         <div class="jcard urg" data-clinic="DentCare Clinic เชียงใหม่" onclick="goView('v-job-detail')">
           <div class="badges"><span class="bdg bdg-role">เคาน์เตอร์</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">เจ้าหน้าที่เคาน์เตอร์ / นัดหมาย</div><span class="jcard-ts">🕐 2 วันที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">เจ้าหน้าที่เคาน์เตอร์ / นัดหมาย</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 2 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> DentCare Clinic เชียงใหม่</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–18:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–18:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> เชียงใหม่</span></div>
           <div class="card-ft"><div class="wage">฿800 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> Add LINE</button></div>
         </div>
@@ -1068,7 +1068,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">ทันตแพทย์ General Practice</div>
         <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม · สาทร กรุงเทพฯ</div>
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
-          <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">🗓 ตารางงาน</div>
+          <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
           <div style="font-size:14px;font-weight:600;color:var(--p800)">เสาร์-อาทิตย์ ทุกสัปดาห์</div>
           <div style="font-size:13px;color:var(--ink3);margin-top:3px">09:00 – 17:00 น. (8 ชั่วโมง)</div>
         </div>
@@ -1116,12 +1116,12 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">ผ่านงาน DentMatch แล้ว 8 ครั้ง</div><div style="font-size:11.5px;color:var(--ink4)">ได้รับการยืนยันจากคลินิก</div></div></div>
-          <div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:var(--p100);display:flex;align-items:center;justify-content:center;font-size:16px">🗓</div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">สมาชิก 14 เดือน</div><div style="font-size:11.5px;color:var(--ink4)">ตั้งแต่ เมษายน 2567</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:var(--p100);display:flex;align-items:center;justify-content:center;font-size:16px"><i data-lucide="calendar-days"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">สมาชิก 14 เดือน</div><div style="font-size:11.5px;color:var(--ink4)">ตั้งแต่ เมษายน 2567</div></div></div>
           <div style="display:flex;align-items:center;gap:10px"></div>
         </div>
       </div>
       <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
-        <div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">🗓 วันที่สะดวกรับงาน</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
         <div class="avail-days-big"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div>
       </div>
       <button class="btn-primary" id="wd-cta" onclick="openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบเพื่อส่งคำเชิญ</button>
@@ -1135,7 +1135,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="hdr-row">
       <div class="logo"><div class="logo-box"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></div><div class="logo-name">Dent<b>Match</b></div></div>
       <div class="hdr-right">
-        <div class="role-pill" style="background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4);color:var(--gold2);cursor:pointer;position:relative" onclick="toggleClinicMenu(event)"><i data-lucide="hospital"></i> <span class="rp-short">คลินิก</span><span class="rp-full">คลินิกทันตกรรมสยาม</span> ▾
+        <div class="role-pill" style="background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4);color:var(--gold2);cursor:pointer;position:relative" onclick="toggleClinicMenu(event)"><i data-lucide="hospital"></i> <span class="rp-short">คลินิก</span><span class="rp-full">คลินิกทันตกรรมสยาม</span> <i data-lucide="chevron-down"></i>
           <div id="clinic-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:180px;overflow:hidden;z-index:999">
             <div onclick="openSheet('s-edit-clinic')" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background=''"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</div>
             <div style="height:1px;background:var(--border);margin:0 12px"></div>
@@ -1174,17 +1174,17 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="cards" id="ccf-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">GP</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span></div>
           <div class="card-ft"><div class="wage">฿3,500 <span>/ วัน</span></div><span style="font-size:11.5px;color:var(--ink4);background:var(--p50);border-radius:8px;padding:5px 10px"></span></div>
         </div>
         <div class="jcard" data-clinic="The Smile Dental Clinic" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">Orthodontic</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts">🕐 1 สัปดาห์ที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 1 สัปดาห์ที่แล้ว</span></div>
           <div class="jcard-clinic" data-clinic="The Smile Dental Clinic"><i data-lucide="hospital"></i> The Smile Dental Clinic</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> นนทบุรี</span></div>
           <div class="card-ft"><div class="wage">฿4,200 <span>/ วัน</span></div><span style="font-size:11.5px;color:var(--ink4);background:var(--p50);border-radius:8px;padding:5px 10px"></span></div>
         </div>
@@ -1204,7 +1204,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="wcard-top" style="cursor:pointer" onclick="goView('v-worker-detail')"><div class="av av-g0"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">4829</span></div><div class="av-dot"></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr">ทันตแพทย์</span><span class="w-exp">5 ปี</span></div><div class="w-loc"><i data-lucide="map-pin"></i> กรุงเทพฯ (บางนา)</div></div></div>
           <div class="skills"><span class="sk">GP</span><span class="sk">Orthodontic</span><span class="sk">Extraction</span></div>
           <div class="quote">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</div>
-          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 8 ครั้ง</span><span class="tr">🗓 14 เดือน</span></div>
+          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 8 ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> 14 เดือน</span></div>
           <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d">จ</div><div class="d">อ</div><div class="d">พ</div><div class="d">พฤ</div><div class="d">ศ</div><div class="d on">ส</div><div class="d on">อา</div></div></div>
           <button class="btn-invite" onclick="openSheet('s-invite')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>
@@ -1212,7 +1212,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="wcard-top" style="cursor:pointer" onclick="goView('v-worker-detail')"><div class="av av-g5"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">7731</span></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr">ทันตแพทย์</span><span class="w-exp">8 ปี</span></div><div class="w-loc"><i data-lucide="map-pin"></i> นนทบุรี</div></div></div>
           <div class="skills"><span class="sk">Implant</span><span class="sk">Surgery</span><span class="sk">GP</span></div>
           <div class="quote">เชี่ยวชาญ Implant และ Surgery รับงาน part-time เพิ่มเติม</div>
-          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 21 ครั้ง</span><span class="tr">🗓 26 เดือน</span></div>
+          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 21 ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> 26 เดือน</span></div>
           <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d on">จ</div><div class="d">อ</div><div class="d on">พ</div><div class="d">พฤ</div><div class="d on">ศ</div><div class="d on">ส</div><div class="d">อา</div></div></div>
           <button class="btn-invite" onclick="openSheet('s-invite')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>
@@ -1287,11 +1287,11 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ทันตแพทย์ GP · เสาร์ 24 พ.ค.</div>
-            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span>🗓 24 พ.ค. 68</span><span><i data-lucide="eye"></i> 12 ยอดวิว</span></div>
+            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> 24 พ.ค. 68</span><span><i data-lucide="eye"></i> 12 ยอดวิว</span></div>
           </div>
           <div class="mstatus" style="color:var(--p600)"><div class="dot dot-p"></div>วันงานผ่านแล้ว</div>
         </div>
-        <div class="past-banner">🗓 วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
+        <div class="past-banner"><i data-lucide="calendar-days"></i> วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
         <div class="act-row">
           <button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button>
@@ -1303,7 +1303,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ทันตแพทย์ Pediatric · อาทิตย์</div>
-            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span>🗓 2 มิ.ย. 68</span><span><i data-lucide="eye"></i> 9 ยอดวิว</span></div>
+            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> 2 มิ.ย. 68</span><span><i data-lucide="eye"></i> 9 ยอดวิว</span></div>
           </div>
           <div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>
         </div>
@@ -1320,7 +1320,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ผู้ช่วยทันตแพทย์ Implant</div>
-            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span>🗓 อังคาร-พฤหัส</span><span><i data-lucide="eye"></i> 8 ยอดวิว</span><span style="color:var(--ink5)">หมดอายุ 28 ก.ค.</span></div>
+            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> อังคาร-พฤหัส</span><span><i data-lucide="eye"></i> 8 ยอดวิว</span><span style="color:var(--ink5)">หมดอายุ 28 ก.ค.</span></div>
           </div>
           <div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>
         </div>
@@ -1340,7 +1340,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ทันตแพทย์ GP · เสาร์นี้</div>
-            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span>🗓 7 มิ.ย. 68</span><span><i data-lucide="eye"></i> 18 ยอดวิว</span></div>
+            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> 7 มิ.ย. 68</span><span><i data-lucide="eye"></i> 18 ยอดวิว</span></div>
           </div>
           <div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>
         </div>
@@ -1363,7 +1363,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ทันตแพทย์ Orthodontic</div>
-            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span>🗓 จันทร์-พุธ</span><span><i data-lucide="eye"></i> 11 ยอดวิว</span></div>
+            <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> จันทร์-พุธ</span><span><i data-lucide="eye"></i> 11 ยอดวิว</span></div>
           </div>
           <div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดแล้ว</div>
         </div>
@@ -1412,12 +1412,12 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="sinv-note"><i data-lucide="send"></i> <span>"สวัสดีครับ เห็นโปรไฟล์แล้วสนใจมากเลยครับ ตำแหน่งเสาร์-อาทิตย์นี้ว่างไหมครับ?"</span></div>
       </div>
       <div class="sinv-card">
-        <div class="sinv-top"><div class="sinv-av av-g5"><div class="av-content"><span style="font-size:15px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">7731</span></div></div><div class="sinv-info"><div class="sinv-who">ทันตแพทย์ · 8 ปี · นนทบุรี</div><div class="sinv-meta"><i data-lucide="map-pin"></i> นนทบุรี · Implant, Surgery</div></div><div class="sinv-status" style="color:var(--ink4)">⏳ ยังไม่อ่าน</div></div>
+        <div class="sinv-top"><div class="sinv-av av-g5"><div class="av-content"><span style="font-size:15px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">7731</span></div></div><div class="sinv-info"><div class="sinv-who">ทันตแพทย์ · 8 ปี · นนทบุรี</div><div class="sinv-meta"><i data-lucide="map-pin"></i> นนทบุรี · Implant, Surgery</div></div><div class="sinv-status" style="color:var(--ink4)"><i data-lucide="hourglass"></i> ยังไม่อ่าน</div></div>
         <div class="sinv-job-chip"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม · กรุงเทพฯ</div>
         <div class="sinv-note"><i data-lucide="send"></i> <span>"เรียนเชิญพิจารณาร่วมงานกับทีมเราครับ ต้องการ Implant specialist ครับ"</span></div>
       </div>
       <div class="sinv-card">
-        <div class="sinv-top"><div class="sinv-av av-g3"><div class="av-content"><span style="font-size:15px"><i data-lucide="hand-helping"></i></span><span class="av-lbl">0045</span></div></div><div class="sinv-info"><div class="sinv-who">ผู้ช่วยทันตแพทย์ · 3 ปี</div><div class="sinv-meta"><i data-lucide="map-pin"></i> ลาดพร้าว · จัดฟัน, Sterilize</div></div><div class="sinv-status" style="color:var(--ink4)">⏳ ยังไม่อ่าน</div></div>
+        <div class="sinv-top"><div class="sinv-av av-g3"><div class="av-content"><span style="font-size:15px"><i data-lucide="hand-helping"></i></span><span class="av-lbl">0045</span></div></div><div class="sinv-info"><div class="sinv-who">ผู้ช่วยทันตแพทย์ · 3 ปี</div><div class="sinv-meta"><i data-lucide="map-pin"></i> ลาดพร้าว · จัดฟัน, Sterilize</div></div><div class="sinv-status" style="color:var(--ink4)"><i data-lucide="hourglass"></i> ยังไม่อ่าน</div></div>
         <div class="sinv-job-chip"><i data-lucide="clipboard-list"></i> ผู้ช่วยทันตแพทย์ Implant</div>
         <div class="sinv-note"><i data-lucide="send"></i> <span>ไม่มีข้อความ — ส่งแค่ประกาศงาน</span></div>
       </div>
@@ -1443,7 +1443,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="profile-name">ทันตแพทย์ · ไม่ระบุชื่อ</div>
           <div class="profile-sub"><span><i data-lucide="map-pin"></i> กรุงเทพฯ (บางนา)</span><span>·</span><span>5 ปี</span></div>
         </div>
-        <span class="wkr-caret">▾</span>
+        <span class="wkr-caret"><i data-lucide="chevron-down"></i></span>
         <div id="worker-menu" style="display:none;position:absolute;top:calc(100% + 8px);left:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:160px;overflow:hidden;z-index:999">
           <div onclick="logoutWorker()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''"><i data-lucide="log-out"></i> ออกจากระบบ</div>
         </div>
@@ -1465,7 +1465,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- PROFILE -->
     <div class="tab-content" id="wt-profile">
       <div class="profile-body">
-        <div class="profile-section"><div class="ps-title">📊 ภาพรวมโปรไฟล์</div>
+        <div class="profile-section"><div class="ps-title"><i data-lucide="bar-chart-3"></i> ภาพรวมโปรไฟล์</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
             <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">142</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="eye"></i> โปรไฟล์ถูกดู</div></div>
             <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">7</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="send"></i> ได้รับคำเชิญ</div></div>
@@ -1474,17 +1474,17 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="profile-section"><div class="ps-title"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
           <div class="trust-card">
             <div class="trust-item"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
-            <div class="trust-item"><div class="trust-icon ti-purple">🗓</div><div class="trust-info"><div class="trust-label">สมาชิก 14 เดือน</div><div class="trust-val">ตั้งแต่ เมษายน 2567</div></div></div>
+            <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label">สมาชิก 14 เดือน</div><div class="trust-val">ตั้งแต่ เมษายน 2567</div></div></div>
             <div class="trust-item"><div class="trust-icon ti-blue"><i data-lucide="map-pin"></i></div><div class="trust-info"><div class="trust-label" id="profileProvDisplay">กรุงเทพมหานคร</div><div class="trust-val">จังหวัดที่รับงาน</div></div></div>
           </div>
         </div>
-        <div class="profile-section"><div class="ps-title">⚡ ทักษะ / สาขา</div>
+        <div class="profile-section"><div class="ps-title"><i data-lucide="zap"></i> ทักษะ / สาขา</div>
           <div class="skills-wrap"><span class="sk" style="font-size:13px;padding:5px 12px">GP</span><span class="sk" style="font-size:13px;padding:5px 12px">Orthodontic</span><span class="sk" style="font-size:13px;padding:5px 12px">Extraction</span><span class="sk" style="font-size:13px;padding:5px 12px">Root Canal</span></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="message-circle"></i> แนะนำตัวเอง</div>
           <div class="intro-box"><div class="intro-txt">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์ มีใบประกอบวิชาชีพ ทันตแพทยสภา ทำงานได้ทั้งคลินิกและโรงพยาบาล</div></div>
         </div>
-        <div class="profile-section"><div class="ps-title">🗓 วันที่สะดวกรับงาน</div>
+        <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
           <div class="avail-card"><div class="avail-days-big"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
         </div>
         <button class="btn-edit-profile" onclick="goView('v-edit-profile')"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
@@ -1607,17 +1607,17 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="cards" id="wtj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts">🕐 3 วันที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์ General Practice</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 3 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–17:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span></div>
           <div class="card-ft"><div class="wage">฿3,500 <span>/ วัน</span></div><button class="btn-line" onclick="event.stopPropagation();openAddLine(this,'คลินิกทันตกรรมสยาม','ทันตแพทย์ General Practice','@siamdental')"><span class="llogo">L</span>Add LINE</button></div>
         </div>
         <div class="jcard" data-clinic="The Smile Dental Clinic">
           <div class="badges"><span class="bdg bdg-role">ทันตแพทย์</span><span class="bdg bdg-br">Orthodontic</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts">🕐 1 สัปดาห์ที่แล้ว</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ทันตแพทย์จัดฟัน Part-time</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 1 สัปดาห์ที่แล้ว</span></div>
           <div class="jcard-clinic" data-clinic="The Smile Dental Clinic"><i data-lucide="hospital"></i> The Smile Dental Clinic</div>
-          <div class="sched-strip"><span>🗓</span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
+          <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">จันทร์ พุธ ศุกร์ · 13:00–20:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> นนทบุรี</span></div>
           <div class="card-ft"><div class="wage">฿4,200 <span>/ วัน</span></div><button class="btn-line" onclick="event.stopPropagation();openAddLine(this,'The Smile Dental Clinic','ทันตแพทย์จัดฟัน Part-time','@thesmile')"><span class="llogo">L</span>Add LINE</button></div>
         </div>
@@ -1730,7 +1730,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       </div>
       <button class="btn-primary" onclick="confirmLineSent()" style="margin-bottom:9px">ส่งใน LINE แล้ว <i data-lucide="check"></i></button>
       <div style="display:flex;gap:8px">
-        <button onclick="_openLine()" style="flex:1;background:#fff;color:var(--ink3);border:1.5px solid var(--border2);border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">↗️ เปิด LINE อีกครั้ง</button>
+        <button onclick="_openLine()" style="flex:1;background:#fff;color:var(--ink3);border:1.5px solid var(--border2);border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="external-link"></i> เปิด LINE อีกครั้ง</button>
         <button onclick="copyMsgAgain()" style="flex:1;background:#fff;color:var(--ink3);border:1.5px solid var(--border2);border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="clipboard-list"></i> คัดลอกอีกครั้ง</button>
       </div>
     </div>
@@ -1769,9 +1769,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="width:8px;height:8px;background:var(--red);border-radius:50%;flex-shrink:0;margin-top:4px"></div>
       </div>
 
-      <!-- ✨ บุคลากรใหม่ match -->
+      <!-- <i data-lucide="sparkles" style="color:var(--gold)"></i> บุคลากรใหม่ match -->
       <div style="display:flex;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;cursor:pointer" onclick="closeSheet('s-noti-clinic');clinicTab('workers',document.querySelector('#v-clinic .tb:nth-child(2)'))">
-        <div style="width:38px;height:38px;background:var(--yellow-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
+        <div style="width:38px;height:38px;background:var(--yellow-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i data-lucide="sparkles" style="color:var(--gold)"></i></div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--ink)">มีบุคลากรใหม่ที่ตรงกับโพสของคุณ</div>
           <div style="font-size:12px;color:var(--ink4);margin-top:2px">ทันตแพทย์ Orthodontic · กรุงเทพฯ · ว่างเสาร์-อาทิตย์</div>
@@ -1806,7 +1806,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       </div>
       <!-- job match -->
       <div style="display:flex;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px">
-        <div style="width:38px;height:38px;background:var(--green-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
+        <div style="width:38px;height:38px;background:var(--green-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"><i data-lucide="sparkles" style="color:var(--gold)"></i></div>
         <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">งานใหม่ตรงกับทักษะของคุณ</div><div style="font-size:12px;color:var(--ink4);margin-top:2px">ทันตแพทย์ Orthodontic · นนทบุรี · ฿4,000/วัน</div><div style="font-size:11px;color:var(--ink5);margin-top:3px">เมื่อวาน</div></div>
       </div>
       <!-- ยืนยันงาน -->
@@ -1873,7 +1873,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="margin-left:auto;color:var(--green);font-size:18px">›</div>
       </div>
       <div style="background:var(--p50);border:1.5px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">
-        <div style="width:38px;height:38px;background:var(--p100);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📧</div>
+        <div style="width:38px;height:38px;background:var(--p100);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0"><i data-lucide="mail"></i></div>
         <div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">อีเมล</div><div style="font-size:12px;color:var(--ink4);margin-top:2px">dentmatch.team@gmail.com</div></div>
       </div>
     </div>
@@ -2047,14 +2047,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- login OTP: no step dots (direct flow), register OTP: show dots -->
       <div id="otp-login-ctx">
         <div style="text-align:center;margin-bottom:16px">
-          <div style="width:52px;height:52px;background:var(--p100);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px">📱</div>
+          <div style="width:52px;height:52px;background:var(--p100);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px"><i data-lucide="smartphone"></i></div>
           <div class="sheet-title" style="text-align:center">ยืนยัน OTP</div>
           <div style="font-size:13px;color:var(--ink4);margin-top:4px">รหัส 6 หลักส่งไปยัง Email <strong id="otp-phone-display">your@email.com</strong></div>
         </div>
       </div>
       <div id="otp-register-ctx" style="display:none">
         <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div></div>
-        <div class="sheet-title">ยืนยัน OTP 📧</div>
+        <div class="sheet-title">ยืนยัน OTP <i data-lucide="mail"></i></div>
         <div class="sheet-sub">กรอกรหัส 6 หลักที่ส่งไปยัง Email ของคุณ</div>
       </div>
       <div class="otp-row" id="otpRow">
@@ -2070,7 +2070,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     </div>
     <div id="ls-success" style="display:none">
       <div class="success-screen">
-        <div class="success-icon">🎉</div>
+        <div class="success-icon"><i data-lucide="party-popper"></i></div>
         <div class="success-title" id="success-title-txt">เข้าสู่ระบบสำเร็จ!</div>
         <div class="success-sub" id="success-sub-txt">ยินดีต้อนรับกลับสู่ DentMatch<br>เริ่มใช้งานได้เลย</div>
         <button class="btn-primary" onclick="finishLogin()">เริ่มใช้งาน →</button>
@@ -2221,7 +2221,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 
 <!-- โหมดตัวอย่าง / Demo — สลับมุมมอง Guest/Clinic/Worker โดยไม่ต้องล็อกอิน (จะลบตอนต่อ backend จริง) -->
 <div id="devbar" style="position:absolute;bottom:calc(10px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:5px;background:rgba(20,10,50,.85);backdrop-filter:blur(6px);padding:5px 6px 5px 10px;border-radius:14px;box-shadow:0 8px 24px rgba(8,3,34,.5)">
-  <span style="font-family:'Sarabun',sans-serif;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.3px;margin-right:2px">✨ โหมดตัวอย่าง</span>
+  <span style="font-family:'Sarabun',sans-serif;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.3px;margin-right:2px"><i data-lucide="sparkles" style="color:var(--gold)"></i> โหมดตัวอย่าง</span>
   <button onclick="devView('v-main')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer"><i data-lucide="eye"></i> Guest</button>
   <button onclick="devView('v-clinic')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer"><i data-lucide="hospital"></i> Clinic</button>
   <button onclick="devView('v-worker')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg> Worker</button>
@@ -2685,10 +2685,10 @@ function loginSuccess(){
   const title=document.getElementById('success-title-txt');
   const sub=document.getElementById('success-sub-txt');
   if(_loginMode==='login'){
-    if(title)title.textContent='ยินดีต้อนรับกลับ! 👋';
+    if(title)title.innerHTML='ยินดีต้อนรับกลับ! <i data-lucide="hand"></i>';
     if(sub)sub.textContent='เข้าสู่ระบบสำเร็จ\nเริ่มใช้งานได้เลย';
   } else {
-    if(title)title.textContent='สมัครสมาชิกสำเร็จ! 🎉';
+    if(title)title.innerHTML='สมัครสมาชิกสำเร็จ! <i data-lucide="party-popper"></i>';
     if(sub)sub.textContent='ยินดีต้อนรับสู่ DentMatch\nเริ่มใช้งานได้เลย';
   }
   goLoginStep('ls-success');
@@ -2937,7 +2937,7 @@ function copyMsgAgain() {
 function confirmLineSent() {
   if(_addLineBtn) markLineAdded(_addLineBtn);
   closeSheet('s-add-line');
-  showToast('🎉 ติดต่อคลินิกผ่าน LINE แล้ว');
+  showToast('<i data-lucide="party-popper"></i> ติดต่อคลินิกผ่าน LINE แล้ว');
 }
 function showToast(msg){
   const host=document.getElementById('app')||document.body;
@@ -3141,7 +3141,7 @@ function previewPost(){
     +'<div class="badges"><span class="bdg bdg-role">'+pos+'</span>'+(skills[0]?'<span class="bdg bdg-br">'+skills[0]+'</span>':'')+'</div>'
     +'<div class="jcard-title" style="margin-bottom:3px">'+pos+(skills[0]?(' '+skills[0]):'')+'</div>'
     +'<div class="jcard-clinic"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม</div>'
-    +'<div class="sched-strip"><span>🗓</span><span class="sched-txt">'+sched+'</span></div>'
+    +'<div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">'+sched+'</span></div>'
     +'<div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span>'+(skills[0]?'<span class="pill pill-b">'+skills[0]+'</span>':'')+'</div>'
     +'<div class="card-ft"><div class="wage">'+payHtml+'</div></div>'
     +'</div>';
@@ -3566,8 +3566,8 @@ function initDesktop(){
       <div class="tt"><h2>${title}</h2>${count?`<span class="pill">${count}</span>`:''}</div>
       <div class="tr">
         <div class="dt-vtw">
-          <button class="dt-vt on" title="Grid">▦</button>
-          <button class="dt-vt" title="List">☰</button>
+          <button class="dt-vt on" title="Grid"><i data-lucide="layout-grid"></i></button>
+          <button class="dt-vt" title="List"><i data-lucide="list"></i></button>
         </div>
       </div>`;
     cards.parentNode.insertBefore(tb,cards);
@@ -3587,7 +3587,7 @@ function initDesktop(){
     fw.classList.add('dt-collapsible');               // collapsed by default
     const bar=document.createElement('div');
     bar.className='dt-filterbar';
-    bar.innerHTML='<button class="dt-filter-toggle" type="button">ตัวกรอง <span class="dt-filter-badge">0</span><span class="chev">▾</span></button><span class="dt-filter-summary"></span><button class="dt-filter-clear" type="button"><i data-lucide="x"></i> ล้างทั้งหมด</button>';
+    bar.innerHTML='<button class="dt-filter-toggle" type="button">ตัวกรอง <span class="dt-filter-badge">0</span><span class="chev"><i data-lucide="chevron-down"></i></span></button><span class="dt-filter-summary"></span><button class="dt-filter-clear" type="button"><i data-lucide="x"></i> ล้างทั้งหมด</button>';
     fw.insertBefore(bar,fw.firstChild);
     const toggle=bar.querySelector('.dt-filter-toggle');
     const badge=bar.querySelector('.dt-filter-badge');
