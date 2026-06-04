@@ -470,53 +470,10 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
 .info-box{background:var(--p25);border:1px solid var(--p100);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--ink4);display:flex;align-items:flex-start;gap:6px;line-height:1.5;margin:0 16px 12px}
 
 
-/* ═══════════════════════════════════════════════════════════════
-   TABLET PORTRAIT (768–1023px) — refined "app on a designed canvas"
-═══════════════════════════════════════════════════════════════ */
-@media(min-width:768px) and (max-width:1023px){
-  html,body{background:#140B36}
-  .shell{
-    padding:46px 24px;
-    align-items:center;justify-content:center;
-    background:
-      radial-gradient(125% 90% at 12% 8%,rgba(124,92,191,.42) 0%,transparent 52%),
-      radial-gradient(110% 80% at 90% 96%,rgba(201,168,76,.20) 0%,transparent 50%),
-      linear-gradient(152deg,#1A0F45 0%,#241564 44%,#3A2196 100%);
-  }
-  .shell::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:
-      radial-gradient(40% 30% at 80% 18%,rgba(232,200,106,.10),transparent 60%),
-      radial-gradient(46% 34% at 18% 82%,rgba(155,125,212,.16),transparent 60%);
-    opacity:1;
-  }
-  /* designed brand lockup, top-left of canvas */
-  .shell::after{
-    content:'DentMatch';
-    position:absolute;top:34px;left:42px;
-    font-family:'Prompt',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;
-    color:rgba(255,255,255,.92);
-    text-shadow:0 2px 18px rgba(0,0,0,.3);
-    pointer-events:none;z-index:2;
-  }
-  .phone{
-    position:relative;z-index:3;
-    width:100%;max-width:474px;
-    height:calc(100vh - 92px);height:calc(100dvh - 92px);max-height:892px;
-    background:var(--off-white);
-    border-radius:46px;border:1px solid rgba(255,255,255,.05);
-    box-shadow:
-      0 50px 110px -22px rgba(8,3,34,.78),
-      0 18px 44px -12px rgba(8,3,34,.5),
-      0 0 0 11px rgba(255,255,255,.035),
-      0 0 0 1px rgba(255,255,255,.10) inset,
-      0 1px 0 rgba(255,255,255,.25) inset;
-    overflow:hidden;
-  }
-}
+/* (device-preview เดิม 768–1023 ถูกแทนด้วย dashboard เต็มจอ — ดูบล็อก tablet tuning ท้าย stylesheet) */
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE LAYER — premium desktop + tablet landscape
+   RESPONSIVE LAYER — premium desktop + tablet
    (placed last so it correctly overrides base mobile styles)
 ═══════════════════════════════════════════════════════════════ */
 :root{
@@ -529,9 +486,9 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DESKTOP + TABLET LANDSCAPE (≥1024px) — premium dashboard
+   DASHBOARD (≥768px) — desktop + tablet เต็มจอ
 ═══════════════════════════════════════════════════════════════ */
-@media(min-width:1024px){
+@media(min-width:768px){
 
   html,body{background:var(--dt-canvas);overflow:hidden}
 
@@ -942,6 +899,16 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
 *:focus-visible{outline:3px solid var(--p400);outline-offset:2px}
 input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--p400);outline-offset:2px}
 .hdr *:focus-visible,.mini-hdr *:focus-visible,.profile-hero *:focus-visible,.dt-gsearch input:focus-visible{outline-color:#E8C86A}
+
+/* ── Tablet portrait tuning (768–1023px): dashboard เต็มจอ แต่บีบให้พอดีจอแคบ ── */
+@media(min-width:768px) and (max-width:1023px){
+  :root{--dt-rail:208px}
+  .dt-stats{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(278px,1fr))}
+  #cc-manage.on,#cc-invites.on,#wt-inbox .inbox-pane.on{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .dt-toolbar,.sec-hdr,.filter-wrap,.dt-stats,.cards,.gbanner,.onboard-card,.ftabs,.inline-tabs,.stat4,.sinv-stat{padding-left:22px;padding-right:22px}
+  .gbanner,.onboard-card{margin-left:22px;margin-right:22px}
+}
 </style>
 </head>
 <body>
@@ -3271,8 +3238,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   hideZeroTrust();
   initA11y();
   initFilters();
-  if(window.innerWidth>=1024) initDesktop();
-  window.addEventListener('resize',()=>{ if(window.innerWidth>=1024) initDesktop(); });
+  if(window.innerWidth>=768) initDesktop();
+  window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); });
 });
 
 // แสดงป้าย BETA ทุกหน้า (inject เข้าทุกชนิด header: logo / mini-hdr / profile-hero)
