@@ -1290,6 +1290,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <button class="ft" onclick="mFilter('past',this)">วันงานผ่านแล้ว</button>
       </div>
 
+      <div id="cc-manage-cards">
       <!-- ① วันงานผ่านแล้ว -->
       <div class="mcard mf-past" style="border-color:rgba(107,78,194,.25);background:linear-gradient(to bottom,#fff,var(--p25))" onclick="goView('v-job-detail')" style="cursor:pointer">
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
@@ -1404,6 +1405,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button>
         </div>
       </div>
+      </div><!-- /cc-manage-cards -->
 
     </div>
     <!-- INVITES SENT -->
@@ -2853,6 +2855,7 @@ async function dmLoadProfile(){
   }catch(e){ console.warn('dmLoadProfile', e); }
   await dmLoadWorkerBoard();   // C2a: บอร์ดบุคลากรจากของจริง
   await dmLoadJobsBoard();     // C2b: บอร์ดงานจากของจริง
+  if(dmUser.role==='clinic') await dmLoadManageBoard();   // C3d-1: แท็บจัดการ = งานคลินิกตัวเอง
 }
 
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
@@ -3091,7 +3094,8 @@ async function dmPostJob(){
     if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
     console.log('[postjob] insert สำเร็จ ✓', data);
     openSheet('s-post-success');
-    await dmLoadJobsBoard();   // refresh บอร์ด → งานใหม่โผล่บนสุด (is_open + created_at desc)
+    await dmLoadJobsBoard();     // refresh บอร์ด → งานใหม่โผล่บนสุด
+    await dmLoadManageBoard();   // refresh แท็บจัดการด้วย
   }catch(e){ console.error('[postjob] exception', e); showToast('ลงประกาศไม่สำเร็จ'); }
 }
 /* ════════ C3c — คลินิกส่งคำเชิญ (INSERT invites · worker_id opaque · dedup unique(clinic,worker,job)) ════════ */
@@ -3134,6 +3138,86 @@ async function dmSendInvite(){
     console.log('[invite] insert สำเร็จ ✓', data);
     openSheet('s-invite-success');
   }catch(e){ console.error('[invite] exception', e); showToast('ส่งคำเชิญไม่สำเร็จ'); }
+}
+/* ════════ C3d-1 — manage tab จริง (งานของคลินิก + actions is_open/DELETE · clinic-owner ผ่าน RLS j_cud) ════════ */
+const _thMonthsAbbr = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function _dmThaiDate(d){ if(!d) return ''; const p=String(d).split('-'); if(p.length!==3) return _dmEsc(d); return (+p[2])+' '+(_thMonthsAbbr[+p[1]-1]||'')+' '+(((+p[0])+543)%100); }
+function _dmJobIsPast(job){ if(!job.work_date) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(job.work_date) < t; }
+function dmManageCard(job){
+  const past=_dmJobIsPast(job);
+  const st = past ? 'past' : (job.is_open ? 'open' : 'closed');
+  const title=_dmEsc(job.title);
+  const dateStr = job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job));
+  const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
+  const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
+  let cardStyle='cursor:pointer', mf='mf-open', badge, body;
+  if(st==='past'){
+    mf='mf-past'; cardStyle+=';border-color:rgba(107,78,194,.25);background:linear-gradient(to bottom,#fff,var(--p25))';
+    badge='<div class="mstatus" style="color:var(--p600)"><div class="dot dot-p"></div>วันงานผ่านแล้ว</div>';
+    body=`<div class="past-banner"><i data-lucide="calendar-days"></i> วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
+      <div class="act-row"><button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+  } else if(st==='closed'){
+    cardStyle+=';opacity:.9;border-color:rgba(229,83,58,.2)';
+    badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
+    body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
+      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+  } else {
+    if(job.urgent) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
+    badge = job.urgent ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
+                       : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
+    body=`<div class="tog-row"><div class="tog" onclick="event.stopPropagation();dmToggleJob('${job.id}',this)"></div><span class="tog-lbl">เปิดรับสมัคร</span></div>
+      <div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+  }
+  return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
+    <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div>${badge}</div>
+    ${body}
+  </div>`;
+}
+async function dmLoadManageBoard(){
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
+  try{
+    const { data, error } = await dmSb().from('jobs')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
+    if(error){ console.warn('[manage] load', error); return; }
+    if(!data) return;
+    data.forEach(j=>{ _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้
+    const wrap=document.getElementById('cc-manage-cards');
+    if(wrap) wrap.innerHTML = data.length ? data.map(dmManageCard).join('')
+      : '<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีประกาศงาน — ลงงานใหม่ที่แท็บ “ลงงาน”</div>';
+    const open=data.filter(j=>j.is_open && !_dmJobIsPast(j)).length;
+    const urg=data.filter(j=>j.urgent && j.is_open && !_dmJobIsPast(j)).length;
+    const setN=(id,n)=>{ const e=document.getElementById(id); if(e) e.textContent=n; };
+    setN('m-stat-all',data.length); setN('m-stat-open',open); setN('m-stat-urg',urg); setN('m-stat-closed',data.length-open);
+    refreshIcons();
+    console.log('[manage] โหลด', data.length, 'งาน');
+  }catch(e){ console.warn('[manage] exception', e); }
+}
+async function _dmJobUpdate(id, patch, msg){
+  if(!dmSb() || !dmUser) return false;
+  try{
+    const { error } = await dmSb().from('jobs').update(patch).eq('id', id);   // RLS j_cud: clinic_id=auth.uid
+    if(error){ console.error('[manage] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return false; }
+    console.log('[manage] update ✓', id, JSON.stringify(patch));
+    if(_dmJobs[id]) Object.assign(_dmJobs[id], patch);
+    await dmLoadManageBoard(); await dmLoadJobsBoard();
+    if(msg) showToast(msg);
+    return true;
+  }catch(e){ console.error('[manage] update exception', e); return false; }
+}
+function dmToggleJob(id){ const j=_dmJobs[id]; if(!j) return; _dmJobUpdate(id, { is_open: !j.is_open }, j.is_open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
+function dmGotStaff(id){ _dmJobUpdate(id, { is_open:false }, 'บันทึกว่าได้คนแล้ว'); }
+function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true }, 'เปิดรับใหม่แล้ว'); }
+async function dmDeleteJob(id){
+  if(!confirm('ลบประกาศงานนี้? กู้คืนไม่ได้')) return;
+  if(!dmSb() || !dmUser) return;
+  try{
+    const { error } = await dmSb().from('jobs').delete().eq('id', id);   // RLS j_cud
+    if(error){ console.error('[manage] delete ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลบไม่สำเร็จ: '+error.message); return; }
+    console.log('[manage] deleted ✓', id); delete _dmJobs[id];
+    await dmLoadManageBoard(); await dmLoadJobsBoard();
+    showToast('ลบประกาศแล้ว');
+  }catch(e){ console.error('[manage] delete exception', e); }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
