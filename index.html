@@ -2265,6 +2265,12 @@ function goView(id){
   const sc=next.querySelector('.scroll'); if(sc)sc.scrollTop=0;
   // ซ่อน Add LINE CTA ถ้า role = clinic
   if(id==='v-job-detail'){
+    // เปิดจากการ์ด mock (ไม่ใช่ dmOpenJob) → คืน HTML mock เดิม (scroll + header sub) กันค้างข้อมูลงานจริงล่าสุด
+    if(!_dmRealJobOpen && _dmJDDefault!=null && sc){
+      sc.innerHTML=_dmJDDefault;
+      const _sd=next.querySelector('.mini-hdr-sub'); if(_sd && _dmJDSubDefault!=null) _sd.textContent=_dmJDSubDefault;
+    }
+    _dmRealJobOpen=false;
     const cta=document.getElementById('jd-cta-wrap');
     if(cta) cta.style.display = currentRole==='clinic' ? 'none' : '';
   }
@@ -2923,7 +2929,7 @@ function dmJobCard(job){
                            : (skill0?`<span class="bdg bdg-br">${_dmEsc(skill0)}</span>`:'');
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=job.wage_text?_dmEsc(job.wage_text):'ตามตกลง';
-  return `<div class="jcard${job.urgent?' urg':''}" data-clinic="${cname}" onclick="goView('v-job-detail')" style="cursor:pointer">
+  return `<div class="jcard${job.urgent?' urg':''}" data-clinic="${cname}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">${pos}</span>${badge2}</div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${_dmEsc(job.title)}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname}</div>
@@ -2935,16 +2941,116 @@ function dmJobCard(job){
 async function dmLoadJobsBoard(){
   if(!dmSb() || !dmUser) return;   // authenticated เท่านั้น (RLS) ; guest = mock
   try{
-    // jobs + clinics(name,province,line_id) — ไม่มี PII
+    // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
-      .select('id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, skills, created_at, clinics(name, province, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('is_open', true).order('created_at', { ascending:false }).limit(60);
     if(error || !data || !data.length) return;   // fallback: คงการ์ด mock
+    _dmJobs={}; data.forEach(j=>{ _dmJobs[j.id]=j; });   // เก็บไว้ให้ dmOpenJob lookup ตอนคลิกการ์ด
     const html=data.map(dmJobCard).join('');
     ['#ccf-cards','#wtj-cards'].forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
     _dmSetCount('#cc-find', data.length, 'งาน'); _dmSetCount('#wt-jobs', data.length, 'งาน');
     refreshIcons();
   }catch(e){ console.warn('dmLoadJobsBoard', e); }
+}
+
+/* ════════ C2c — หน้ารายละเอียดงานจากของจริง (v-job-detail) ════════ */
+let _dmJobs={};            // map job.id -> job (จาก dmLoadJobsBoard) ให้ dmOpenJob lookup
+let _dmJDDefault=null;     // HTML mock เดิมของ v-job-detail .scroll (restore ตอนเปิดจากการ์ด mock)
+let _dmJDSubDefault=null;  // ข้อความ mini-hdr-sub เดิม (อยู่นอก .scroll → restore แยก)
+let _dmRealJobOpen=false;  // true = เปิด v-job-detail ครั้งนี้มาจาก dmOpenJob (อย่า restore)
+function _dmAddr(province, district){ return [district, province].filter(Boolean).map(_dmEsc).join(' · '); }
+function _dmHours(job){     // "(8 ชั่วโมง)" ถ้ามี time_start/end
+  if(!job.time_start || !job.time_end) return '';
+  const a=job.time_start.split(':'), b=job.time_end.split(':');
+  if(a.length<2||b.length<2) return '';
+  const h=(parseInt(b[0],10)*60+parseInt(b[1],10))-(parseInt(a[0],10)*60+parseInt(a[1],10));
+  if(!(h>0)) return '';
+  const hr=Math.round(h/60*10)/10;
+  return ' ('+(Number.isInteger(hr)?hr:hr.toFixed(1))+' ชั่วโมง)';
+}
+function dmJobDetailHTML(job){
+  const clinic=job.clinics||{};
+  const cname=_dmEsc(clinic.name||'คลินิก');
+  const pos=DM_POS_LABEL[job.position]||_dmEsc(job.position);
+  const skill0=(job.skills&&job.skills[0])?`<span class="bdg bdg-br">${_dmEsc(job.skills[0])}</span>`:'';
+  const urg=job.urgent?'<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>':'';
+  const accent=job.urgent?'linear-gradient(180deg,var(--orange),#FFB26B)':'linear-gradient(180deg,var(--p400),var(--p200))';
+  const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
+  const time=(job.time_start&&job.time_end)?(_dmEsc(job.time_start)+' – '+_dmEsc(job.time_end)+' น.'+_dmHours(job)):'';
+  const wage=job.wage_text?_dmEsc(job.wage_text):'ตามตกลง';
+  const jobAddr=_dmAddr(job.province, job.district);
+  const isOwner=(dmUser && job.clinic_id===dmUser.id);
+  // บล็อกสถิติ — โชว์เฉพาะ cell ที่มีข้อมูล/สิทธิ์ (ADD LINE = เจ้าของงานเท่านั้น ตาม RLS ale_sel)
+  let cells='';
+  if(job.patients_per_day!=null) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">จำนวนคนไข้</div><div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">${_dmEsc(job.patients_per_day)} คน/วัน</div></div>`;
+  if(isOwner) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">ADD LINE แล้ว</div><div id="jd-addline" style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">…</div></div>`;
+  const grid=cells?`<hr class="divline"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">${cells}</div>`:'';
+  const descPara=job.description?`<div style="font-size:13.5px;color:var(--ink3);line-height:1.7">${_dmEsc(job.description)}</div>`:'';
+  const descCard=(descPara||grid)?`<div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
+        <div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:12px"><i data-lucide="clipboard-list"></i> รายละเอียดงาน</div>
+        ${descPara}${grid}
+      </div>`:'';
+  const aboutTxt=clinic.about?`<div style="font-size:13px;color:var(--ink3);line-height:1.65">${_dmEsc(clinic.about)}</div>`:'';
+  const clinicAddr=_dmAddr(clinic.province, clinic.district);
+  return `<div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+      <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border);position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${accent};border-radius:4px 0 0 4px"></div>
+        <div class="badges" style="margin-bottom:12px"><span class="bdg bdg-role">${pos}</span>${skill0}${urg}</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">${_dmEsc(job.title)}</div>
+        <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px"><i data-lucide="hospital"></i> ${cname}${jobAddr?' · '+jobAddr:''}</div>
+        <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
+          <div style="font-size:14px;font-weight:600;color:var(--p800)">${days?_dmEsc(days):'ตามตกลง'}</div>
+          ${time?`<div style="font-size:13px;color:var(--ink3);margin-top:3px">${time}</div>`:''}
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,var(--p800),var(--p600));border-radius:var(--r);padding:18px;box-shadow:0 6px 20px rgba(60,30,130,.28)">
+        <div style="font-size:11px;font-weight:700;color:var(--p300);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px"><i data-lucide="banknote" style="color:var(--gold)"></i> ค่าตอบแทน</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:32px;font-weight:800;color:var(--gold2);line-height:1.1">${wage}</div>
+      </div>
+      ${descCard}
+      <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
+        <div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:12px"><i data-lucide="hospital"></i> เกี่ยวกับคลินิก</div>
+        <div style="display:flex;align-items:center;gap:12px;${aboutTxt?'margin-bottom:12px':''}"><div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="hospital"></i></div><div><div style="font-size:14px;font-weight:600;color:var(--ink)">${cname}</div>${clinicAddr?`<div style="font-size:12px;color:var(--ink4);margin-top:2px"><i data-lucide="map-pin"></i> ${clinicAddr}</div>`:''}</div></div>
+        ${aboutTxt}
+      </div>
+      <div id="jd-cta-wrap">
+        <button class="btn-primary" id="jd-cta" onclick="openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบเพื่อ Add LINE คลินิก</button>
+      </div>
+    </div>`;
+}
+async function dmJobAddLineCount(jobId){
+  try{ const { count } = await dmSb().from('add_line_events').select('id',{count:'exact',head:true}).eq('job_id', jobId); return count||0; }catch(e){ return 0; }
+}
+function dmOpenJob(id){
+  const job=_dmJobs[id];
+  const sc=document.querySelector('#v-job-detail .scroll');
+  if(!job || !sc){ goView('v-job-detail'); return; }   // ไม่เจอ = เปิด mock เดิม
+  const sub=document.querySelector('#v-job-detail .mini-hdr-sub');
+  if(_dmJDDefault==null){ _dmJDDefault=sc.innerHTML; _dmJDSubDefault=sub?sub.textContent:''; }   // เก็บ mock เดิม (scroll + sub) ครั้งแรก
+  sc.innerHTML=dmJobDetailHTML(job);
+  if(sub) sub.textContent=(job.clinics&&job.clinics.name)||'รายละเอียดงาน';
+  const btn=document.getElementById('jd-cta'), cl=job.clinics||{};
+  if(btn){
+    if(currentRole==='worker'){
+      btn.innerHTML='<span class="llogo">L</span> Add LINE คลินิก'; btn.className='btn-line';
+      btn.style.width='100%'; btn.style.justifyContent='center';
+      btn.onclick=()=>openAddLine(btn, cl.name||'', job.title||'', cl.line_id||'');
+    } else if(currentRole==='clinic'){
+      const w=document.getElementById('jd-cta-wrap'); if(w) w.style.display='none';
+    } else {
+      btn.innerHTML='<i data-lucide="lock"></i> เข้าสู่ระบบเพื่อ Add LINE คลินิก'; btn.className='btn-primary';
+      btn.onclick=()=>openSheet('s-login');
+    }
+  }
+  _dmRealJobOpen=true;
+  goView('v-job-detail');
+  refreshIcons();
+  // ยอด ADD LINE จริง (เฉพาะเจ้าของงาน — RLS ale_sel) เติม async
+  if(dmUser && job.clinic_id===dmUser.id){
+    dmJobAddLineCount(job.id).then(n=>{ const el=document.getElementById('jd-addline'); if(el) el.textContent=n+' คน'; });
+  }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
