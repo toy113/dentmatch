@@ -1944,7 +1944,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
-          <input class="inp" type="email" id="login-email" placeholder="your@email.com" style="padding-right:90px">
+          <input class="inp" type="email" id="login-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
           <button onclick="emailLoginRequestOtp()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ขอ OTP →</button>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:4px">รหัส OTP จะส่งไปยัง Email ที่ลงทะเบียนไว้</div>
@@ -1955,7 +1955,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
-          <input class="inp" type="email" id="reg-email" placeholder="your@email.com" style="padding-right:90px">
+          <input class="inp" type="email" id="reg-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
           <button onclick="enterRolePick()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ถัดไป →</button>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:4px">จะส่ง OTP ยืนยันไปยัง Email</div>
@@ -2038,7 +2038,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <label id="regSkillLabel" style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">ทักษะ / สาขา</label>
         <div class="chip-row" style="flex-wrap:wrap" id="regWorkerSkillChips"><span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span></div>
       </div>
-      <select class="inp" style="margin-bottom:9px"><option value="">ประสบการณ์ *</option><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
+      <select class="inp" style="margin-bottom:9px" id="rw-exp"><option value="">ประสบการณ์ *</option><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
       <div class="form-group" style="margin-bottom:9px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">จังหวัดที่รับงาน <span style="font-size:10px;font-weight:400;color:var(--ink4)">(เลือกได้หลายจังหวัด)</span></label>
         <div id="regProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:4px"></div>
@@ -2585,6 +2585,17 @@ function openSheet(id){
   if(_title) el.setAttribute('aria-label', _title.textContent.trim());
   _sheetReturnFocus = document.activeElement;
   if(id==='s-province'){renderProvList();renderSelTags();}
+  // s-login: เปิดจาก LINE callback (flag) = คงสถานะสมัคร · เปิด manual = เริ่มสะอาดเต็ม
+  // (กันหน้า ls-otp/อีเมลเก่าค้าง → ส่ง OTP ไปเมลคนอื่น)
+  if(id==='s-login'){
+    if(_lineSignupOpening){ _lineSignupOpening=false; }
+    else {
+      if(typeof goLoginStep==='function') goLoginStep('ls-login');
+      var _le=document.getElementById('login-email'); if(_le)_le.value='';
+      var _re=document.getElementById('reg-email');   if(_re)_re.value='';
+      _otpEmail=null; _otpMode=null; _lineSignup=null;
+    }
+  }
   setTimeout(()=>{ const f=el.querySelector(_SHEET_FOCUSABLE); (f||_sheet).focus&&(f||_sheet).focus(); }, 60);
 }
 function closeSheet(id){
@@ -2682,7 +2693,7 @@ async function nextAfterRegWorker() {
     phone:(document.getElementById('rw-phone').value||'').trim(),
     position:document.getElementById('regWorkerPos').value||'assistant',
     province:[...regProvs][0]||'',   // worker_profiles เก็บจังหวัดหลักเดียว (multi-province ไว้ทีหลัง)
-    bio:bio?bio.value.trim():'' };
+    bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value) };
   _otpEmail=email; _otpMode='register';
   if(await dmSendEmailOtp(email,true)){
     const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
@@ -2771,8 +2782,10 @@ async function dmSendEmailOtp(email, createUser){
 }
 // ปุ่ม "ขอ OTP →" (login)
 async function emailLoginRequestOtp(){
+  if(_lineSignup){ showToast('กำลังสมัครด้วย LINE อยู่'); return; }   // กันส่ง OTP ระหว่าง LINE signup
   const email=(document.getElementById('login-email').value||'').trim();
   if(!email){ showToast('กรอกอีเมลก่อน'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('อีเมลไม่ถูกต้อง'); return; }   // กันส่งไปค่าแปลกๆ
   _otpEmail=email; _otpMode='login'; pendingSignup=null;
   if(await dmSendEmailOtp(email,false)){
     const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
@@ -2812,7 +2825,7 @@ async function dmCreateRecords(uid, s){
     await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null });
   } else {
     // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
-    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null });
+    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
     await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
   }
 }
@@ -2831,6 +2844,50 @@ async function dmLoadProfile(){
       }
     }
   }catch(e){ console.warn('dmLoadProfile', e); }
+  await dmLoadWorkerBoard();   // C2: บอร์ดบุคลากรจากของจริง
+}
+
+/* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
+const DM_TOOTH_SVG = '<svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg>';
+const DM_POS_LABEL = { dentist:'ทันตแพทย์', assistant:'ผู้ช่วยฯ', counter:'เคาน์เตอร์' };
+const DM_DAYS = ['จ','อ','พ','พฤ','ศ','ส','อา'];   // index+1 = day number (1=จ..7=อา)
+function _dmEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
+function _dmMonths(d){ if(!d)return 0; const s=new Date(d),n=new Date(); return Math.max(0,(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())); }
+function _dmExpYears(s){ if(!s) return null; if(/จบใหม่/.test(s)) return 0; const m=String(s).match(/\d+/); return m?parseInt(m[0],10):null; }   // "5 ปี"->5, "10+ ปี"->10, "จบใหม่"->0
+function dmWorkerCard(w){
+  const dot = w.available ? '<div class="av-dot"></div>' : '';
+  const pos = DM_POS_LABEL[w.position] || _dmEsc(w.position);
+  const exp = (w.experience_years!=null) ? `<span class="w-exp">${w.experience_years} ปี</span>` : '';
+  const loc = _dmEsc(w.province) + (w.district ? ' ('+_dmEsc(w.district)+')' : '');
+  const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
+  const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
+  const ad = w.available_days||[];
+  const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
+  return `<div class="wcard">
+          <div class="wcard-top" style="cursor:pointer" onclick="goView('v-worker-detail')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
+          <div class="skills">${skills}</div>
+          ${quote}
+          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ${w.trust_score||0} ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> ${_dmMonths(w.member_since)} เดือน</span></div>
+          <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days">${days}</div></div>
+          <button class="btn-invite" onclick="openSheet('s-invite')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
+        </div>`;
+}
+async function dmLoadWorkerBoard(){
+  if(!dmSb() || !dmUser) return;   // ต้อง authenticated (RLS) ; guest = คง mock
+  try{
+    // ★ public-safe เท่านั้น — ไม่ select worker_private / ไม่มีคอลัมน์ PII ในตารางนี้
+    const { data, error } = await dmSb().from('worker_profiles')
+      .select('anon_id, position, skills, province, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
+      .order('trust_score', { ascending:false }).limit(60);
+    if(error || !data || !data.length) return;   // fallback: คงการ์ด mock เดิม (DB ว่าง/ช่วง launch)
+    const cards=document.querySelector('#cc-workers .cards');
+    if(!cards) return;
+    cards.innerHTML = data.map(dmWorkerCard).join('');
+    const pill=document.querySelector('#cc-workers .cnt-pill'); if(pill){ pill.textContent=data.length+' คน'; pill.setAttribute('data-total', data.length); }
+    if(typeof buildWorkerBoards==='function') buildWorkerBoards();   // propagate → wt-workers + teaser
+    refreshIcons();
+  }catch(e){ console.warn('dmLoadWorkerBoard', e); }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
@@ -2849,6 +2906,7 @@ async function dmSignOut(){ try{ if(dmSb()) await dmSb().auth.signOut(); }catch(
 
 /* ════════ LINE Login (Batch 3 · ผ่าน Edge Function line-auth) ════════ */
 let _lineSignup = null;   // { uid, name, lid } เมื่อผู้ใช้ LINE ใหม่ต้องเลือก role+กรอกฟอร์ม
+let _lineSignupOpening = false;   // true ชั่วคราว = openSheet('s-login') ครั้งนี้มาจาก LINE callback (อย่า reset)
 // ปุ่ม "เข้าสู่ระบบ/สมัครด้วย LINE" → สร้าง authorize URL เอง (Channel ID public), redirect_uri = Edge Function /callback
 function _b64url(o){ return btoa(JSON.stringify(o)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 function startLineLogin(){
@@ -2876,6 +2934,7 @@ async function dmHandleLineCallback(){
   const uid=data.user.id;
   if(isNew){
     _lineSignup={ uid, name, lid };
+    _lineSignupOpening=true;   // กัน openSheet reset สถานะ LINE signup
     openSheet('s-login'); _loginMode='register'; loginTab('register'); enterRolePick();
     showToast('ยินดีต้อนรับ'+(name?' '+name:'')+' — เลือกบทบาทเพื่อสมัคร');
     return true;
@@ -2900,7 +2959,7 @@ async function dmFinishLineSignup(role){
     s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
         phone:(document.getElementById('rw-phone').value||'').trim(),
         position:document.getElementById('regWorkerPos').value||'assistant',
-        province:[...regProvs][0]||'', bio:bio?bio.value.trim():'', line_user_id:_lineSignup.lid };
+        province:[...regProvs][0]||'', bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid };
   }
   try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
   dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
