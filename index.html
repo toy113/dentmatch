@@ -2914,7 +2914,7 @@ function _dmSched(job){
   const p=[days,time].filter(Boolean);
   return p.length?p.join(' · '):'ตามตกลง';
 }
-function dmCardAddLine(btn){ openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||''); }
+function dmCardAddLine(btn){ openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
 // อัปเดต count ทั้ง sec-hdr (.cnt-pill) + dt-toolbar (.pill) ของแท็บ + เก็บ data-total ให้ filter
 function _dmSetCount(tabSel, n, unit){
   const tc=document.querySelector(tabSel); if(!tc) return;
@@ -2935,7 +2935,7 @@ function dmJobCard(job){
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> ${loc}</span></div>
-          <div class="card-ft"><div class="wage">${wage}</div><button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button></div>
+          <div class="card-ft"><div class="wage">${wage}</div><button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button></div>
         </div>`;
 }
 async function dmLoadJobsBoard(){
@@ -3036,7 +3036,7 @@ function dmOpenJob(id){
     if(currentRole==='worker'){
       btn.innerHTML='<span class="llogo">L</span> Add LINE คลินิก'; btn.className='btn-line';
       btn.style.width='100%'; btn.style.justifyContent='center';
-      btn.onclick=()=>openAddLine(btn, cl.name||'', job.title||'', cl.line_id||'');
+      btn.onclick=()=>openAddLine(btn, cl.name||'', job.title||'', cl.line_id||'', job.id);
     } else if(currentRole==='clinic'){
       const w=document.getElementById('jd-cta-wrap'); if(w) w.style.display='none';
     } else {
@@ -3308,10 +3308,14 @@ function dayToggle(el){el.classList.toggle('on')}
 let _addLineBtn = null;
 let _addLineId = '@661kqfot';
 let currentWorkerId = '4829';   // production: ดึงจาก auth session ของ worker ที่ล็อกอิน
+let _addLineJobId = null;       // C3b: job.id จริงของงานที่กด Add LINE (mock = null)
+let _addLineClinicId = null;    // C3b: clinic_id จริง (derive จาก _dmJobs)
 
-function openAddLine(btn, clinic, jobName, lineId) {
+function openAddLine(btn, clinic, jobName, lineId, jobId) {
   _addLineBtn = btn;
   _addLineId = lineId || '@siamdental';
+  _addLineJobId = jobId || null;
+  _addLineClinicId = (jobId && _dmJobs && _dmJobs[jobId]) ? _dmJobs[jobId].clinic_id : null;
   const clinicEl = document.getElementById('addline-clinic-name');
   if(clinicEl){ clinicEl.textContent = clinic; clinicEl.insertAdjacentHTML('beforeend', ' <span class="addline-lineid">'+_addLineId+'</span>'); }
   const msg = document.getElementById('addline-msg');
@@ -3339,6 +3343,7 @@ function _openLine() {
 function copyAndLine() {
   const msg = document.getElementById('addline-msg');
   if(msg) _copyText(msg.value);
+  dmRecordAddLine();   // ★ record ตรงนี้ = action จริง (คัดลอก+เปิด LINE) · "ส่งใน LINE แล้ว" เป็น optional step
   _openLine();
   // ไปขั้นยืนยัน — ยังไม่พลิกการ์ด/ปิด sheet จนกว่าผู้ใช้ยืนยันว่าส่งแล้ว (กัน dead-end)
   const s1=document.getElementById('addline-step1'), s2=document.getElementById('addline-step2');
@@ -3350,7 +3355,27 @@ function copyMsgAgain() {
   if(msg) _copyText(msg.value);
   showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> คัดลอกข้อความอีกครั้งแล้ว');
 }
+// C3b: บันทึก add_line_events ของจริง (worker → job) · ทำให้ "ADD LINE แล้ว N คน" เป็นยอดจริง
+// RLS ale_ins: worker_id=auth.uid() ; dedup 1 ครั้ง/worker/job (count = จำนวนคนจริง ไม่เฟ้อ)
+async function dmRecordAddLine(){
+  if(!dmSb() || !dmUser){ console.warn('[addline] ข้าม: ยังไม่ล็อกอิน', {sb:!!dmSb(), dmUser}); return; }
+  if(dmUser.role!=='worker'){ console.warn('[addline] ข้าม: role =', dmUser.role, '(ฟีเจอร์นี้สำหรับ worker เท่านั้น — clinic ไม่บันทึก)'); return; }
+  if(!_addLineJobId || !_addLineClinicId){ console.warn('[addline] ข้าม: ไม่มี id จริง (การ์ด mock?)', {jobId:_addLineJobId, clinicId:_addLineClinicId}); return; }
+  try{
+    // dedup 1/worker/job (count = จำนวนคนจริง)
+    const dup = await dmSb().from('add_line_events').select('id',{count:'exact',head:true})
+      .eq('worker_id', dmUser.id).eq('job_id', _addLineJobId);
+    if(dup.error) console.warn('[addline] เช็คซ้ำ error', dup.error);
+    if(dup.count && dup.count>0){ console.log('[addline] เคยกดงานนี้แล้ว ('+dup.count+') → ข้าม insert'); return; }
+    // ★ supabase-js return {error} ไม่ throw → ต้องเช็คเอง (เดิมไม่เช็ค = บั๊กเงียบ)
+    const { data, error } = await dmSb().from('add_line_events')
+      .insert({ worker_id:dmUser.id, clinic_id:_addLineClinicId, job_id:_addLineJobId }).select();
+    if(error){ console.error('[addline] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึก Add LINE ไม่สำเร็จ: '+error.message); return; }
+    console.log('[addline] insert สำเร็จ ✓', data);
+  }catch(e){ console.error('[addline] exception', e); }
+}
 function confirmLineSent() {
+  dmRecordAddLine();
   if(_addLineBtn) markLineAdded(_addLineBtn);
   closeSheet('s-add-line');
   showToast('<i data-lucide="party-popper"></i> ติดต่อคลินิกผ่าน LINE แล้ว');
@@ -3365,6 +3390,7 @@ function showToast(msg){
   t._timer=setTimeout(()=>t.classList.remove('show'),2200);
 }
 function skipMsgAndLine() {
+  dmRecordAddLine();
   if(_addLineBtn) markLineAdded(_addLineBtn);
   closeSheet('s-add-line');
   setTimeout(_openLine, 400);
