@@ -2151,7 +2151,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="selectWorkerLog(this)"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">ทันตแพทย์ · GP · บางนา</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE เมื่อ 24 พ.ค. 68</div></div></div>
         <div style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="selectWorkerLog(this)"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px"><i data-lucide="stethoscope"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">ทันตแพทย์ · GP · นนทบุรี</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE เมื่อ 23 พ.ค. 68</div></div></div>
       </div>
-      <button class="btn-primary" onclick="openSheet('s-log-success')">บันทึก <i data-lucide="check"></i></button>
+      <button class="btn-primary" onclick="dmSaveWorkLog()">บันทึก <i data-lucide="check"></i></button>
     </div>
   </div>
 </div>
@@ -2523,7 +2523,17 @@ function mDelete(btn){
 }
 /* work-log: จำการ์ดที่เปิด → หลังบันทึกสำเร็จเปลี่ยนเป็น "บันทึกแล้ว" + ซ่อนปุ่ม (กันบันทึกซ้ำ) #1 */
 let _logCard=null;
-function openLogFromCard(btn){ _logCard=btn.closest('.mcard'); openSheet('s-log'); }
+function openLogFromCard(btn){
+  const card=btn.closest('.mcard'); _logCard=card;
+  _logJobId=(card&&card.dataset.jobid)||null;
+  _logWorkDate=(card&&card.dataset.workdate)||null;
+  _logWorkerId=null;
+  const sub=document.querySelector('#log-step1 .sheet-sub');
+  if(sub && card && card.dataset.title) sub.textContent=card.dataset.title;
+  const s1=document.getElementById('log-step1'), s2=document.getElementById('log-step2');
+  if(s1) s1.style.display=''; if(s2) s2.style.display='none';   // reset → step 1
+  openSheet('s-log');
+}
 function finishWorkLog(){
   closeSheet('s-log-success'); closeSheet('s-log');
   const card=_logCard; _logCard=null;
@@ -2947,8 +2957,9 @@ async function dmLoadJobsBoard(){
   try{
     // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
-      .eq('is_open', true).order('created_at', { ascending:false }).limit(60);
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .eq('is_open', true).gt('expires_at', new Date().toISOString())   // ซ่อนงานหมดอายุจากบอร์ด
+      .order('created_at', { ascending:false }).limit(60);
     if(error || !data || !data.length) return;   // fallback: คงการ์ด mock
     _dmJobs={}; data.forEach(j=>{ _dmJobs[j.id]=j; });   // เก็บไว้ให้ dmOpenJob lookup ตอนคลิกการ์ด
     const html=data.map(dmJobCard).join('');
@@ -3145,7 +3156,8 @@ function _dmThaiDate(d){ if(!d) return ''; const p=String(d).split('-'); if(p.le
 function _dmJobIsPast(job){ if(!job.work_date) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(job.work_date) < t; }
 function dmManageCard(job){
   const past=_dmJobIsPast(job);
-  const st = past ? 'past' : (job.is_open ? 'open' : 'closed');
+  const expired = !past && job.is_open && job.expires_at && (new Date(job.expires_at) < new Date());
+  const st = past ? 'past' : (!job.is_open ? 'closed' : (expired ? 'expired' : 'open'));
   const title=_dmEsc(job.title);
   const dateStr = job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job));
   const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
@@ -3161,6 +3173,11 @@ function dmManageCard(job){
     badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
     body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
       <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+  } else if(st==='expired'){
+    cardStyle+=';opacity:.7';
+    badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
+    body=`<div style="background:var(--p25);border:1px dashed var(--border2);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12px;color:var(--ink4)">โพสถูกซ่อนจาก job board แล้ว</span><button onclick="event.stopPropagation();dmRenewJob('${job.id}')" style="background:var(--p600);border:none;border-radius:7px;padding:7px 13px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap"><i data-lucide="refresh-cw"></i> ต่ออายุ 60 วัน</button></div>
+      <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else {
     if(job.urgent) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
     badge = job.urgent ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
@@ -3177,7 +3194,7 @@ async function dmLoadManageBoard(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
   try{
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
     if(error){ console.warn('[manage] load', error); return; }
     if(!data) return;
@@ -3218,6 +3235,45 @@ async function dmDeleteJob(id){
     await dmLoadManageBoard(); await dmLoadJobsBoard();
     showToast('ลบประกาศแล้ว');
   }catch(e){ console.error('[manage] delete exception', e); }
+}
+function dmRenewJob(id){ _dmJobUpdate(id, { expires_at: new Date(Date.now()+60*86400000).toISOString() }, 'ต่ออายุ 60 วันแล้ว'); }
+
+/* ════════ C3d-2 — work log (clinic บันทึกผล → INSERT work_logs · worker list จาก add_line_events) ════════ */
+let _logJobId=null, _logWorkDate=null, _logWorkerId=null;
+async function dmLoadLogWorkers(){
+  const list=document.getElementById('workerSelectList'); if(!list) return;
+  _logWorkerId=null;
+  if(!dmSb() || !dmUser || !_logJobId) return;   // ไม่มี job จริง = คง mock list
+  try{
+    // คนที่ Add LINE งานนี้ (ale_sel: clinic เจ้าของอ่านได้) + join worker_profiles (public-safe)
+    const { data } = await dmSb().from('add_line_events')
+      .select('worker_id, created_at, worker_profiles(anon_id, position, province, district)')
+      .eq('job_id', _logJobId).eq('clinic_id', dmUser.id).order('created_at',{ascending:false});
+    if(!data || !data.length){
+      list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">ยังไม่มีใคร Add LINE งานนี้</div>'; return;
+    }
+    list.innerHTML = data.map(function(e){
+      const w=e.worker_profiles||{}; const pos=DM_POS_LABEL[w.position]||_dmEsc(w.position);
+      const loc=_dmEsc(w.province||'')+(w.district?' ('+_dmEsc(w.district)+')':'');
+      return `<div data-workerid="${e.worker_id}" onclick="selectWorkerLog(this)" style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px">${DM_TOOTH_SVG}</div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">${pos} · ${_dmEsc(w.anon_id||'')} · ${loc}</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE ${_dmEsc(_dmAgo(e.created_at))}</div></div></div>`;
+    }).join('');
+    refreshIcons();
+  }catch(e){ console.warn('[worklog] load workers', e); }
+}
+async function dmSaveWorkLog(){
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ openSheet('s-log-success'); return; }   // demo = mock
+  if(!_logJobId){ showToast('ไม่พบงาน'); return; }
+  if(!_logWorkerId){ showToast('เลือกบุคลากรที่มาทำงานก่อน'); return; }
+  const outcome = (selectedOutcome==='noshow') ? 'no_show' : 'came';
+  const work_date = _logWorkDate || (new Date().toISOString().slice(0,10));
+  try{
+    // clinic สร้าง work_log + clinic_outcome (wl_ins gated) · status=pending จนกว่า worker ยืนยัน (RPC)
+    const { data, error } = await dmSb().from('work_logs')
+      .insert({ clinic_id:dmUser.id, worker_id:_logWorkerId, job_id:_logJobId, work_date, clinic_outcome:outcome }).select();
+    if(error){ console.error('[worklog] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    console.log('[worklog] insert สำเร็จ ✓ outcome=', outcome, data);
+    openSheet('s-log-success');
+  }catch(e){ console.error('[worklog] exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
@@ -3464,11 +3520,13 @@ function logStep2(){
   const sub=document.getElementById('log-step2-sub');
   if(selectedOutcome==='noshow')sub.textContent='เลือก worker ที่ไม่มา (บันทึกภายใน — ไม่แสดงสาธารณะ)';
   else sub.textContent='เลือก worker ที่มาทำงานจริงเพื่อ +1 completed';
+  dmLoadLogWorkers();   // C3d-2: รายชื่อจริง = คนที่ Add LINE งานนี้
 }
 function selectWorkerLog(el){
   document.querySelectorAll('#workerSelectList > div').forEach(c=>{c.style.borderColor='rgba(107,78,194,.2)';c.style.background='#fff'});
   el.style.borderColor='var(--p500)';
   el.style.background='var(--p50)';
+  _logWorkerId = el.dataset.workerid || null;   // C3d-2: worker ที่เลือก
 }
 function dayToggle(el){el.classList.toggle('on')}
 /* ── ADD LINE + AUTO MESSAGE ── */
