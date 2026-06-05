@@ -1497,7 +1497,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
           <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
         </div>
-        <button class="btn-edit-profile" onclick="goView('v-edit-profile')"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
+        <button class="btn-edit-profile" onclick="dmOpenEditProfile()"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
         <button onclick="openSheet('s-contact')" style="width:100%;background:#fff;color:var(--ink4);border:1.5px solid var(--border2);border-radius:var(--rb);padding:12px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background='#fff'"><i data-lucide="message-circle"></i> ติดต่อเรา</button>
       </div>
     </div>
@@ -1681,7 +1681,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="form-group"><label id="editSkillLabel">สาขาหลัก / ทักษะ</label>
         <div class="chip-row" style="flex-wrap:wrap" id="editSkillChips"></div>
       </div>
-      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp"><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
+      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp" id="edit-exp"><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
       <div class="form-group">
         <label>จังหวัดที่รับงาน <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายจังหวัด)</span></label>
         <div id="editProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
@@ -1698,11 +1698,11 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <button class="chip-more" style="width:100%;text-align:center;border-radius:10px;padding:9px" onclick="openEditProvSheet()"><i data-lucide="search"></i> ค้นหาจังหวัดอื่น...</button>
       </div>
-      <div class="form-group"><label>แนะนำตัวสั้นๆ</label><textarea class="inp" rows="3">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</textarea></div>
+      <div class="form-group"><label>แนะนำตัวสั้นๆ</label><textarea class="inp" id="edit-bio" rows="3">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</textarea></div>
       <div class="form-group"><label>วันที่สะดวก</label>
         <div class="avail-days-big" id="editDays"><div class="d-big" onclick="dayToggle(this)">จ</div><div class="d-big" onclick="dayToggle(this)">อ</div><div class="d-big" onclick="dayToggle(this)">พ</div><div class="d-big" onclick="dayToggle(this)">พฤ</div><div class="d-big" onclick="dayToggle(this)">ศ</div><div class="d-big on" onclick="dayToggle(this)">ส</div><div class="d-big on" onclick="dayToggle(this)">อา</div></div>
       </div>
-      <button class="btn-primary" onclick="openSheet('s-save-success')"><i data-lucide="save"></i> บันทึกโปรไฟล์</button>
+      <button class="btn-primary" onclick="dmSaveWorkerProfile()"><i data-lucide="save"></i> บันทึกโปรไฟล์</button>
     </div>
   </div>
 </div>
@@ -3468,6 +3468,46 @@ async function dmSetAvailable(available){
     console.log('[wprofile] available →', available);
     if(dmUser.worker) dmUser.worker.available=available;
   }catch(e){ console.error('[wprofile] available exception', e); }
+}
+/* C4a-2 — แก้ไขโปรไฟล์: prefill ค่าปัจจุบัน + save จริง (UPDATE worker_profiles · เฉพาะฟิลด์ใน grant) */
+function dmFillEditForm(w){
+  if(!w) return;
+  if(typeof renderSkills==='function') renderSkills('editSkillChips','editSkillLabel', w.position||'dentist', true);
+  const skillSet=new Set(w.skills||[]);
+  document.querySelectorAll('#editSkillChips .chip').forEach(c=>{ c.classList.toggle('on', skillSet.has(c.textContent.trim())); });
+  const exp=document.getElementById('edit-exp');
+  if(exp){ for(let i=0;i<exp.options.length;i++){ if(_dmExpYears(exp.options[i].textContent)===w.experience_years){ exp.selectedIndex=i; break; } } }
+  const ps=document.getElementById('editProvSelected');
+  if(ps && w.province){ ps.innerHTML='<div class="sel-prov-tag">'+_dmEsc(w.province)+' <button onclick="removeEditProv(this,\''+_dmEsc(w.province)+'\')"><i data-lucide="x"></i></button></div>'; }
+  const bio=document.getElementById('edit-bio'); if(bio) bio.value=w.bio||'';
+  const ad=new Set(w.available_days||[]);
+  document.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ d.classList.toggle('on', ad.has(i+1)); });
+  refreshIcons();
+}
+function dmOpenEditProfile(){
+  if(dmUser && dmUser.role==='worker' && dmUser.worker) dmFillEditForm(dmUser.worker);
+  goView('v-edit-profile');
+}
+async function dmSaveWorkerProfile(){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker'){ openSheet('s-save-success'); return; }   // demo = mock
+  const root=document.getElementById('v-edit-profile'); if(!root) return;
+  const skills=[].map.call(root.querySelectorAll('#editSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
+  const expEl=document.getElementById('edit-exp'); const experience_years = expEl ? _dmExpYears(expEl.value) : null;
+  const bioEl=document.getElementById('edit-bio'); const bio=(bioEl && bioEl.value.trim())||null;
+  const days=[]; root.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ if(d.classList.contains('on')) days.push(i+1); });
+  const provTag=root.querySelector('#editProvSelected .sel-prov-tag');
+  const province = provTag ? ((provTag.childNodes[0]&&provTag.childNodes[0].textContent)||'').trim() : null;
+  const patch={ skills, experience_years, available_days:days, bio };   // ★ เฉพาะ grant · ไม่แตะ trust/anon/license ฯลฯ
+  if(province) patch.province=province;
+  console.log('[wprofile] save', JSON.stringify(patch));
+  try{
+    const { error } = await dmSb().from('worker_profiles').update(patch).eq('id', dmUser.id);
+    if(error){ console.error('[wprofile] save ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    console.log('[wprofile] save สำเร็จ ✓');
+    if(dmUser.worker) Object.assign(dmUser.worker, patch);
+    dmFillWorkerProfile(dmUser.worker);   // อัปเดต profile body ทันที
+    openSheet('s-save-success');
+  }catch(e){ console.error('[wprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
