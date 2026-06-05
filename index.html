@@ -2109,7 +2109,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">เลือกประกาศงาน</div>
       <!-- มีโพส: แสดง dropdown -->
       <div id="invite-has-jobs">
-        <select class="job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option>เจ้าหน้าที่เคาน์เตอร์ · 1 มิ.ย. 68</option></select>
+        <select class="job-select" id="invite-job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option>เจ้าหน้าที่เคาน์เตอร์ · 1 มิ.ย. 68</option></select>
       </div>
       <!-- ไม่มีโพส: empty state -->
       <div id="invite-no-jobs" style="display:none;background:var(--p25);border:1.5px dashed var(--p200);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px">
@@ -2120,9 +2120,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       </div>
     </div>
     <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">ข้อความ (ไม่บังคับ)</div>
-    <textarea class="inp" rows="3" placeholder="เช่น สวัสดีครับ สนใจโปรไฟล์ของคุณ..."></textarea>
+    <textarea class="inp" id="invite-msg" rows="3" placeholder="เช่น สวัสดีครับ สนใจโปรไฟล์ของคุณ..."></textarea>
 
-    <button class="btn-primary" style="margin-top:12px" onclick="openSheet('s-invite-success')">ส่งคำเชิญ <i data-lucide="send"></i></button>
+    <button class="btn-primary" style="margin-top:12px" onclick="dmSendInvite()">ส่งคำเชิญ <i data-lucide="send"></i></button>
   </div>
 </div>
 
@@ -2873,12 +2873,12 @@ function dmWorkerCard(w){
   const ad = w.available_days||[];
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
   return `<div class="wcard">
-          <div class="wcard-top" style="cursor:pointer" onclick="goView('v-worker-detail')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
+          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
           <div class="skills">${skills}</div>
           ${quote}
           <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ${w.trust_score||0} ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> ${_dmMonths(w.member_since)} เดือน</span></div>
           <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days">${days}</div></div>
-          <button class="btn-invite" onclick="openSheet('s-invite')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
+          <button class="btn-invite" onclick="dmOpenInvite('${w.id}','${w.anon_id}')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>`;
 }
 async function dmLoadWorkerBoard(){
@@ -2886,8 +2886,8 @@ async function dmLoadWorkerBoard(){
   try{
     // ★ public-safe เท่านั้น — ไม่ select worker_private / ไม่มีคอลัมน์ PII ในตารางนี้
     const { data, error } = await dmSb().from('worker_profiles')
-      .select('anon_id, position, skills, province, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
-      .order('trust_score', { ascending:false }).limit(60);
+      .select('id, anon_id, position, skills, province, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
+      .order('trust_score', { ascending:false }).limit(60);   // id = uuid opaque (ไม่ใช่ PII) ใช้ส่งคำเชิญ
     if(error || !data || !data.length) return;   // fallback: คงการ์ด mock เดิม (DB ว่าง/ช่วง launch)
     const cards=document.querySelector('#cc-workers .cards');
     if(!cards) return;
@@ -3094,6 +3094,47 @@ async function dmPostJob(){
     await dmLoadJobsBoard();   // refresh บอร์ด → งานใหม่โผล่บนสุด (is_open + created_at desc)
   }catch(e){ console.error('[postjob] exception', e); showToast('ลงประกาศไม่สำเร็จ'); }
 }
+/* ════════ C3c — คลินิกส่งคำเชิญ (INSERT invites · worker_id opaque · dedup unique(clinic,worker,job)) ════════ */
+let _inviteWorkerId=null;   // worker_profiles.id (uuid opaque — ไม่ใช่ PII ; PII อยู่ worker_private) ของคนที่จะเชิญ
+let _inviteAnon=null;
+function dmOpenWorker(id, anon){ _inviteWorkerId=id||null; _inviteAnon=anon||null; goView('v-worker-detail'); }   // เก็บ context ตอนคลิกการ์ด → ใช้ตอนเชิญจากหน้า detail
+async function dmOpenInvite(workerId, anon){
+  if(workerId){ _inviteWorkerId=workerId; _inviteAnon=anon||_inviteAnon; }
+  const msg=document.getElementById('invite-msg'); if(msg) msg.value='';
+  openSheet('s-invite');   // เปิด sheet ทันที แล้วค่อย populate งาน
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;   // guest/demo = คง dropdown mock
+  try{
+    const { data } = await dmSb().from('jobs').select('id, title')
+      .eq('clinic_id', dmUser.id).eq('is_open', true).order('created_at',{ascending:false}).limit(50);
+    const sel=document.getElementById('invite-job-select');
+    const hasJobs=document.getElementById('invite-has-jobs'), noJobs=document.getElementById('invite-no-jobs'), sendBtn=document.querySelector('#s-invite .btn-primary');
+    const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
+    if(data && data.length){
+      if(sel) sel.innerHTML=data.map(j=>`<option value="${j.id}">${_dmEsc(j.title)}</option>`).join('');
+      if(hasJobs) hasJobs.style.display='block'; if(noJobs) noJobs.style.display='none'; if(sendBtn) sendBtn.style.display='flex';
+    } else if(attJob){   // ไม่มีงานเปิด + แนบประกาศงาน → empty state
+      if(sel) sel.innerHTML=''; if(hasJobs) hasJobs.style.display='none'; if(noJobs) noJobs.style.display='block'; if(sendBtn) sendBtn.style.display='none';
+    }
+  }catch(e){ console.warn('[invite] load jobs', e); }
+}
+async function dmSendInvite(){
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ console.warn('[invite] ไม่ใช่ clinic session → mock'); openSheet('s-invite-success'); return; }
+  if(!_inviteWorkerId){ showToast('ไม่พบบุคลากรที่จะเชิญ'); return; }
+  let job_id=null;
+  const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
+  if(attJob){ const sel=document.getElementById('invite-job-select'); job_id=(sel && sel.value)||null; }
+  const msgEl=document.getElementById('invite-msg'); const message=(msgEl && msgEl.value.trim())||null;
+  try{
+    const { data, error }=await dmSb().from('invites')
+      .insert({ clinic_id:dmUser.id, worker_id:_inviteWorkerId, job_id, message }).select();
+    if(error){
+      if(/duplicate|unique/i.test(error.message)){ console.warn('[invite] ซ้ำ:', error.message); showToast('เคยส่งคำเชิญงานนี้ให้บุคลากรคนนี้แล้ว'); closeSheet('s-invite'); return; }
+      console.error('[invite] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ส่งคำเชิญไม่สำเร็จ: '+error.message); return;
+    }
+    console.log('[invite] insert สำเร็จ ✓', data);
+    openSheet('s-invite-success');
+  }catch(e){ console.error('[invite] exception', e); showToast('ส่งคำเชิญไม่สำเร็จ'); }
+}
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
   if(!dmSb()) return;
@@ -3198,7 +3239,7 @@ function updateWdCta(){
     btn.style.display='';
     btn.className='btn-primary';
     btn.innerHTML='<i data-lucide="send"></i> ส่งคำเชิญ';
-    btn.onclick=()=>openSheet('s-invite');
+    btn.onclick=()=>dmOpenInvite(_inviteWorkerId, _inviteAnon);   // ใช้ worker ที่เก็บตอนคลิกการ์ด (dmOpenWorker)
   } else {
     btn.style.display='none';   // worker/guest = อ่านอย่างเดียว ไม่มีปุ่มเชิญ
   }
