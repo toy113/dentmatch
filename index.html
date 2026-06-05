@@ -1266,7 +1266,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
             <input type="number" class="inp" id="wage-input" placeholder="" style="padding-left:32px">
           </div>
         </div>
-        <div class="form-group"><label>รายละเอียดเพิ่มเติม</label><textarea class="inp" rows="3" placeholder="ขอบเขตงาน, สิ่งที่คลินิกมีให้, ข้อกำหนด..."></textarea></div>
+        <div class="form-group"><label>รายละเอียดเพิ่มเติม</label><textarea class="inp" id="post-desc" rows="3" placeholder="ขอบเขตงาน, สิ่งที่คลินิกมีให้, ข้อกำหนด..."></textarea></div>
         <button class="btn-outline" type="button" onclick="previewPost()" style="margin-bottom:8px"><i data-lucide="eye"></i> ดูตัวอย่างการ์ด</button>
         <div id="post-preview" style="display:none;margin-bottom:8px"></div>
         <div id="post-err" style="font-size:12.5px;color:var(--red);margin-bottom:8px;display:none;font-weight:600"></div>
@@ -2843,8 +2843,9 @@ async function dmLoadProfile(){
       const { data } = await dmSb().from('worker_profiles').select('anon_id, position, province').eq('id',dmUser.id).single();
       if(data){ document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id); }
     } else if(dmUser.role==='clinic'){
-      const { data } = await dmSb().from('clinics').select('name, province').eq('id',dmUser.id).single();
+      const { data } = await dmSb().from('clinics').select('name, province, district').eq('id',dmUser.id).single();
       if(data){
+        dmUser.clinic={ name:data.name, province:data.province, district:data.district };   // C3a: ใช้ตอนโพสต์งาน (จังหวัด/อำเภอ = ที่ตั้งงาน)
         document.querySelectorAll('#v-clinic .rp-full').forEach(e=>e.textContent=data.name);
         const t=document.querySelector('#v-clinic .hdr-title'); if(t)t.textContent=data.name;
       }
@@ -3051,6 +3052,47 @@ function dmOpenJob(id){
   if(dmUser && job.clinic_id===dmUser.id){
     dmJobAddLineCount(job.id).then(n=>{ const el=document.getElementById('jd-addline'); if(el) el.textContent=n+' คน'; });
   }
+}
+/* ════════ C3a — คลินิกโพสต์งานจริง (INSERT jobs · title auto-compose · is_boosted default false) ════════ */
+async function dmPostJob(){
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ openSheet('s-post-success'); return; }
+  const root=document.getElementById('cc-post'); if(!root) return;
+  const pc=root.querySelector('.pos-card.on'); const pos=(pc&&pc.dataset.pos)||'assistant';
+  const posLabel=DM_POS_LABEL[pos]||pos;
+  const skills=[].map.call(root.querySelectorAll('#postSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
+  // วัน → work_days int[] (1=จ..7=อา) + ชื่อวันสำหรับ title (ข้าม "ตามตกลง")
+  const dayMap={'จันทร์':1,'อังคาร':2,'พุธ':3,'พฤหัส':4,'ศุกร์':5,'เสาร์':6,'อาทิตย์':7};
+  const daySel=[].filter.call(root.querySelectorAll('#postDays .chip.on'), c=>dayMap[c.textContent.trim()]);
+  const work_days=daySel.map(c=>dayMap[c.textContent.trim()]);
+  const dayPhrase=daySel.map(c=>c.textContent.trim()).join('-');
+  const ti=root.querySelectorAll('.inp-row input');
+  const time_start=(ti[0]&&ti[0].value.trim())||null;
+  const time_end=(ti[1]&&ti[1].value.trim())||null;
+  const wv=(document.getElementById('wage-input')||{}).value;
+  let wage_text=null;
+  if(_payType==='nego') wage_text='ตามตกลง';
+  else if(wv) wage_text='฿'+(+wv).toLocaleString()+(_payType==='month'?'/เดือน':'/วัน');
+  const de=document.getElementById('post-desc'); const description=(de&&de.value.trim())||null;
+  const work_date=(document.getElementById('workdate')||{}).value||null;
+  // จังหวัด/อำเภอ = ที่ตั้งคลินิก (jobs.province NOT NULL)
+  let prov=(dmUser.clinic&&dmUser.clinic.province)||null, dist=(dmUser.clinic&&dmUser.clinic.district)||null;
+  if(!prov){
+    try{ const { data:cl }=await dmSb().from('clinics').select('name, province, district').eq('id',dmUser.id).single();
+      if(cl){ prov=cl.province; dist=cl.district; dmUser.clinic={name:cl.name,province:cl.province,district:cl.district}; } }catch(e){}
+  }
+  if(!prov){ showToast('ไม่พบจังหวัดคลินิก — ลองใหม่'); return; }
+  // title auto-compose: ตำแหน่ง + ทักษะแรก + วัน  (เช่น "ทันตแพทย์ GP เสาร์-อาทิตย์")
+  const title=[posLabel, skills[0]||'', dayPhrase].filter(Boolean).join(' ').trim();
+  // ★ row = เฉพาะคอลัมน์ใน INSERT grant (ไม่มี id/is_boosted/created_at → is_boosted default false)
+  const row={ clinic_id:dmUser.id, title, position:pos, province:prov, district:dist,
+    wage_text, work_date, urgent:false, is_open:true, skills, work_days, time_start, time_end, description };
+  try{
+    const { data, error }=await dmSb().from('jobs').insert(row).select();
+    if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
+    console.log('[postjob] insert สำเร็จ ✓', data);
+    openSheet('s-post-success');
+    await dmLoadJobsBoard();   // refresh บอร์ด → งานใหม่โผล่บนสุด (is_open + created_at desc)
+  }catch(e){ console.error('[postjob] exception', e); showToast('ลงประกาศไม่สำเร็จ'); }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
@@ -3549,6 +3591,7 @@ function setPayType(type) {
 }
 /* validate ฟอร์มลงงาน: ต้องเลือกวันทำงาน ≥1 + ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") */
 function validatePost(){
+  console.log('[postjob] validatePost เรียกแล้ว · role=', (dmUser&&dmUser.role), '· sb=', (typeof dmSb==='function'&&!!dmSb()));
   const days=document.getElementById('postDays');
   const wage=document.getElementById('wage-input');
   const err=document.getElementById('post-err');
@@ -3560,9 +3603,10 @@ function validatePost(){
   if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
     showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
   }
-  if(!ok){ if(err){ err.innerHTML='<i data-lucide="triangle-alert"></i> กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
+  if(!ok){ console.warn('[postjob] validation fail:', msgs.join(' · ')); if(err){ err.innerHTML='<i data-lucide="triangle-alert"></i> กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
   if(err) err.style.display='none';
-  openSheet('s-post-success');
+  if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){ console.log('[postjob] → dmPostJob (insert จริง)'); dmPostJob(); }
+  else { console.warn('[postjob] ไม่ใช่ clinic session → mock success (ต้อง login เป็นคลินิกถึงจะ insert จริง) · role=', (dmUser&&dmUser.role)); openSheet('s-post-success'); }
 }
 /* ดูตัวอย่างการ์ดงานจากค่าที่กรอก (toggle) */
 function previewPost(){
