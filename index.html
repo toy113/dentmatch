@@ -1478,24 +1478,24 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="profile-section"><div class="ps-title"><i data-lucide="bar-chart-3"></i> ภาพรวมโปรไฟล์</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
             <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">142</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="eye"></i> โปรไฟล์ถูกดู</div></div>
-            <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">7</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="send"></i> ได้รับคำเชิญ</div></div>
+            <div class="trust-card" style="text-align:center;padding:14px"><div id="pf-invites" style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">7</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="send"></i> ได้รับคำเชิญ</div></div>
           </div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
           <div class="trust-card">
-            <div class="trust-item"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
-            <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label">สมาชิก 14 เดือน</div><div class="trust-val">ตั้งแต่ เมษายน 2567</div></div></div>
+            <div class="trust-item"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label" id="pf-trust">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
+            <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label" id="pf-member">สมาชิก 14 เดือน</div><div class="trust-val">ตั้งแต่ เมษายน 2567</div></div></div>
             <div class="trust-item"><div class="trust-icon ti-blue"><i data-lucide="map-pin"></i></div><div class="trust-info"><div class="trust-label" id="profileProvDisplay">กรุงเทพมหานคร</div><div class="trust-val">จังหวัดที่รับงาน</div></div></div>
           </div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="zap"></i> ทักษะ / สาขา</div>
-          <div class="skills-wrap"><span class="sk" style="font-size:13px;padding:5px 12px">GP</span><span class="sk" style="font-size:13px;padding:5px 12px">Orthodontic</span><span class="sk" style="font-size:13px;padding:5px 12px">Extraction</span><span class="sk" style="font-size:13px;padding:5px 12px">Root Canal</span></div>
+          <div class="skills-wrap" id="pf-skills"><span class="sk" style="font-size:13px;padding:5px 12px">GP</span><span class="sk" style="font-size:13px;padding:5px 12px">Orthodontic</span><span class="sk" style="font-size:13px;padding:5px 12px">Extraction</span><span class="sk" style="font-size:13px;padding:5px 12px">Root Canal</span></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="message-circle"></i> แนะนำตัวเอง</div>
-          <div class="intro-box"><div class="intro-txt">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์ มีใบประกอบวิชาชีพ ทันตแพทยสภา ทำงานได้ทั้งคลินิกและโรงพยาบาล</div></div>
+          <div class="intro-box"><div class="intro-txt" id="pf-bio">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์ มีใบประกอบวิชาชีพ ทันตแพทยสภา ทำงานได้ทั้งคลินิกและโรงพยาบาล</div></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
-          <div class="avail-card"><div class="avail-days-big"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
+          <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
         </div>
         <button class="btn-edit-profile" onclick="goView('v-edit-profile')"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
         <button onclick="openSheet('s-contact')" style="width:100%;background:#fff;color:var(--ink4);border:1.5px solid var(--border2);border-radius:var(--rb);padding:12px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background='#fff'"><i data-lucide="message-circle"></i> ติดต่อเรา</button>
@@ -2852,8 +2852,17 @@ async function dmLoadProfile(){
   if(!dmUser || !dmSb()) return;
   try{
     if(dmUser.role==='worker'){
-      const { data } = await dmSb().from('worker_profiles').select('anon_id, position, province').eq('id',dmUser.id).single();
-      if(data){ document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id); }
+      const { data } = await dmSb().from('worker_profiles')
+        .select('anon_id, position, province, district, skills, bio, available, available_days, experience_years, trust_score, member_since')
+        .eq('id',dmUser.id).single();
+      if(data){
+        dmUser.worker=data;   // C4a: เก็บไว้ render body + prefill edit form
+        document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id);
+        dmFillWorkerProfile(data);
+        dmApplyAvailUI(data.available!==false);
+        try{ const { count } = await dmSb().from('invites').select('id',{count:'exact',head:true}).eq('worker_id',dmUser.id);
+          const iv=document.getElementById('pf-invites'); if(iv && count!=null) iv.textContent=count; }catch(e){}
+      }
     } else if(dmUser.role==='clinic'){
       const { data } = await dmSb().from('clinics').select('name, province, district').eq('id',dmUser.id).single();
       if(data){
@@ -3421,6 +3430,44 @@ function toggleProfile(el){
     if(wrap){wrap.classList.remove('off');wrap.classList.add('on');}
     showToast('<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงาน — คลินิกเห็นโปรไฟล์คุณแล้ว');
   }
+  if(typeof dmSetAvailable==='function') dmSetAvailable(!el.classList.contains('off'));   // C4a: persist available → DB
+}
+/* ════════ C4a — โปรไฟล์ worker จริง (render body + toggle available · ไม่แตะ protected fields) ════════ */
+function dmFillWorkerProfile(w){
+  if(!w) return;
+  const prov=document.getElementById('profileProvDisplay'); if(prov) prov.textContent=w.province||'-';
+  const tEl=document.getElementById('pf-trust'); if(tEl) tEl.textContent='ผ่านงาน DentMatch '+(w.trust_score||0)+' ครั้ง';
+  const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent='สมาชิก '+_dmMonths(w.member_since)+' เดือน';
+  const sk=document.getElementById('pf-skills');
+  if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
+  const bio=document.getElementById('pf-bio'); if(bio) bio.textContent=w.bio||'ยังไม่ได้แนะนำตัว';
+  const dwrap=document.getElementById('pf-days');
+  if(dwrap){ const ad=w.available_days||[]; dwrap.innerHTML=DM_DAYS.map((lbl,i)=>`<div class="d-big${ad.includes(i+1)?' on':''}">${lbl}</div>`).join(''); }
+  refreshIcons();
+}
+function dmApplyAvailUI(available){
+  const tog=document.getElementById('profileTog'); if(!tog) return;
+  const wrap=tog.closest('.profile-tog-wrap'); const txt=tog.previousElementSibling;
+  const title=txt&&txt.querySelector('.profile-tog-title'), sub=txt&&txt.querySelector('.profile-tog-sub');
+  if(available){
+    tog.classList.remove('off'); if(wrap){wrap.classList.add('on');wrap.classList.remove('off');}
+    if(title) title.innerHTML='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงานอยู่';
+    if(sub) sub.innerHTML='<i data-lucide="check"></i> คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ';
+  } else {
+    tog.classList.add('off'); if(wrap){wrap.classList.add('off');wrap.classList.remove('on');}
+    if(title) title.innerHTML='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับงานอยู่';
+    if(sub) sub.textContent='คลินิกหาคุณไม่เจอ — เปิดเพื่อรับคำเชิญ';
+  }
+  refreshIcons();
+}
+async function dmSetAvailable(available){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker') return;   // เฉพาะ worker
+  try{
+    const { error }=await dmSb().from('worker_profiles').update({ available }).eq('id',dmUser.id);   // available อยู่ใน grant (ไม่ใช่ protected)
+    if(error){ console.error('[wprofile] available ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return; }
+    console.log('[wprofile] available →', available);
+    if(dmUser.worker) dmUser.worker.available=available;
+  }catch(e){ console.error('[wprofile] available exception', e); }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
