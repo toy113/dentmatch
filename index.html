@@ -1416,6 +1416,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="sinv-s"><div class="sinv-n" style="color:var(--orange)">2</div><div class="sinv-l">ยังไม่อ่าน</div></div>
       </div>
 
+      <div id="cc-invites-cards">
       <div class="sinv-card">
         <div class="sinv-top"><div class="sinv-av av-g0"><div class="av-content"><span style="font-size:15px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">4829</span></div></div><div class="sinv-info"><div class="sinv-who">ทันตแพทย์ · 5 ปี · กรุงเทพฯ</div><div class="sinv-meta"><i data-lucide="map-pin"></i> บางนา · GP, Orthodontic</div></div><div class="sinv-status" style="color:var(--green)"><i data-lucide="check"></i> อ่านแล้ว</div></div>
         <div class="sinv-job-chip"><i data-lucide="clipboard-list"></i> ทันตแพทย์ GP เสาร์ 24 พ.ค.</div>
@@ -1431,6 +1432,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="sinv-job-chip"><i data-lucide="clipboard-list"></i> ผู้ช่วยทันตแพทย์ Implant</div>
         <div class="sinv-note"><i data-lucide="send"></i> <span>ไม่มีข้อความ — ส่งแค่ประกาศงาน</span></div>
       </div>
+      </div><!-- /cc-invites-cards -->
     </div>
   </div>
   <div class="bot-nav">
@@ -2874,7 +2876,8 @@ async function dmLoadProfile(){
   }catch(e){ console.warn('dmLoadProfile', e); }
   await dmLoadWorkerBoard();   // C2a: บอร์ดบุคลากรจากของจริง
   await dmLoadJobsBoard();     // C2b: บอร์ดงานจากของจริง
-  if(dmUser.role==='clinic') await dmLoadManageBoard();   // C3d-1: แท็บจัดการ = งานคลินิกตัวเอง
+  if(dmUser.role==='clinic'){ await dmLoadManageBoard(); dmLoadClinicInvites(); }   // C3d-1 จัดการ + C4b คำเชิญที่ส่ง
+  if(dmUser.role==='worker') dmLoadWorkerInbox();                                    // C4b: inbox คำเชิญที่ได้รับ
 }
 
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
@@ -3157,6 +3160,7 @@ async function dmSendInvite(){
     }
     console.log('[invite] insert สำเร็จ ✓', data);
     openSheet('s-invite-success');
+    if(typeof dmLoadClinicInvites==='function') dmLoadClinicInvites();   // C4b: refresh "คำเชิญที่ส่ง" ทันที
   }catch(e){ console.error('[invite] exception', e); showToast('ส่งคำเชิญไม่สำเร็จ'); }
 }
 /* ════════ C3d-1 — manage tab จริง (งานของคลินิก + actions is_open/DELETE · clinic-owner ผ่าน RLS j_cud) ════════ */
@@ -3508,6 +3512,92 @@ async function dmSaveWorkerProfile(){
     dmFillWorkerProfile(dmUser.worker);   // อัปเดต profile body ทันที
     openSheet('s-save-success');
   }catch(e){ console.error('[wprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); }
+}
+/* ════════ C4b — invite สองทาง (worker inbox + clinic คำเชิญที่ส่ง · RLS inv_sel/inv_upd) ════════ */
+function dmInviteCard(inv){   // ฝั่ง worker (คำเชิญที่ได้รับ)
+  const c=inv.clinics||{}, j=inv.jobs||{};
+  const cname=_dmEsc(c.name||'คลินิก');
+  const loc=_dmEsc((c.district?c.district+' ':'')+(c.province||'')) || '-';
+  const time=_dmEsc(_dmAgo(inv.created_at));
+  const jobChip = j.title ? `<div class="inv-job-chip"><i data-lucide="clipboard-list"></i> ${_dmEsc(j.title)}${j.wage_text?' — '+_dmEsc(j.wage_text):''}</div>`
+                          : `<div class="inv-job-chip"><i data-lucide="hospital"></i> ${cname}</div>`;
+  const msg = inv.message ? `<div class="inv-msg">"${_dmEsc(inv.message)}"</div>` : '';
+  const saved = inv.status==='accepted';
+  const badge = saved
+    ? '<span style="font-size:10.5px;color:var(--gold);background:var(--gold-bg);padding:3px 8px;border-radius:8px;font-weight:700;border:1px solid rgba(201,168,76,.3)"><i data-lucide="bookmark"></i> บันทึก</span>'
+    : '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="new-dot"></div><span style="font-size:10px;font-weight:700;color:var(--red)">ใหม่</span></div>';
+  const addLine = `<button class="btn-line-sm" onclick="event.stopPropagation();openAddLine(this,'${_dmEsc(c.name||'')}','${_dmEsc(j.title||'')}','${_dmEsc(c.line_id||'')}')"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">L</span>Add LINE คลินิก</button>`;
+  const saveBtn = saved ? '' : `<button class="btn-save" onclick="event.stopPropagation();dmMarkSaved('${inv.id}')"><i data-lucide="bookmark"></i> บันทึก</button>`;
+  return `<div class="inv-card${saved?'':' new-inv'}"${saved?' style="border-left:3.5px solid var(--gold)"':''}>
+    <div class="inv-top"><div class="clinic-av av-g0"><div class="av-content"><span style="font-size:17px"><i data-lucide="hospital"></i></span></div></div><div class="inv-info"><div class="inv-clinic">${cname}</div><div class="inv-loc"><i data-lucide="map-pin"></i> ${loc}</div><div class="inv-time">${time}</div></div>${badge}</div>
+    ${jobChip}${msg}
+    <div class="inv-ft">${addLine}${saveBtn}</div>
+  </div>`;
+}
+async function dmLoadWorkerInbox(){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
+  try{
+    const { data, error } = await dmSb().from('invites')
+      .select('id, status, message, created_at, clinics(name, province, district, line_id), jobs(title, wage_text)')
+      .eq('worker_id', dmUser.id).order('created_at',{ascending:false}).limit(60);
+    if(error){ console.warn('[inbox] worker load', error); return; }
+    if(!data) return;
+    const render=(arr)=>arr.length?arr.map(dmInviteCard).join(''):'<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีคำเชิญ</div>';
+    const setPane=(id,arr)=>{ const el=document.getElementById(id); if(el) el.innerHTML=render(arr); };
+    const pending=data.filter(i=>i.status==='pending');
+    setPane('inbox-new', pending);
+    setPane('inbox-saved', data.filter(i=>i.status==='accepted'));
+    setPane('inbox-all', data);
+    const nb=document.querySelector('#wt-inbox .it .badge-new'); if(nb) nb.textContent=pending.length;
+    refreshIcons();
+    console.log('[inbox] worker', data.length, 'คำเชิญ');
+  }catch(e){ console.warn('[inbox] worker exception', e); }
+}
+async function dmMarkSaved(id){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
+  try{
+    const { error } = await dmSb().from('invites').update({ status:'accepted' }).eq('id', id);   // RLS inv_upd: worker_id=auth.uid
+    if(error){ console.error('[inbox] บันทึก ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    console.log('[inbox] บันทึก ✓', id);
+    showToast('<i data-lucide="bookmark"></i> บันทึกคำเชิญแล้ว');
+    await dmLoadWorkerInbox();
+  }catch(e){ console.error('[inbox] บันทึก exception', e); }
+}
+function dmSinvCard(inv){   // ฝั่ง clinic (คำเชิญที่ส่ง)
+  const w=inv.worker_profiles||{}, j=inv.jobs||{};
+  const pos=DM_POS_LABEL[w.position]||_dmEsc(w.position);
+  const who=pos+((w.experience_years!=null)?' · '+w.experience_years+' ปี':'')+(w.province?' · '+_dmEsc(w.province):'');
+  const skills=(w.skills||[]).slice(0,3).join(', ');
+  const meta=(w.district?_dmEsc(w.district):'')+(skills?((w.district?' · ':'')+_dmEsc(skills)):'') || '-';
+  const read = inv.status==='accepted';
+  const statusBadge = read
+    ? '<div class="sinv-status" style="color:var(--green)"><i data-lucide="check"></i> อ่านแล้ว</div>'
+    : '<div class="sinv-status" style="color:var(--ink4)"><i data-lucide="hourglass"></i> ยังไม่อ่าน</div>';
+  const jobChip = j.title ? `<div class="sinv-job-chip"><i data-lucide="clipboard-list"></i> ${_dmEsc(j.title)}</div>` : '';
+  const note = `<div class="sinv-note"><i data-lucide="send"></i> <span>${inv.message?'"'+_dmEsc(inv.message)+'"':'ไม่มีข้อความ — ส่งแค่ประกาศงาน'}</span></div>`;
+  return `<div class="sinv-card">
+    <div class="sinv-top"><div class="sinv-av av-g0"><div class="av-content"><span style="font-size:15px">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id||'')}</span></div></div><div class="sinv-info"><div class="sinv-who">${who}</div><div class="sinv-meta"><i data-lucide="map-pin"></i> ${meta}</div></div>${statusBadge}</div>
+    ${jobChip}${note}
+  </div>`;
+}
+async function dmLoadClinicInvites(){
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
+  try{
+    const { data, error } = await dmSb().from('invites')
+      .select('id, status, message, created_at, worker_profiles(anon_id, position, province, district, skills, experience_years), jobs(title)')
+      .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(60);
+    if(error){ console.warn('[inbox] clinic load', error); return; }
+    if(!data) return;
+    const wrap=document.getElementById('cc-invites-cards');
+    if(wrap) wrap.innerHTML = data.length?data.map(dmSinvCard).join(''):'<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่ได้ส่งคำเชิญ</div>';
+    const read=data.filter(i=>i.status==='accepted').length;
+    const sn=document.querySelectorAll('#cc-invites .sinv-stat .sinv-n');
+    if(sn[0]) sn[0].textContent=data.length;
+    if(sn[1]) sn[1].textContent=read;
+    if(sn[2]) sn[2].textContent=data.length-read;
+    refreshIcons();
+    console.log('[inbox] clinic', data.length, 'คำเชิญที่ส่ง');
+  }catch(e){ console.warn('[inbox] clinic exception', e); }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
