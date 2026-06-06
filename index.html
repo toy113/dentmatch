@@ -3279,19 +3279,30 @@ let _inviteAnon=null;
 async function dmOpenWorker(id, anon){   // เก็บ context ตอนคลิกการ์ด + ดึงข้อมูลจริงมา render หน้า detail (เดิม static mock)
   _inviteWorkerId=id||null; _inviteAnon=anon||null;
   goView('v-worker-detail');
-  const an=document.getElementById('wd-anon'); if(an) an.textContent=anon||'—';
-  if(!id) return;
+  _dmResetWorkerDetail(anon);   // เคลียร์ค่าค้าง + ซ่อน trust row (กันสภาพครึ่ง ๆ "0 ครั้ง/0 เดือน" ถ้าโหลดไม่ได้)
+  if(!id || !dmSb()) return;
   try{
     const { data, error } = await dmSb().from('worker_profiles')
       .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio')
-      .eq('id', id).single();
-    if(error || !data){ console.error('dmOpenWorker', error); return; }
+      .eq('id', id).maybeSingle();   // maybeSingle: 0 แถวคืน null (ไม่ throw 406 เหมือน single)
+    if(error){ console.error('dmOpenWorker', error); return; }
+    if(!data){ const t=document.getElementById('wd-title'); if(t) t.textContent='ไม่พบข้อมูล — ลองเข้าสู่ระบบใหม่'; console.warn('dmOpenWorker: 0 rows (guest/หมด session หรือถูกลบ)', id); return; }
     dmFillWorkerDetail(data);
     if(dmUser && dmUser.id && dmUser.id!==id){   // log view (1 viewer=1 · dedup ผ่าน unique) · ไม่นับ self-view
       const { error: pvErr } = await dmSb().from('profile_views').upsert({ worker_id:id, viewer_id:dmUser.id }, { onConflict:'worker_id,viewer_id', ignoreDuplicates:true });
       if(pvErr) console.error('profile_views log', pvErr);
     }
   }catch(e){ console.error('dmOpenWorker', e); }
+}
+function _dmResetWorkerDetail(anon){   // คืนหน้า detail เป็นสภาพสะอาด (กันค่าคนก่อน/ค่า default ค้างตอนโหลดไม่สำเร็จ)
+  const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
+  set('wd-anon',anon||'—'); set('wd-title','—'); set('wd-loc','—'); set('wd-member','—'); set('wd-since','');
+  const bd=document.getElementById('wd-badges'); if(bd) bd.innerHTML='';
+  const sk=document.getElementById('wd-skills'); if(sk) sk.innerHTML='';
+  const q=document.getElementById('wd-quote'); if(q) q.textContent='';
+  const dd=document.getElementById('wd-days'); if(dd) dd.innerHTML=DM_DAYS.map(l=>`<div class="d-big">${l}</div>`).join('');
+  const trow=document.getElementById('wd-trust-row'); if(trow) trow.style.display='none';
+  refreshIcons();
 }
 async function dmOpenInvite(workerId, anon){
   if(workerId){ _inviteWorkerId=workerId; _inviteAnon=anon||_inviteAnon; }
