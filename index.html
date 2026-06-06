@@ -71,6 +71,12 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
   .shell{padding:0}
   .phone{border-radius:0;height:100vh;height:100dvh;max-height:none}
 }
+/* boot splash — บังไม่ให้ guest/mock แวบตอน restore session (async) */
+#dm-splash{position:absolute;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--p900) 0%,var(--p650) 100%);transition:opacity .35s ease}
+#dm-splash.hide{opacity:0;pointer-events:none}
+#dm-splash .dm-splash-logo{font-family:'Prompt',sans-serif;font-size:30px;font-weight:800;color:#fff;letter-spacing:-.8px;text-shadow:0 2px 14px rgba(232,200,106,.3);animation:dmSplashPulse 1.1s ease-in-out infinite}
+#dm-splash .dm-splash-logo b{color:var(--gold2)}
+@keyframes dmSplashPulse{0%,100%{opacity:.55}50%{opacity:1}}
 
 
 /* ===== responsive layer rebuilt at end of stylesheet (see bottom) ===== */
@@ -958,6 +964,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <body>
 <div class="shell">
 <div class="phone" id="app">
+<div id="dm-splash"><div class="dm-splash-logo">Dent<b>Match</b></div></div>
 
 <!-- ════════ VIEW: MAIN (Guest) ════════ -->
 <div class="view active" id="v-main">
@@ -4700,6 +4707,7 @@ function applyProvince() {
 
 
 window.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); } }, 8000);   // failsafe: กัน splash ค้างถ้า supabase module โหลด/บูตไม่สำเร็จ
   const wd=document.getElementById('workdate');
   if(wd){ wd.value=new Date().toISOString().split('T')[0]; showThaiDate(wd); }
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
@@ -4887,6 +4895,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     if (typeof dmLoadStats === 'function') dmLoadStats();             // สถิติจริง (public · guest ด้วย)
     if (typeof dmLoadJobsBoard === 'function') dmLoadJobsBoard();     // บอร์ดงาน public (guest เห็นงานจริง · authed ก็ refresh ซ้ำได้)
   } catch(e){ console.warn('auth init', e); }
+  finally { const _sp=document.getElementById('dm-splash'); if(_sp){ _sp.classList.add('hide'); setTimeout(()=>{ try{_sp.remove();}catch(_e){} }, 400); } }   // restore เสร็จ (login→routed / guest) → เปิด splash
 </script>
 </body>
 </html>
