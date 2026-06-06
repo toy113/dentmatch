@@ -3380,7 +3380,7 @@ function dmManageCard(job){
                        : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
     body=`<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   }
-  const toggle=(st==='open'||st==='closed')?`<div class="tog${st==='closed'?' off':''}" onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"></div>`:'';
+  const toggle=(st==='open'||st==='closed')?`<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="padding:11px;margin:-11px;cursor:pointer;display:inline-flex;align-items:center" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"><div class="tog${st==='closed'?' off':''}"></div></div>`:'';
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
     <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
     ${body}
