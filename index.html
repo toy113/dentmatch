@@ -3037,7 +3037,7 @@ function dmJobCard(job){
   const badge2= job.urgent ? '<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>'
                            : (skill0?`<span class="bdg bdg-br">${_dmEsc(skill0)}</span>`:'');
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
-  const wage=job.wage_text?_dmEsc(job.wage_text):'ตามตกลง';
+  const wage=_dmEsc(_dmWage(job));
   return `<div class="jcard${job.urgent?' urg':''}" data-clinic="${cname}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">${pos}</span>${badge2}</div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${_dmEsc(job.title)}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
@@ -3139,6 +3139,7 @@ let _dmJDDefault=null;     // HTML mock เดิมของ v-job-detail .scro
 let _dmJDSubDefault=null;  // ข้อความ mini-hdr-sub เดิม (อยู่นอก .scroll → restore แยก)
 let _dmRealJobOpen=false;  // true = เปิด v-job-detail ครั้งนี้มาจาก dmOpenJob (อย่า restore)
 function _dmAddr(province, district){ return [district, province].filter(Boolean).map(_dmEsc).join(' · '); }
+function _dmWage(job){ const w=((job&&job.wage_text)||'').trim(); return (!w || w==='ตามตกลง') ? 'ค่าตอบแทนตามตกลง' : w; }   // softening "ตามตกลง" เดี่ยว ๆ ให้ไม่ห้วน (ครอบ fallback + ค่าที่เก็บไว้เดิม)
 function dmJobDetailHTML(job){
   const clinic=job.clinics||{};
   const cname=_dmEsc(clinic.name||'คลินิก');
@@ -3148,7 +3149,7 @@ function dmJobDetailHTML(job){
   const accent=job.urgent?'linear-gradient(180deg,var(--orange),#FFB26B)':'linear-gradient(180deg,var(--p400),var(--p200))';
   const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
   const time=(job.time_start&&job.time_end)?(_dmEsc(job.time_start)+' – '+_dmEsc(job.time_end)+' น.'):'';
-  const wage=job.wage_text?_dmEsc(job.wage_text):'ตามตกลง';
+  const wage=_dmEsc(_dmWage(job));
   const jobAddr=_dmAddr(job.province, job.district);
   const isOwner=(dmUser && job.clinic_id===dmUser.id);
   // บล็อกสถิติ — โชว์เฉพาะ cell ที่มีข้อมูล/สิทธิ์ (ADD LINE = เจ้าของงานเท่านั้น ตาม RLS ale_sel)
@@ -4368,7 +4369,7 @@ function previewPost(){
   const wage=(document.getElementById('wage-input')||{}).value;
   const nego=(typeof _payType!=='undefined'&&_payType==='nego');
   const month=(typeof _payType!=='undefined'&&_payType==='month');
-  const payHtml = nego ? 'ตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
+  const payHtml = nego ? 'ค่าตอบแทนตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
   const sched = (days.length?days.join(' '):'ตามตกลง') + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
   box.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="clipboard-list"></i> ตัวอย่างที่จะแสดงใน job board</div>'
     +'<div class="jcard" style="cursor:default;animation:none">'
