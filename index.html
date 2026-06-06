@@ -1477,6 +1477,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- PROFILE -->
     <div class="tab-content" id="wt-profile">
       <div class="profile-body">
+        <div style="text-align:center;padding:2px 0 12px"><div id="pf-pos" style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:var(--ink)">—</div><div style="font-size:11.5px;color:var(--ink4);margin-top:3px">รหัสบุคลากร · <b id="pf-anon" style="color:var(--p700);font-family:'Prompt',sans-serif;font-size:14px;letter-spacing:.8px">—</b></div></div>
         <div class="profile-section" id="wt-worklog-confirm" style="display:none"><div class="ps-title"><i data-lucide="clipboard-check"></i> งานรอยืนยันผล</div>
           <div id="wt-worklog-cards"></div>
         </div>
@@ -1665,13 +1666,15 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="form-body">
       <div class="form-group">
         <label>ตำแหน่ง</label>
-        <div style="background:var(--p50);border:2px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <span style="font-size:26px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span>
-          <div style="flex:1"><div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--p700)">ทันตแพทย์</div><div style="font-size:11.5px;color:var(--ink4);margin-top:2px">DDS / ทพ.</div></div>
-          <span style="font-size:16px"><i data-lucide="lock"></i></span>
+        <div id="edit-pos-wrap" style="margin-bottom:8px">
+          <div style="background:var(--p50);border:2px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:26px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span>
+            <div style="flex:1"><div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--p700)">ทันตแพทย์</div><div style="font-size:11.5px;color:var(--ink4);margin-top:2px">DDS / ทพ.</div></div>
+            <span style="font-size:16px"><i data-lucide="lock"></i></span>
+          </div>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);display:flex;align-items:flex-start;gap:5px;padding:0 2px;line-height:1.5">
-          <span>ℹ️</span><span>ผู้ช่วยฯ ↔ เคาน์เตอร์ สลับกันได้ในหน้านี้</span>
+          <span>ℹ️</span><span id="edit-pos-hint">ผู้ช่วยฯ ↔ เคาน์เตอร์ สลับกันได้ในหน้านี้</span>
         </div>
       </div>
       <!-- ชื่อ-นามสกุล: read-only, locked -->
@@ -3459,6 +3462,14 @@ function toggleProfile(el){
 /* ════════ C4a — โปรไฟล์ worker จริง (render body + toggle available · ไม่แตะ protected fields) ════════ */
 function dmFillWorkerProfile(w){
   if(!w) return;
+  // header pill: ตำแหน่ง/จังหวัด/ประสบการณ์จริง (เดิม hardcode "ทันตแพทย์")
+  const pn=document.querySelector('#v-worker .wkr-pill-info .profile-name');
+  if(pn) pn.textContent=(DM_POS_LABEL[w.position]||w.position||'บุคลากร')+' · รหัส '+(w.anon_id||'—');
+  const ps=document.querySelector('#v-worker .wkr-pill-info .profile-sub');
+  if(ps){ const loc=(w.province?_dmEsc(w.province):'')+(w.district?' ('+_dmEsc(w.district)+')':''); const ex=(w.experience_years!=null)?(w.experience_years+' ปี'):'';
+    ps.innerHTML='<span><i data-lucide="map-pin"></i> '+(loc||'-')+'</span>'+(ex?' <span>·</span> <span>'+ex+'</span>':''); }
+  const po=document.getElementById('pf-pos'); if(po) po.textContent=DM_POS_LABEL[w.position]||w.position||'บุคลากร';
+  const an=document.getElementById('pf-anon'); if(an) an.textContent=w.anon_id||'—';
   const prov=document.getElementById('profileProvDisplay'); if(prov) prov.textContent=w.province||'-';
   const tEl=document.getElementById('pf-trust'); if(tEl) tEl.textContent='ผ่านงาน DentMatch '+(w.trust_score||0)+' ครั้ง';
   const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent='สมาชิก '+_dmMonths(w.member_since)+' เดือน';
@@ -3494,8 +3505,43 @@ async function dmSetAvailable(available){
   }catch(e){ console.error('[wprofile] available exception', e); }
 }
 /* C4a-2 — แก้ไขโปรไฟล์: prefill ค่าปัจจุบัน + save จริง (UPDATE worker_profiles · เฉพาะฟิลด์ใน grant) */
+/* C4e — สลับ ผู้ช่วยฯ ↔ เคาน์เตอร์ ได้ในเว็บ (assistant↔counter · trigger enforce_position_lock อนุญาต · dentist ล็อก) */
+function dmPosSwapBtn(label, pos, active){
+  const on='background:var(--p600);color:#fff;border:2px solid var(--p500);font-weight:700';
+  const off='background:#fff;color:var(--ink3);border:2px solid var(--border2);font-weight:600';
+  return `<button onclick="dmSwapPosition('${pos}')" style="flex:1;padding:13px;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;cursor:pointer;transition:.2s;${active?on:off}">${label}</button>`;
+}
+function dmRenderEditPos(pos){
+  const wrap=document.getElementById('edit-pos-wrap'); if(!wrap) return;
+  const hint=document.getElementById('edit-pos-hint');
+  if(pos==='dentist'){
+    wrap.innerHTML='<div style="background:var(--p50);border:2px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px"><span style="font-size:26px">'+DM_TOOTH_SVG+'</span><div style="flex:1"><div style="font-family:\'Prompt\',sans-serif;font-size:14px;font-weight:700;color:var(--p700)">ทันตแพทย์</div><div style="font-size:11.5px;color:var(--ink4);margin-top:2px">DDS / ทพ.</div></div><span style="font-size:16px"><i data-lucide="lock"></i></span></div>';
+    if(hint) hint.textContent='ตำแหน่งทันตแพทย์ถูกล็อก — เปลี่ยนต้องติดต่อแอดมิน';
+  } else {
+    wrap.innerHTML='<div style="display:flex;gap:8px">'+dmPosSwapBtn('ผู้ช่วยฯ','assistant',pos==='assistant')+dmPosSwapBtn('เคาน์เตอร์','counter',pos==='counter')+'</div>';
+    if(hint) hint.textContent='แตะเพื่อสลับ ผู้ช่วยฯ ↔ เคาน์เตอร์ ได้ทันที';
+  }
+  refreshIcons();
+}
+async function dmSwapPosition(newPos){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker' || !dmUser.worker) return;
+  if(dmUser.worker.position===newPos) return;                  // เดิมอยู่แล้ว
+  if(dmUser.worker.position==='dentist'){ showToast('ตำแหน่งทันตแพทย์ล็อก เปลี่ยนไม่ได้'); return; }
+  if(newPos!=='assistant' && newPos!=='counter'){ showToast('สลับได้เฉพาะ ผู้ช่วยฯ ↔ เคาน์เตอร์'); return; }
+  try{
+    const { error } = await dmSb().from('worker_profiles').update({ position:newPos }).eq('id', dmUser.id);   // position อยู่ใน grant · trigger อนุญาต assistant↔counter
+    if(error){ console.error('[swap-pos] ล้มเหลว:', error.message, '| code:', error.code, error); showToast('สลับไม่สำเร็จ: '+error.message); return; }
+    console.log('[swap-pos] →', newPos);
+    dmUser.worker.position=newPos;
+    showToast('<i data-lucide="check"></i> สลับเป็น '+(DM_POS_LABEL[newPos]||newPos)+' แล้ว');
+    dmRenderEditPos(newPos);              // อัปเดตปุ่ม
+    dmFillEditForm(dmUser.worker);        // re-render ทักษะตามตำแหน่งใหม่
+    dmFillWorkerProfile(dmUser.worker);   // อัปเดต body
+  }catch(e){ console.error('[swap-pos] exception', e); }
+}
 function dmFillEditForm(w){
   if(!w) return;
+  dmRenderEditPos(w.position||'dentist');   // C4e: ปุ่มสลับตำแหน่ง (หรือ locked ถ้า dentist)
   if(typeof renderSkills==='function') renderSkills('editSkillChips','editSkillLabel', w.position||'dentist', true);
   const skillSet=new Set(w.skills||[]);
   document.querySelectorAll('#editSkillChips .chip').forEach(c=>{ c.classList.toggle('on', skillSet.has(c.textContent.trim())); });
