@@ -3,6 +3,7 @@ dentmatch-premium.html
 DentMatch-Build-Spec.md
 DentMatch-Pre-Backend-Decisions.md
 DentMatch-Supabase-Schema.md
+ADMIN-RUNBOOK.md
 
 # Claude Code / local agent config & secrets
 .claude/
