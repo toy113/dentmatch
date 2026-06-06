@@ -446,6 +446,9 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .success-screen{text-align:center;padding:20px 0 10px}
 .success-icon{font-size:64px;margin-bottom:16px;animation:bounce .5s ease}
 @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+/* realtime: กระดิ่งสั่นเมื่อมี noti ใหม่สด (live event) — ต่อยอด C4f */
+@keyframes dmBellRing{0%,100%{transform:rotate(0)}12%{transform:rotate(13deg)}24%{transform:rotate(-11deg)}36%{transform:rotate(9deg)}48%{transform:rotate(-7deg)}60%{transform:rotate(4deg)}72%{transform:rotate(-2deg)}}
+.dm-bell-ring svg{animation:dmBellRing .8s ease;transform-origin:50% 4px}
 .success-title{font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
 .success-sub{font-size:14px;color:var(--ink3);line-height:1.6;margin-bottom:24px}
 
@@ -2902,6 +2905,7 @@ async function dmLoadProfile(){
   if(dmUser.role==='clinic'){ await dmLoadManageBoard(); dmLoadClinicInvites(); }   // C3d-1 จัดการ + C4b คำเชิญที่ส่ง
   if(dmUser.role==='worker'){ dmLoadWorkerInbox(); dmLoadWorkerConfirm(); }           // C4b inbox + C4c งานรอยืนยัน
   dmLoadNoti();                                                                       // C4f: แจ้งเตือนจริง (bell)
+  dmSubscribeNoti();                                                                  // realtime: กระดิ่งเด้งสด (subscribe)
 }
 
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
@@ -3329,7 +3333,7 @@ async function dmInitSession(){
   finishLogin();
 }
 // logout จริง (เรียกจาก logoutClinic/logoutWorker)
-async function dmSignOut(){ try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
+async function dmSignOut(){ dmUnsubscribeNoti(); try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
 
 /* ════════ LINE Login (Batch 3 · ผ่าน Edge Function line-auth) ════════ */
 let _lineSignup = null;   // { uid, name, lid } เมื่อผู้ใช้ LINE ใหม่ต้องเลือก role+กรอกฟอร์ม
@@ -3772,6 +3776,39 @@ async function dmLoadNoti(){
     refreshIcons();
     dmLog('[noti]', dmUser.role, items.length);
   }catch(e){ dmLog('[noti]', e); }
+}
+/* ════════ realtime: กระดิ่งเด้งสด — subscribe invites/work_logs/add_line_events (ต่อยอด C4f) ════════
+   แนวคิด: realtime = "trigger ให้ re-derive" → ฟัง event แล้วเรียก dmLoadNoti() เดิมซ้ำ (reuse logic·ทน event ตกหล่น)
+   RLS (inv_sel/wl_sel/ale_sel) + filter worker_id/clinic_id คุมให้ได้เฉพาะของตัวเอง · ต้องรัน migration 0010 (publication) */
+let _dmNotiChannel = null, _dmNotiDebounce = null, _dmNotiReady = false;
+function _dmNotiBump(){
+  // feedback เฉพาะ event "สด" (หลัง subscribe เสร็จ) — ไม่เด้งตอน join ครั้งแรก
+  if(!_dmNotiReady || !dmUser) return;
+  const bell=document.getElementById((dmUser.role==='clinic'?'clinic':'worker')+'-bell');
+  if(bell){ bell.classList.remove('dm-bell-ring'); void bell.offsetWidth; bell.classList.add('dm-bell-ring'); }
+  showToast('<i data-lucide="bell"></i> มีการแจ้งเตือนใหม่');
+}
+function _dmNotiOnChange(){
+  clearTimeout(_dmNotiDebounce);
+  _dmNotiDebounce=setTimeout(()=>{ dmLoadNoti(); _dmNotiBump(); }, 350);   // debounce กัน event รัวๆ
+}
+function dmSubscribeNoti(){
+  if(!dmSb() || !dmUser) return;
+  dmUnsubscribeNoti();                       // idempotent — กัน channel ซ้ำเมื่อ dmLoadProfile ถูกเรียกซ้ำ
+  const uid=dmUser.id, ch=dmSb().channel('noti:'+uid);
+  if(dmUser.role==='worker'){
+    ch.on('postgres_changes',{event:'*',schema:'public',table:'invites',  filter:'worker_id=eq.'+uid},_dmNotiOnChange)
+      .on('postgres_changes',{event:'*',schema:'public',table:'work_logs',filter:'worker_id=eq.'+uid},_dmNotiOnChange);
+  } else if(dmUser.role==='clinic'){
+    ch.on('postgres_changes',{event:'*',schema:'public',table:'add_line_events',filter:'clinic_id=eq.'+uid},_dmNotiOnChange)
+      .on('postgres_changes',{event:'*',schema:'public',table:'invites',        filter:'clinic_id=eq.'+uid},_dmNotiOnChange);
+  } else { return; }
+  ch.subscribe((status)=>{ dmLog('[noti:rt]',status); if(status==='SUBSCRIBED') _dmNotiReady=true; });
+  _dmNotiChannel=ch;
+}
+function dmUnsubscribeNoti(){
+  clearTimeout(_dmNotiDebounce); _dmNotiReady=false;
+  if(_dmNotiChannel){ try{ dmSb().removeChannel(_dmNotiChannel); }catch(e){} _dmNotiChannel=null; }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
