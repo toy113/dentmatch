@@ -3368,7 +3368,7 @@ function dmManageCard(job){
     cardStyle+=';opacity:.9;border-color:rgba(229,83,58,.2)';
     badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
     body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
-      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+      <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else if(st==='expired'){
     cardStyle+=';opacity:.7';
     badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
@@ -3378,11 +3378,11 @@ function dmManageCard(job){
     if(job.urgent) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
     badge = job.urgent ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
                        : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
-    body=`<div class="tog-row"><div class="tog" onclick="event.stopPropagation();dmToggleJob('${job.id}',this)"></div><span class="tog-lbl">เปิดรับสมัคร</span></div>
-      <div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+    body=`<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   }
+  const toggle=(st==='open'||st==='closed')?`<div class="tog${st==='closed'?' off':''}" onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"></div>`:'';
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
-    <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div>${badge}</div>
+    <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
     ${body}
   </div>`;
 }
@@ -3409,8 +3409,9 @@ async function dmLoadManageBoard(){
 async function _dmJobUpdate(id, patch, msg){
   if(!dmSb() || !dmUser) return false;
   try{
-    const { error } = await dmSb().from('jobs').update(patch).eq('id', id);   // RLS j_cud: clinic_id=auth.uid
+    const { data, error } = await dmSb().from('jobs').update(patch).eq('id', id).select('id');   // RLS j_cud: clinic_id=auth.uid · .select ยืนยันอัปเดตติดจริง
     if(error){ console.error('[manage] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return false; }
+    if(!data || !data.length){ console.warn('[manage] update: 0 rows (RLS/anon — เซสชันหลุด?)', id); showToast('อัปเดตไม่สำเร็จ — เซสชันอาจหมดอายุ ลองเข้าสู่ระบบใหม่'); return false; }
     dmLog('[manage] update ✓', id, JSON.stringify(patch));
     if(_dmJobs[id]) Object.assign(_dmJobs[id], patch);
     await dmLoadManageBoard(); await dmLoadJobsBoard();
