@@ -3712,6 +3712,7 @@ async function dmSwapPosition(newPos){
     dmRenderEditPos(newPos);              // อัปเดตปุ่ม
     dmFillEditForm(dmUser.worker);        // re-render ทักษะตามตำแหน่งใหม่
     dmFillWorkerProfile(dmUser.worker);   // อัปเดต body
+    dmLoadWorkerBoard();                   // re-fetch บอร์ด (ตำแหน่งบนการ์ดเปลี่ยน)
   }catch(e){ console.error('[swap-pos] exception', e); }
 }
 function dmFillEditForm(w){
@@ -3751,6 +3752,7 @@ async function dmSaveWorkerProfile(){
     dmLog('[wprofile] save สำเร็จ ✓');
     if(dmUser.worker) Object.assign(dmUser.worker, patch);
     dmFillWorkerProfile(dmUser.worker);   // อัปเดต profile body ทันที
+    dmLoadWorkerBoard();                   // re-fetch บอร์ดบุคลากร → การ์ดของเราอัปเดตตาม (เดิมค้างของเก่า)
     openSheet('s-save-success');
   }catch(e){ console.error('[wprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
