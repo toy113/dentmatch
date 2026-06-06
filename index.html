@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>DentMatch</title>
+<title>DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร</title>
+<meta name="description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากรสำหรับงาน part-time ในไทย ค้นหางาน/รับคำเชิญ แล้วนัดคุยต่อผ่าน LINE">
+<meta name="theme-color" content="#2E1A7E">
+<!-- favicon: inline SVG (ฟันบนพื้นม่วง) — กัน 404 favicon.ico -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232E1A7E'/%3E%3Ctext x='50' y='54' font-size='60' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%A6%B7%3C/text%3E%3C/svg%3E">
+<!-- Open Graph / Twitter — preview เวลาแชร์ลิงก์ (LINE/social) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร">
+<meta property="og:description" content="ค้นหางาน/บุคลากรทันตกรรม part-time ในไทย แล้วนัดคุยต่อผ่าน LINE">
+<meta property="og:locale" content="th_TH">
+<meta name="twitter:card" content="summary">
 <!-- Supabase config: publishable (anon) key ใส่ frontend ได้ (RLS คุม) · ห้ามใส่ service_role/secret -->
 <script>
   window.DM_CFG = {
@@ -1153,7 +1163,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
             <div onclick="logoutClinic()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''"><i data-lucide="log-out"></i> ออกจากระบบ</div>
           </div>
         </div>
-        <div class="icon-btn" id="clinic-bell" onclick="openNoti('clinic')" style="position:relative"><i data-lucide="bell"></i><div class="notif-pip" id="clinic-noti-pip"></div><div id="clinic-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
+        <div class="icon-btn" id="clinic-bell" onclick="openNoti('clinic')" style="position:relative"><i data-lucide="bell"></i><div class="notif-pip" id="clinic-noti-pip" style="display:none"></div><div id="clinic-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff;display:none"></div></div>
       </div>
     </div>
     <div class="hdr-greeting"><div class="hdr-sub">Smart Dental Matching</div><div class="hdr-title">คลินิก<em>ทันตกรรมสยาม</em></div></div>
@@ -1463,7 +1473,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div onclick="logoutWorker()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''"><i data-lucide="log-out"></i> ออกจากระบบ</div>
         </div>
       </div>
-      <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative"><i data-lucide="bell"></i><div class="notif-pip" id="worker-noti-pip"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff">2</div></div>
+      <div class="icon-btn" id="worker-bell" onclick="openNoti('worker')" style="position:relative"><i data-lucide="bell"></i><div class="notif-pip" id="worker-noti-pip" style="display:none"></div><div id="worker-noti-badge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-size:9px;font-weight:700;font-family:Sarabun,sans-serif;min-width:16px;text-align:center;border:1.5px solid #fff;display:none"></div></div>
     </div>
     <div class="profile-tog-wrap on">
       <div class="profile-tog-txt"><div class="profile-tog-title"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);vertical-align:middle"></span> เปิดรับงานอยู่</div><div class="profile-tog-sub"><i data-lucide="check"></i> คลินิกเห็นโปรไฟล์คุณ · พร้อมรับคำเชิญ</div></div>
@@ -1513,7 +1523,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- INBOX -->
     <div class="tab-content" id="wt-inbox">
       <div class="inline-tabs">
-        <button class="it on" onclick="inboxTab('new',this)"><i data-lucide="inbox"></i> ใหม่ <span class="badge-new">2</span></button>
+        <button class="it on" onclick="inboxTab('new',this)"><i data-lucide="inbox"></i> ใหม่ <span class="badge-new" style="display:none">0</span></button>
         <button class="it" onclick="inboxTab('saved',this)"><i data-lucide="bookmark"></i> บันทึก</button>
         <button class="it" onclick="inboxTab('all',this)"><i data-lucide="folder-open"></i> ทั้งหมด</button>
       </div>
@@ -2190,7 +2200,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">LINE ID</label>
     <input class="inp" type="text" id="edit-clinic-line" placeholder="@lineid" value="@siamdental" style="margin-bottom:12px">
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">เบอร์โทร</label>
-    <input class="inp" type="tel" id="edit-clinic-phone" placeholder="0XX-XXX-XXXX" value="081-234-5678" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:16px">
+    <input class="inp" type="tel" id="edit-clinic-phone" placeholder="0XX-XXX-XXXX" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:16px">
     <button class="btn-primary" onclick="saveClinicProfile()"><i data-lucide="save"></i> บันทึก</button>
   </div>
 </div>
@@ -3624,7 +3634,7 @@ async function dmLoadWorkerInbox(){
     setPane('inbox-new', pending);
     setPane('inbox-saved', data.filter(i=>i.status==='accepted'));
     setPane('inbox-all', data);
-    const nb=document.querySelector('#wt-inbox .it .badge-new'); if(nb) nb.textContent=pending.length;
+    const nb=document.querySelector('#wt-inbox .it .badge-new'); if(nb){ nb.textContent=pending.length; nb.style.display=pending.length?'':'none'; }
     refreshIcons();
     dmLog('[inbox] worker', data.length, 'คำเชิญ');
   }catch(e){ dmLog('[inbox] worker exception', e); }
@@ -3869,8 +3879,6 @@ function posCard(el){
   if(form.querySelector('#postSkillChips')) renderSkills('postSkillChips','postSkillLabel',pos,false);
   if(form.querySelector('#editSkillChips')) renderSkills('editSkillChips','editSkillLabel',pos,true);
 }
-// simulate: clinic has jobs (true) or not (false) — in real app check from DB
-const CLINIC_HAS_JOBS = true;
 function attCard(el){
   el.closest('.attach-cards').querySelectorAll('.att-card').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
@@ -3881,7 +3889,8 @@ function attCard(el){
   // ถ้าเลือก ประกาศงาน → แสดง job section
   if(el.querySelector('.att-name')?.textContent === 'ประกาศงาน') {
     if(jobSection) jobSection.style.display = 'block';
-    if(CLINIC_HAS_JOBS) {
+    const _sel=document.getElementById('invite-job-select');   // จริง: เช็คจาก dropdown ที่ dmOpenInvite เติมจาก DB
+    if(_sel && _sel.options && _sel.options.length) {
       if(hasJobs) hasJobs.style.display = 'block';
       if(noJobs) noJobs.style.display = 'none';
       if(sendBtn) sendBtn.style.display = 'flex';
