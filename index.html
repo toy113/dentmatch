@@ -2960,18 +2960,22 @@ function _dmExpYears(s){ if(!s) return null; if(/จบใหม่/.test(s)) re
 function dmWorkerCard(w){
   const dot = w.available ? '<div class="av-dot"></div>' : '';
   const pos = DM_POS_LABEL[w.position] || _dmEsc(w.position);
-  const exp = (w.experience_years!=null) ? `<span class="w-exp">${w.experience_years} ปี</span>` : '';
+  const exp = (w.experience_years==null) ? '' : `<span class="w-exp">${w.experience_years>0 ? w.experience_years+' ปี' : 'จบใหม่'}</span>`;
   const provs = (w.provinces&&w.provinces.length) ? w.provinces : (w.province?[w.province]:[]);
   const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
   const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
   const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
   const ad = w.available_days||[];
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
+  const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
+  const trust=[ _ts>0?`<span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ${_ts} ครั้ง</span>`:'',
+                _mo>0?`<span class="tr"><i data-lucide="calendar-days"></i> ${_mo} เดือน</span>`:'' ].join('');
+  const trustRow=trust?`<div class="trust">${trust}</div>`:'';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
           <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
           <div class="skills">${skills}</div>
           ${quote}
-          <div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ${w.trust_score||0} ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> ${_dmMonths(w.member_since)} เดือน</span></div>
+          ${trustRow}
           <div class="avail-row"><span class="al">วันสะดวก:</span><div class="days">${days}</div></div>
           <button class="btn-invite" onclick="dmOpenInvite('${w.id}','${w.anon_id}')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>`;
