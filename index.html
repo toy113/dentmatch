@@ -1477,6 +1477,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- PROFILE -->
     <div class="tab-content" id="wt-profile">
       <div class="profile-body">
+        <div class="profile-section" id="wt-worklog-confirm" style="display:none"><div class="ps-title"><i data-lucide="clipboard-check"></i> งานรอยืนยันผล</div>
+          <div id="wt-worklog-cards"></div>
+        </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="bar-chart-3"></i> ภาพรวมโปรไฟล์</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
             <div class="trust-card" style="text-align:center;padding:14px"><div style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">142</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="eye"></i> โปรไฟล์ถูกดู</div></div>
@@ -2877,7 +2880,7 @@ async function dmLoadProfile(){
   await dmLoadWorkerBoard();   // C2a: บอร์ดบุคลากรจากของจริง
   await dmLoadJobsBoard();     // C2b: บอร์ดงานจากของจริง
   if(dmUser.role==='clinic'){ await dmLoadManageBoard(); dmLoadClinicInvites(); }   // C3d-1 จัดการ + C4b คำเชิญที่ส่ง
-  if(dmUser.role==='worker') dmLoadWorkerInbox();                                    // C4b: inbox คำเชิญที่ได้รับ
+  if(dmUser.role==='worker'){ dmLoadWorkerInbox(); dmLoadWorkerConfirm(); }           // C4b inbox + C4c งานรอยืนยัน
 }
 
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
@@ -3598,6 +3601,45 @@ async function dmLoadClinicInvites(){
     refreshIcons();
     console.log('[inbox] clinic', data.length, 'คำเชิญที่ส่ง');
   }catch(e){ console.warn('[inbox] clinic exception', e); }
+}
+/* ════════ C4c — worker ยืนยันผลงาน (2-party · RPC set_work_outcome) · ปิด loop trust ════════ */
+function dmWorkLogConfirmCard(wl){
+  const c=wl.clinics||{}, j=wl.jobs||{};
+  return `<div class="trust-card" style="margin-bottom:10px;padding:14px">
+    <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:3px"><i data-lucide="hospital"></i> ${_dmEsc(c.name||'คลินิก')}</div>
+    <div style="font-size:12.5px;color:var(--ink4);margin-bottom:10px"><i data-lucide="clipboard-list"></i> ${_dmEsc(j.title||'งาน')} · ${_dmThaiDate(wl.work_date)}</div>
+    <div style="font-size:12.5px;color:var(--ink3);margin-bottom:8px">คุณได้ไปทำงานวันนี้หรือไม่?</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-sm" style="flex:1;background:var(--green-bg);border-color:rgba(6,199,85,.4);color:var(--green2);font-weight:700;justify-content:center" onclick="dmConfirmWork('${wl.id}','came')"><i data-lucide="check"></i> มาทำงาน</button>
+      <button class="btn-sm" style="flex:1;justify-content:center" onclick="dmConfirmWork('${wl.id}','no_show')"><i data-lucide="x"></i> ไม่ได้มา</button>
+    </div>
+  </div>`;
+}
+async function dmLoadWorkerConfirm(){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
+  const section=document.getElementById('wt-worklog-confirm'), cards=document.getElementById('wt-worklog-cards');
+  if(!section || !cards) return;
+  try{
+    // งานที่ clinic รายงานแล้ว แต่ worker ยังไม่ยืนยัน (worker_outcome ว่าง) · ไม่ดึง clinic_outcome (honest 2-party)
+    const { data, error } = await dmSb().from('work_logs')
+      .select('id, work_date, clinics(name), jobs(title)')
+      .eq('worker_id', dmUser.id).is('worker_outcome', null).order('work_date',{ascending:false}).limit(30);
+    if(error){ console.warn('[worklog-confirm] load', error); return; }
+    if(data && data.length){ cards.innerHTML=data.map(dmWorkLogConfirmCard).join(''); section.style.display=''; }
+    else { cards.innerHTML=''; section.style.display='none'; }
+    refreshIcons();
+    console.log('[worklog-confirm]', (data||[]).length, 'รอยืนยัน');
+  }catch(e){ console.warn('[worklog-confirm] exception', e); }
+}
+async function dmConfirmWork(id, outcome){
+  if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
+  try{
+    const { error } = await dmSb().rpc('set_work_outcome', { p_log:id, p_outcome:outcome });   // RPC: worker → worker_outcome เท่านั้น
+    if(error){ console.error('[worklog-confirm] RPC ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ยืนยันไม่สำเร็จ: '+error.message); return; }
+    console.log('[worklog-confirm] ยืนยัน ✓', outcome, id);
+    showToast(outcome==='came'?'<i data-lucide="check"></i> ยืนยันแล้ว — ขอบคุณครับ':'บันทึกแล้ว');
+    await dmLoadProfile();   // refresh: confirm list หาย + trust อาจ +1 (ถ้าตรงกับ clinic)
+  }catch(e){ console.error('[worklog-confirm] exception', e); }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
