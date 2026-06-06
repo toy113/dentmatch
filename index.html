@@ -2265,17 +2265,19 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   <button onclick="devView('v-clinic')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer"><i data-lucide="hospital"></i> Clinic</button>
   <button onclick="devView('v-worker')" style="border:none;background:rgba(255,255,255,.14);color:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;padding:6px 11px;border-radius:10px;cursor:pointer"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg> Worker</button>
 </div>
+<script>/* demo bar: โชว์เฉพาะ dev (localhost) · production = ลบทิ้งจาก DOM */
+if(!/^(localhost|127\.0\.0\.1|::1|\[::1\])$/.test(location.hostname)){var _db=document.getElementById('devbar');if(_db)_db.remove();}</script>
 
 </div><!-- /.phone -->
 </div><!-- /.shell -->
 
 <script>
 let currentView='v-main', viewStack=[], currentRole=null, selectedLoginRole=null, selectedOutcome='came';
-/* ตัวเลขจริงของแพลตฟอร์ม (production: ดึงจาก backend) */
-const STATS = { jobs:248, workers:94, urgent:23, provinces:12 };
+/* ตัวเลขแพลตฟอร์ม — เริ่ม 0 (ซ่อน band) แล้ว dmLoadStats() ดึง count จริงจาก DB */
+let STATS = { jobs:0, workers:0, urgent:0, provinces:0 };
 const STATS_THRESHOLD = 50;   // โชว์ตัวเลขเมื่อมีงาน ≥ เกณฑ์นี้
-/* (D) ต่ำกว่าเกณฑ์ = ช่วงเปิดใหม่ (งานน้อย) → ซ่อนแถบสถิติทั้งหมดอัตโนมัติ */
-const LAUNCH_MODE = STATS.jobs < STATS_THRESHOLD;
+/* ต่ำกว่าเกณฑ์ = ช่วงเปิดใหม่ (งานน้อย) → ซ่อนแถบสถิติทั้งหมดอัตโนมัติ */
+let LAUNCH_MODE = STATS.jobs < STATS_THRESHOLD;
 
 function goView(id){
   const cur=document.getElementById(currentView), next=document.getElementById(id);
@@ -2955,8 +2957,12 @@ async function dmLoadWorkerBoard(){
     const { data, error } = await dmSb().from('worker_profiles')
       .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
       .order('trust_score', { ascending:false }).limit(60);   // id = uuid opaque (ไม่ใช่ PII) ใช้ส่งคำเชิญ
-    if(error || !data || !data.length) return;   // fallback: คงการ์ด mock เดิม (DB ว่าง/ช่วง launch)
+    if(error) console.warn('dmLoadWorkerBoard', error);
     const cards=document.querySelector('#cc-workers .cards');
+    if(!data || !data.length){   // ว่าง → empty state (ไม่คง mock)
+      if(cards) cards.innerHTML=_dmEmptyBoard('ยังไม่มีบุคลากรในระบบตอนนี้','users');
+      _dmSetCount('#cc-workers',0,'คน'); _dmSetCount('#wt-workers',0,'คน'); refreshIcons(); return;
+    }
     if(!cards) return;
     cards.innerHTML = data.map(dmWorkerCard).join('');
     _dmSetCount('#cc-workers', data.length, 'คน'); _dmSetCount('#wt-workers', data.length, 'คน');
@@ -2988,6 +2994,11 @@ function _dmSetCount(tabSel, n, unit){
   const tc=document.querySelector(tabSel); if(!tc) return;
   ['.sec-hdr .cnt-pill', '.dt-toolbar .pill'].forEach(s=>{ const p=tc.querySelector(s); if(p){ p.textContent=n+' '+unit; p.setAttribute('data-total', n); } });
 }
+function _dmEmptyBoard(msg, icon){   // empty state แทนการคง mock เดิม (DB ว่าง)
+  return '<div style="grid-column:1/-1;text-align:center;padding:44px 20px;color:var(--ink4)">'
+    +'<i data-lucide="'+(icon||'inbox')+'" style="width:38px;height:38px;color:var(--p300)"></i>'
+    +'<div style="font-size:13.5px;margin-top:10px">'+_dmEsc(msg)+'</div></div>';
+}
 function dmJobCard(job){
   const clinic=job.clinics||{};
   const cname=_dmEsc(clinic.name||'คลินิก');
@@ -3007,20 +3018,64 @@ function dmJobCard(job){
         </div>`;
 }
 async function dmLoadJobsBoard(){
-  if(!dmSb() || !dmUser) return;   // authenticated เท่านั้น (RLS) ; guest = mock
+  if(!dmSb()) return;   // jobs เป็น public (RLS j_sel using(true)) → guest โหลดได้ด้วย
+  const SEL=['#tcj-cards','#ccf-cards','#wtj-cards'];   // guest(main) · clinic-find · worker-jobs
   try{
     // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
       .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('is_open', true).gt('expires_at', new Date().toISOString())   // ซ่อนงานหมดอายุจากบอร์ด
       .order('created_at', { ascending:false }).limit(60);
-    if(error || !data || !data.length) return;   // fallback: คงการ์ด mock
+    if(error) console.warn('dmLoadJobsBoard', error);
+    if(!data || !data.length){   // ว่าง/error → empty state (ไม่คง mock เดิม)
+      const empty=_dmEmptyBoard('ยังไม่มีงานที่เปิดรับตอนนี้','briefcase');
+      SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=empty; });
+      _dmJobs={}; _dmSetCount('#tc-jobs',0,'งาน'); _dmSetCount('#cc-find',0,'งาน'); _dmSetCount('#wt-jobs',0,'งาน'); refreshIcons(); return;
+    }
     _dmJobs={}; data.forEach(j=>{ _dmJobs[j.id]=j; });   // เก็บไว้ให้ dmOpenJob lookup ตอนคลิกการ์ด
     const html=data.map(dmJobCard).join('');
-    ['#ccf-cards','#wtj-cards'].forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
-    _dmSetCount('#cc-find', data.length, 'งาน'); _dmSetCount('#wt-jobs', data.length, 'งาน');
+    SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
+    _dmSetCount('#tc-jobs',data.length,'งาน'); _dmSetCount('#cc-find',data.length,'งาน'); _dmSetCount('#wt-jobs',data.length,'งาน');
     refreshIcons();
   }catch(e){ console.warn('dmLoadJobsBoard', e); }
+}
+/* ════════ stats band — ดึงเลขจริงจาก DB · auto-hide เมื่อ < เกณฑ์ (ใช้ LAUNCH_MODE เดิม) ════════ */
+function dmApplyStats(){
+  // mobile #statRow (3 ตัว)
+  var _sn=document.querySelectorAll('#statRow .stat-n');
+  if(_sn[0])_sn[0].innerHTML=STATS.jobs+'<sub> งาน</sub>';
+  if(_sn[1])_sn[1].innerHTML=STATS.workers+'<sub> คน</sub>';
+  if(_sn[2])_sn[2].innerHTML='<i data-lucide="flame" style="color:var(--orange)"></i> '+STATS.urgent;
+  var _sr=document.getElementById('statRow'); if(_sr)_sr.style.display=LAUNCH_MODE?'none':'';
+  // desktop .dt-stats (4 ตัว) — rebuild idempotent ตามความกว้าง + LAUNCH_MODE
+  var tcJobs=document.getElementById('tc-jobs');
+  if(tcJobs){
+    var ex=tcJobs.querySelector('.dt-stats'); if(ex) ex.remove();
+    if(!LAUNCH_MODE && window.innerWidth>=768){
+      var d=[[STATS.jobs,'งานที่เปิดรับ','\u{1F4BC}',''],[STATS.workers,'บุคลากรหาคลินิก','\u{1F9B7}',''],[STATS.urgent,'งานด่วน','\u{1F525}','urg'],[STATS.provinces,'จังหวัดทั่วไทย','\u{1F4CD}','']];
+      var bar=document.createElement('div'); bar.className='dt-stats';
+      bar.innerHTML=d.map(function(a){return '<div class="dt-stat '+a[3]+'"><div class="ic">'+a[2]+'</div><div class="n">'+a[0]+'</div><div class="l">'+a[1]+'</div></div>';}).join('');
+      var ob=tcJobs.querySelector('#guestOnboard'); if(ob) ob.after(bar); else tcJobs.insertBefore(bar,tcJobs.firstChild);
+    }
+  }
+  refreshIcons();
+}
+async function dmLoadStats(){
+  if(!dmSb()) return;
+  try{
+    var nowISO=new Date().toISOString();
+    var res=await Promise.all([
+      dmSb().from('jobs').select('id',{count:'exact',head:true}).eq('is_open',true).gt('expires_at',nowISO),
+      dmSb().from('jobs').select('id',{count:'exact',head:true}).eq('is_open',true).eq('urgent',true).gt('expires_at',nowISO),
+      dmSb().from('worker_profiles').select('id',{count:'exact',head:true}),
+      dmSb().from('jobs').select('province').eq('is_open',true).gt('expires_at',nowISO).limit(500)
+    ]);
+    STATS.jobs=res[0].count||0; STATS.urgent=res[1].count||0; STATS.workers=res[2].count||0;
+    STATS.provinces=res[3].data?new Set(res[3].data.map(function(r){return r.province;}).filter(Boolean)).size:0;
+    LAUNCH_MODE = STATS.jobs < STATS_THRESHOLD;
+    dmApplyStats();
+    dmLog('[stats]', STATS, 'launch_mode='+LAUNCH_MODE);
+  }catch(e){ dmLog('[stats]', e); }
 }
 
 /* ════════ C2c — หน้ารายละเอียดงานจากของจริง (v-job-detail) ════════ */
@@ -4537,18 +4592,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   buildWorkerBoards();
   addCardHints();
   initBeta();
-  // stats band (D): เติมตัวเลขจาก STATS · โชว์เมื่อ ≥ เกณฑ์ · ต่ำกว่า = ซ่อนทั้งแถบ
-  var _sn=document.querySelectorAll('#statRow .stat-n');
-  if(_sn[0])_sn[0].innerHTML=STATS.jobs+'<sub> งาน</sub>';
-  if(_sn[1])_sn[1].innerHTML=STATS.workers+'<sub> คน</sub>';
-  if(_sn[2])_sn[2].innerHTML='<i data-lucide="flame" style="color:var(--orange)"></i> '+STATS.urgent;
-  var _sr=document.getElementById('statRow');
-  if(_sr)_sr.style.display=LAUNCH_MODE?'none':'';
+  dmApplyStats();   // stats band — เริ่ม 0/ซ่อน · dmLoadStats() เติมเลขจริงภายหลัง
   hideZeroTrust();
   initA11y();
   initFilters();
   if(window.innerWidth>=768) initDesktop();
-  window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); });
+  window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); dmApplyStats(); });
   refreshIcons();
 });
 
@@ -4595,21 +4644,8 @@ function initDesktop(){
 
   // 1) (เดิม) search ใน navbar — ย้ายลงเป็นกล่องใต้ตัวกรอง (แท็บงานเท่านั้น) ผ่าน .clinic-search-wrap แทน
 
-  // 2) Guest job tab: stats ตัวเลข (โชว์เมื่อ ≥ เกณฑ์ · ช่วงเปิดใหม่งานน้อย = ไม่โชว์)
-  const tcJobs=document.getElementById('tc-jobs');
-  if(tcJobs && !LAUNCH_MODE && !tcJobs.querySelector('.dt-stats')){
-    const data=[
-      [String(STATS.jobs),'งานที่เปิดรับ','\u{1F4BC}',''],
-      [String(STATS.workers),'บุคลากรหาคลินิก','\u{1F9B7}',''],
-      [String(STATS.urgent),'งานด่วน','\u{1F525}','urg'],
-      [String(STATS.provinces),'จังหวัดทั่วไทย','\u{1F4CD}','']
-    ];
-    const bar=document.createElement('div');
-    bar.className='dt-stats';
-    bar.innerHTML=data.map(([n,l,ic,cl])=>`<div class="dt-stat ${cl}"><div class="ic">${ic}</div><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
-    const ob=tcJobs.querySelector('#guestOnboard');
-    if(ob) ob.after(bar); else tcJobs.insertBefore(bar,tcJobs.firstChild);
-  }
+  // 2) Guest job tab: stats → dmApplyStats() (width-aware · ดึงเลขจริงผ่าน dmLoadStats)
+  dmApplyStats();
 
   // 3) Toolbar (title + count + grid/list) — replaces the plain section header
   [['tcj-cards','\u{1F4BC} งานที่เปิดรับ'],
@@ -4725,6 +4761,8 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     let handled = false;
     if (typeof dmHandleLineCallback === 'function') handled = await dmHandleLineCallback();   // LINE redirect กลับมา?
     if (!handled && typeof dmInitSession === 'function') await dmInitSession();                // ไม่ใช่ → restore session เดิม
+    if (typeof dmLoadStats === 'function') dmLoadStats();             // สถิติจริง (public · guest ด้วย)
+    if (typeof dmLoadJobsBoard === 'function') dmLoadJobsBoard();     // บอร์ดงาน public (guest เห็นงานจริง · authed ก็ refresh ซ้ำได้)
   } catch(e){ console.warn('auth init', e); }
 </script>
 </body>
