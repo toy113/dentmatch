@@ -2664,7 +2664,7 @@ function openSheet(id){
       _otpEmail=null; _otpMode=null; _lineSignup=null;
     }
   }
-  setTimeout(()=>{ const f=el.querySelector(_SHEET_FOCUSABLE); (f||_sheet).focus&&(f||_sheet).focus(); }, 60);
+  setTimeout(()=>{ const f=el.querySelector(_SHEET_FOCUSABLE); (f||_sheet).focus&&(f||_sheet).focus({preventScroll:true}); }, 60);   // preventScroll: กันมือถือเลื่อน view ใต้ sheet จน header หาย
 }
 function closeSheet(id){
   const el=document.getElementById(id); if(!el)return;
@@ -2673,7 +2673,7 @@ function closeSheet(id){
   el.removeAttribute('aria-modal');
   if(!document.querySelector('.overlay.open')) _sheetZ=1000;   // ปิดหมดแล้วรีเซ็ตตัวนับ
   // a11y: คืน focus ให้ปุ่มที่กดเปิด sheet
-  if(_sheetReturnFocus && _sheetReturnFocus.focus){ try{_sheetReturnFocus.focus();}catch(e){} _sheetReturnFocus=null; }
+  if(_sheetReturnFocus && _sheetReturnFocus.focus){ try{_sheetReturnFocus.focus({preventScroll:true});}catch(e){} _sheetReturnFocus=null; }   // preventScroll: กันเลื่อนไปปุ่มเดิมจน header หาย
 }
 function overlayClose(e,id){if(e.target===document.getElementById(id))closeSheet(id)}
 
