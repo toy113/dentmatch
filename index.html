@@ -2986,6 +2986,7 @@ async function dmLoadWorkerBoard(){
     // ★ public-safe เท่านั้น — ไม่ select worker_private / ไม่มีคอลัมน์ PII ในตารางนี้
     const { data, error } = await dmSb().from('worker_profiles')
       .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
+      .eq('available', true)   // ★ "ปิดรับงาน" (available=false) → ไม่โชว์ให้คลินิก
       .order('trust_score', { ascending:false }).limit(60);   // id = uuid opaque (ไม่ใช่ PII) ใช้ส่งคำเชิญ
     if(error) console.warn('dmLoadWorkerBoard', error);
     const cards=document.querySelector('#cc-workers .cards');
