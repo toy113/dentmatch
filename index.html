@@ -2925,6 +2925,8 @@ async function dmLoadProfile(){
         dmApplyAvailUI(data.available!==false);
         try{ const { count } = await dmSb().from('invites').select('id',{count:'exact',head:true}).eq('worker_id',dmUser.id);
           const iv=document.getElementById('pf-invites'); if(iv && count!=null) iv.textContent=count; }catch(e){}
+        try{ const { count: vc } = await dmSb().from('profile_views').select('id',{count:'exact',head:true}).eq('worker_id',dmUser.id);
+          const pv=document.getElementById('pf-views'); if(pv && vc!=null) pv.textContent=vc; }catch(e){ console.error('pf-views', e); }
       }
     } else if(dmUser.role==='clinic'){
       const { data } = await dmSb().from('clinics').select('name, province, district, line_id, phone').eq('id',dmUser.id).single();
@@ -3281,6 +3283,10 @@ async function dmOpenWorker(id, anon){   // เก็บ context ตอนคล
       .eq('id', id).single();
     if(error || !data){ console.error('dmOpenWorker', error); return; }
     dmFillWorkerDetail(data);
+    if(dmUser && dmUser.id && dmUser.id!==id){   // log view (1 viewer=1 · dedup ผ่าน unique) · ไม่นับ self-view
+      const { error: pvErr } = await dmSb().from('profile_views').upsert({ worker_id:id, viewer_id:dmUser.id }, { onConflict:'worker_id,viewer_id', ignoreDuplicates:true });
+      if(pvErr) console.error('profile_views log', pvErr);
+    }
   }catch(e){ console.error('dmOpenWorker', e); }
 }
 async function dmOpenInvite(workerId, anon){
