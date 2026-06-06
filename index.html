@@ -2735,7 +2735,7 @@ async function nextAfterRegWorker() {
     first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
     phone:(document.getElementById('rw-phone').value||'').trim(),
     position:document.getElementById('regWorkerPos').value||'assistant',
-    province:[...regProvs][0]||'',   // worker_profiles เก็บจังหวัดหลักเดียว (multi-province ไว้ทีหลัง)
+    province:[...regProvs][0]||'', provinces:[...regProvs],   // province=ตัวหลัก · provinces=ครบ
     bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value) };
   _otpEmail=email; _otpMode='register';
   if(await dmSendEmailOtp(email,true)){
@@ -2868,7 +2868,7 @@ async function dmCreateRecords(uid, s){
     await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null });
   } else {
     // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
-    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
+    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
     await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
   }
 }
@@ -2878,7 +2878,7 @@ async function dmLoadProfile(){
   try{
     if(dmUser.role==='worker'){
       const { data } = await dmSb().from('worker_profiles')
-        .select('anon_id, position, province, district, skills, bio, available, available_days, experience_years, trust_score, member_since')
+        .select('anon_id, position, province, provinces, district, skills, bio, available, available_days, experience_years, trust_score, member_since')
         .eq('id',dmUser.id).single();
       if(data){
         dmUser.worker=data;   // C4a: เก็บไว้ render body + prefill edit form
@@ -2915,12 +2915,13 @@ function dmWorkerCard(w){
   const dot = w.available ? '<div class="av-dot"></div>' : '';
   const pos = DM_POS_LABEL[w.position] || _dmEsc(w.position);
   const exp = (w.experience_years!=null) ? `<span class="w-exp">${w.experience_years} ปี</span>` : '';
-  const loc = _dmEsc(w.province) + (w.district ? ' ('+_dmEsc(w.district)+')' : '');
+  const provs = (w.provinces&&w.provinces.length) ? w.provinces : (w.province?[w.province]:[]);
+  const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
   const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
   const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
   const ad = w.available_days||[];
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
-  return `<div class="wcard">
+  return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
           <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
           <div class="skills">${skills}</div>
           ${quote}
@@ -2934,7 +2935,7 @@ async function dmLoadWorkerBoard(){
   try{
     // ★ public-safe เท่านั้น — ไม่ select worker_private / ไม่มีคอลัมน์ PII ในตารางนี้
     const { data, error } = await dmSb().from('worker_profiles')
-      .select('id, anon_id, position, skills, province, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
+      .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
       .order('trust_score', { ascending:false }).limit(60);   // id = uuid opaque (ไม่ใช่ PII) ใช้ส่งคำเชิญ
     if(error || !data || !data.length) return;   // fallback: คงการ์ด mock เดิม (DB ว่าง/ช่วง launch)
     const cards=document.querySelector('#cc-workers .cards');
@@ -3381,7 +3382,7 @@ async function dmFinishLineSignup(role){
     s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
         phone:(document.getElementById('rw-phone').value||'').trim(),
         position:document.getElementById('regWorkerPos').value||'assistant',
-        province:[...regProvs][0]||'', bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid };
+        province:[...regProvs][0]||'', provinces:[...regProvs], bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid };
   }
   try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
   dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
@@ -3470,7 +3471,8 @@ function dmFillWorkerProfile(w){
     ps.innerHTML='<span><i data-lucide="map-pin"></i> '+(loc||'-')+'</span>'+(ex?' <span>·</span> <span>'+ex+'</span>':''); }
   const po=document.getElementById('pf-pos'); if(po) po.textContent=DM_POS_LABEL[w.position]||w.position||'บุคลากร';
   const an=document.getElementById('pf-anon'); if(an) an.textContent=w.anon_id||'—';
-  const prov=document.getElementById('profileProvDisplay'); if(prov) prov.textContent=w.province||'-';
+  const _wprovs=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);
+  const prov=document.getElementById('profileProvDisplay'); if(prov) prov.textContent=_wprovs.length?_wprovs.join(', '):'-';
   const tEl=document.getElementById('pf-trust'); if(tEl) tEl.textContent='ผ่านงาน DentMatch '+(w.trust_score||0)+' ครั้ง';
   const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent='สมาชิก '+_dmMonths(w.member_since)+' เดือน';
   const sk=document.getElementById('pf-skills');
@@ -3548,7 +3550,8 @@ function dmFillEditForm(w){
   const exp=document.getElementById('edit-exp');
   if(exp){ for(let i=0;i<exp.options.length;i++){ if(_dmExpYears(exp.options[i].textContent)===w.experience_years){ exp.selectedIndex=i; break; } } }
   const ps=document.getElementById('editProvSelected');
-  if(ps && w.province){ ps.innerHTML='<div class="sel-prov-tag">'+_dmEsc(w.province)+' <button onclick="removeEditProv(this,\''+_dmEsc(w.province)+'\')"><i data-lucide="x"></i></button></div>'; }
+  if(ps){ const list=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);
+    ps.innerHTML=list.map(p=>'<div class="sel-prov-tag">'+_dmEsc(p)+' <button onclick="removeEditProv(this,\''+_dmEsc(p)+'\')"><i data-lucide="x"></i></button></div>').join(''); }
   const bio=document.getElementById('edit-bio'); if(bio) bio.value=w.bio||'';
   const ad=new Set(w.available_days||[]);
   document.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ d.classList.toggle('on', ad.has(i+1)); });
@@ -3565,10 +3568,9 @@ async function dmSaveWorkerProfile(){
   const expEl=document.getElementById('edit-exp'); const experience_years = expEl ? _dmExpYears(expEl.value) : null;
   const bioEl=document.getElementById('edit-bio'); const bio=(bioEl && bioEl.value.trim())||null;
   const days=[]; root.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ if(d.classList.contains('on')) days.push(i+1); });
-  const provTag=root.querySelector('#editProvSelected .sel-prov-tag');
-  const province = provTag ? ((provTag.childNodes[0]&&provTag.childNodes[0].textContent)||'').trim() : null;
+  const provTags=[].map.call(root.querySelectorAll('#editProvSelected .sel-prov-tag'), t=>((t.childNodes[0]&&t.childNodes[0].textContent)||'').trim()).filter(Boolean);
   const patch={ skills, experience_years, available_days:days, bio };   // ★ เฉพาะ grant · ไม่แตะ trust/anon/license ฯลฯ
-  if(province) patch.province=province;
+  if(provTags.length){ patch.provinces=provTags; patch.province=provTags[0]; }   // provinces=ครบ · province=ตัวหลัก
   console.log('[wprofile] save', JSON.stringify(patch));
   try{
     const { error } = await dmSb().from('worker_profiles').update(patch).eq('id', dmUser.id);
@@ -4229,10 +4231,11 @@ function _cardMatches(card,f){
   }
   // skills (OR)
   if(f.skills.length && !f.skills.some(s=>skillText.includes(s))) return false;
-  // province (OR, normalized)
+  // province (OR, normalized) — wcard มีหลายจังหวัดผ่าน data-provinces
   if(f.provs.length){
-    const cp=_normProv(prov);
-    if(!f.provs.some(p=>{const np=_normProv(p);return np&&(cp.includes(np)||np.includes(cp));})) return false;
+    const dp=card.getAttribute('data-provinces');
+    const cardProvs = dp ? dp.split('|').map(_normProv) : [_normProv(prov)];
+    if(!f.provs.some(p=>{const np=_normProv(p); return np && cardProvs.some(cp=>cp&&(cp.includes(np)||np.includes(cp)));})) return false;
   }
   // urgent (jobs only)
   if(f.wantUrgent && (isW || !card.classList.contains('urg'))) return false;
