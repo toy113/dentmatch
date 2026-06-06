@@ -1145,7 +1145,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="hdr-right">
         <div class="role-pill" style="background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4);color:var(--gold2);cursor:pointer;position:relative" onclick="toggleClinicMenu(event)"><i data-lucide="hospital"></i> <span class="rp-short">คลินิก</span><span class="rp-full">คลินิกทันตกรรมสยาม</span> <i data-lucide="chevron-down"></i>
           <div id="clinic-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(20,10,60,.18);border:1px solid var(--border);min-width:180px;overflow:hidden;z-index:999">
-            <div onclick="openSheet('s-edit-clinic')" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background=''"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</div>
+            <div onclick="dmOpenEditClinic()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background=''"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</div>
             <div style="height:1px;background:var(--border);margin:0 12px"></div>
             <div onclick="logoutClinic()" style="padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--red);display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s" onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background=''"><i data-lucide="log-out"></i> ออกจากระบบ</div>
           </div>
@@ -2172,19 +2172,19 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="font-size:11px;font-weight:700;color:var(--ink5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"><i data-lucide="lock"></i> ไม่สามารถแก้ไขได้</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <span style="font-size:12.5px;color:var(--ink3)">ชื่อคลินิก</span>
-        <span style="font-size:13px;font-weight:700;color:var(--ink)">คลินิกทันตกรรมสยาม</span>
+        <span style="font-size:13px;font-weight:700;color:var(--ink)" id="edit-clinic-name">คลินิกทันตกรรมสยาม</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:12.5px;color:var(--ink3)">จังหวัด</span>
-        <span style="font-size:13px;font-weight:700;color:var(--ink)">กรุงเทพมหานคร</span>
+        <span style="font-size:13px;font-weight:700;color:var(--ink)" id="edit-clinic-prov">กรุงเทพมหานคร</span>
       </div>
       <div style="font-size:11px;color:var(--ink5);margin-top:8px">ต้องการเปลี่ยน? ติดต่อ <a href="#" onclick="openSheet('s-contact');return false" style="color:var(--p600);font-weight:600">ทีมงาน DentMatch</a></div>
     </div>
     <!-- แก้ได้ -->
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">LINE ID</label>
-    <input class="inp" type="text" placeholder="@lineid" value="@siamdental" style="margin-bottom:12px">
+    <input class="inp" type="text" id="edit-clinic-line" placeholder="@lineid" value="@siamdental" style="margin-bottom:12px">
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">เบอร์โทร</label>
-    <input class="inp" type="tel" placeholder="0XX-XXX-XXXX" value="081-234-5678" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:16px">
+    <input class="inp" type="tel" id="edit-clinic-phone" placeholder="0XX-XXX-XXXX" value="081-234-5678" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:16px">
     <button class="btn-primary" onclick="saveClinicProfile()"><i data-lucide="save"></i> บันทึก</button>
   </div>
 </div>
@@ -2427,14 +2427,30 @@ function logoutClinic(){
   document.getElementById('v-main').classList.add('active');
   currentView='v-main';
 }
-function saveClinicProfile(){
+/* C4d — แก้โปรไฟล์คลินิก: prefill ค่าปัจจุบัน + save จริง (UPDATE clinics line_id/phone · name/province locked) */
+function dmOpenEditClinic(){
+  if(dmUser && dmUser.role==='clinic' && dmUser.clinic){
+    const c=dmUser.clinic;
+    const set=(id,v)=>{ const e=document.getElementById(id); if(!e)return; if('value' in e && e.tagName==='INPUT') e.value=v||''; else e.textContent=v||'-'; };
+    set('edit-clinic-name', c.name); set('edit-clinic-prov', c.province);
+    set('edit-clinic-line', c.line_id); set('edit-clinic-phone', c.phone);
+  }
+  openSheet('s-edit-clinic');
+}
+async function saveClinicProfile(){
+  const lineEl=document.getElementById('edit-clinic-line'), phoneEl=document.getElementById('edit-clinic-phone');
+  const line_id=(lineEl&&lineEl.value.trim())||null;
+  const phone=(phoneEl&&phoneEl.value.trim())||null;
+  if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){
+    try{
+      const { error } = await dmSb().from('clinics').update({ line_id, phone }).eq('id', dmUser.id);   // ★ name/province ไม่อยู่ใน grant → แก้ไม่ได้ (locked)
+      if(error){ console.error('[cprofile] save ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+      console.log('[cprofile] save สำเร็จ ✓ line_id+phone');
+      if(dmUser.clinic){ dmUser.clinic.line_id=line_id; dmUser.clinic.phone=phone; }
+    }catch(e){ console.error('[cprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); return; }
+  }
   closeSheet('s-edit-clinic');
-  // show quick toast
-  const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:22px;font-family:Sarabun,sans-serif;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2)';
-  t.innerHTML='<i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกสำเร็จ';
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2500);
+  showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกสำเร็จ');
 }
 
 /* ── TRUST SCORE VISIBILITY ── */
@@ -2697,7 +2713,8 @@ async function nextAfterRegClinic() {
   pendingSignup={ role:'clinic', email,
     name:(document.getElementById('rc-name').value||'').trim(),
     province:document.getElementById('rc-province').value||'',
-    line_id:(document.getElementById('rc-line').value||'').trim() };
+    line_id:(document.getElementById('rc-line').value||'').trim(),
+    phone:(document.getElementById('rc-phone').value||'').trim() };
   _otpEmail=email; _otpMode='register';
   if(await dmSendEmailOtp(email,true)){
     const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
@@ -2845,7 +2862,7 @@ async function dmCreateRecords(uid, s){
     if(error && !/duplicate|already exists/i.test(error.message)) throw error; };
   await ins('profiles', { id:uid, role:s.role });
   if(s.role==='clinic'){
-    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null });
+    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null });
   } else {
     // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
     await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
@@ -2869,9 +2886,9 @@ async function dmLoadProfile(){
           const iv=document.getElementById('pf-invites'); if(iv && count!=null) iv.textContent=count; }catch(e){}
       }
     } else if(dmUser.role==='clinic'){
-      const { data } = await dmSb().from('clinics').select('name, province, district').eq('id',dmUser.id).single();
+      const { data } = await dmSb().from('clinics').select('name, province, district, line_id, phone').eq('id',dmUser.id).single();
       if(data){
-        dmUser.clinic={ name:data.name, province:data.province, district:data.district };   // C3a: ใช้ตอนโพสต์งาน (จังหวัด/อำเภอ = ที่ตั้งงาน)
+        dmUser.clinic={ name:data.name, province:data.province, district:data.district, line_id:data.line_id, phone:data.phone };   // C3a โพสต์งาน + C4d แก้โปรไฟล์
         document.querySelectorAll('#v-clinic .rp-full').forEach(e=>e.textContent=data.name);
         const t=document.querySelector('#v-clinic .hdr-title'); if(t)t.textContent=data.name;
       }
