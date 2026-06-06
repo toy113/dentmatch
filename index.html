@@ -1136,7 +1136,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
         <div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)" id="wd-trust">ผ่านงาน DentMatch แล้ว 0 ครั้ง</div><div style="font-size:11.5px;color:var(--ink4)">ได้รับการยืนยันจากคลินิก</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px" id="wd-trust-row"><div style="width:34px;height:34px;border-radius:9px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)" id="wd-trust">ผ่านงาน DentMatch แล้ว 0 ครั้ง</div><div style="font-size:11.5px;color:var(--ink4)">ได้รับการยืนยันจากคลินิก</div></div></div>
           <div style="display:flex;align-items:center;gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:var(--p100);display:flex;align-items:center;justify-content:center;font-size:16px"><i data-lucide="calendar-days"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--ink)" id="wd-member">สมาชิก 0 เดือน</div><div style="font-size:11.5px;color:var(--ink4)" id="wd-since"></div></div></div>
           <div style="display:flex;align-items:center;gap:10px"></div>
         </div>
@@ -1502,7 +1502,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
           <div class="trust-card">
-            <div class="trust-item"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label" id="pf-trust">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
+            <div class="trust-item" id="pf-trust-row"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label" id="pf-trust">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
             <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label" id="pf-member">สมาชิก 14 เดือน</div><div class="trust-val" id="pf-since">ตั้งแต่ เมษายน 2567</div></div></div>
             <div class="trust-item"><div class="trust-icon ti-blue"><i data-lucide="map-pin"></i></div><div class="trust-info"><div class="trust-label" id="profileProvDisplay">กรุงเทพมหานคร</div><div class="trust-val">จังหวัดที่รับงาน</div></div></div>
           </div>
@@ -3621,8 +3621,10 @@ function dmFillWorkerProfile(w){
   const an=document.getElementById('pf-anon'); if(an) an.textContent=w.anon_id||'—';
   const _wprovs=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);
   const prov=document.getElementById('profileProvDisplay'); if(prov) prov.textContent=_wprovs.length?_wprovs.join(', '):'-';
-  const tEl=document.getElementById('pf-trust'); if(tEl) tEl.textContent='ผ่านงาน DentMatch '+(w.trust_score||0)+' ครั้ง';
-  const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent='สมาชิก '+_dmMonths(w.member_since)+' เดือน';
+  const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อน 0: ผ่านงาน 0 → ซ่อนแถว · สมาชิก 0 เดือน → "สมาชิกใหม่"
+  const tEl=document.getElementById('pf-trust'); if(tEl) tEl.textContent='ผ่านงาน DentMatch '+_ts+' ครั้ง';
+  const tRow=document.getElementById('pf-trust-row'); if(tRow) tRow.style.display=_ts>0?'':'none';
+  const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent=_mo>0?('สมาชิก '+_mo+' เดือน'):'สมาชิกใหม่';
   const sEl=document.getElementById('pf-since'); if(sEl) sEl.textContent=_dmSince(w.member_since);
   const sk=document.getElementById('pf-skills');
   if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
@@ -3634,13 +3636,15 @@ function dmFillWorkerProfile(w){
 function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข้อมูลจริง (public-safe เท่านั้น · ไม่มี PII)
   if(!w) return;
   const pos=DM_POS_LABEL[w.position]||w.position||'บุคลากร';
-  const ex=(w.experience_years!=null)?(w.experience_years+' ปี'):'';
+  const ex=(w.experience_years==null)?'':(w.experience_years>0?w.experience_years+' ปี':'จบใหม่');
   const set=(id,txt)=>{ const e=document.getElementById(id); if(e) e.textContent=txt; };
   set('wd-anon', w.anon_id||'—');
   set('wd-title', pos+(ex?' · '+ex:''));
   const loc=(w.province||'')+(w.district?' ('+w.district+')':''); set('wd-loc', loc||'—');
-  set('wd-trust', 'ผ่านงาน DentMatch แล้ว '+(w.trust_score||0)+' ครั้ง');
-  set('wd-member', 'สมาชิก '+_dmMonths(w.member_since)+' เดือน');
+  const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อน 0
+  const trow=document.getElementById('wd-trust-row'); if(trow) trow.style.display=_ts>0?'':'none';
+  set('wd-trust', 'ผ่านงาน DentMatch แล้ว '+_ts+' ครั้ง');
+  set('wd-member', _mo>0?('สมาชิก '+_mo+' เดือน'):'สมาชิกใหม่');
   set('wd-since', _dmSince(w.member_since));
   const bd=document.getElementById('wd-badges'); if(bd) bd.innerHTML='<span class="bdg bdg-role">'+_dmEsc(pos)+'</span>';
   const sk=document.getElementById('wd-skills');
