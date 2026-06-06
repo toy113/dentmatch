@@ -1091,7 +1091,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
           <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
           <div style="font-size:14px;font-weight:600;color:var(--p800)">เสาร์-อาทิตย์ ทุกสัปดาห์</div>
-          <div style="font-size:13px;color:var(--ink3);margin-top:3px">09:00 – 17:00 น. (8 ชั่วโมง)</div>
+          <div style="font-size:13px;color:var(--ink3);margin-top:3px">09:00 – 17:00 น.</div>
         </div>
       </div>
       <div style="background:linear-gradient(135deg,var(--p800),var(--p600));border-radius:var(--r);padding:18px;box-shadow:0 6px 20px rgba(60,30,130,.28)">
@@ -3139,15 +3139,6 @@ let _dmJDDefault=null;     // HTML mock เดิมของ v-job-detail .scro
 let _dmJDSubDefault=null;  // ข้อความ mini-hdr-sub เดิม (อยู่นอก .scroll → restore แยก)
 let _dmRealJobOpen=false;  // true = เปิด v-job-detail ครั้งนี้มาจาก dmOpenJob (อย่า restore)
 function _dmAddr(province, district){ return [district, province].filter(Boolean).map(_dmEsc).join(' · '); }
-function _dmHours(job){     // "(8 ชั่วโมง)" ถ้ามี time_start/end
-  if(!job.time_start || !job.time_end) return '';
-  const a=job.time_start.split(':'), b=job.time_end.split(':');
-  if(a.length<2||b.length<2) return '';
-  const h=(parseInt(b[0],10)*60+parseInt(b[1],10))-(parseInt(a[0],10)*60+parseInt(a[1],10));
-  if(!(h>0)) return '';
-  const hr=Math.round(h/60*10)/10;
-  return ' ('+(Number.isInteger(hr)?hr:hr.toFixed(1))+' ชั่วโมง)';
-}
 function dmJobDetailHTML(job){
   const clinic=job.clinics||{};
   const cname=_dmEsc(clinic.name||'คลินิก');
@@ -3156,7 +3147,7 @@ function dmJobDetailHTML(job){
   const urg=job.urgent?'<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>':'';
   const accent=job.urgent?'linear-gradient(180deg,var(--orange),#FFB26B)':'linear-gradient(180deg,var(--p400),var(--p200))';
   const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
-  const time=(job.time_start&&job.time_end)?(_dmEsc(job.time_start)+' – '+_dmEsc(job.time_end)+' น.'+_dmHours(job)):'';
+  const time=(job.time_start&&job.time_end)?(_dmEsc(job.time_start)+' – '+_dmEsc(job.time_end)+' น.'):'';
   const wage=job.wage_text?_dmEsc(job.wage_text):'ตามตกลง';
   const jobAddr=_dmAddr(job.province, job.district);
   const isOwner=(dmUser && job.clinic_id===dmUser.id);
