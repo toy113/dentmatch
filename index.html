@@ -3810,8 +3810,9 @@ async function dmLoadWorkerInbox(){
 async function dmMarkSaved(id){
   if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
   try{
-    const { error } = await dmSb().from('invites').update({ status:'accepted' }).eq('id', id);   // RLS inv_upd: worker_id=auth.uid
+    const { data, error } = await dmSb().from('invites').update({ status:'accepted' }).eq('id', id).select('id');   // RLS inv_upd: worker_id=auth.uid · .select ยืนยันว่าอัปเดตติดจริง
     if(error){ console.error('[inbox] บันทึก ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    if(!data || !data.length){ console.warn('[inbox] บันทึก: 0 rows (RLS/anon — เซสชันหลุด?)', id); showToast('บันทึกไม่สำเร็จ — เซสชันอาจหมดอายุ ลองเข้าสู่ระบบใหม่'); return; }   // 0 แถว = ไม่มีสิทธิ์/ไม่ได้ login
     dmLog('[inbox] บันทึก ✓', id);
     showToast('<i data-lucide="bookmark"></i> บันทึกคำเชิญแล้ว');
     await dmLoadWorkerInbox();
