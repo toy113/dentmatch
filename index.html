@@ -4609,11 +4609,19 @@ function initBeta(){
 }
 
 // Make non-native clickable elements (div[onclick]) reachable & operable by keyboard
+const A11Y_LBL={bell:'การแจ้งเตือน','arrow-left':'ย้อนกลับ','chevron-left':'ย้อนกลับ',x:'ปิด','x-circle':'ปิด',search:'ค้นหา','square-pen':'แก้ไข','log-out':'ออกจากระบบ','trash-2':'ลบ',check:'ยืนยัน','refresh-cw':'ต่ออายุ','rotate-ccw':'เปิดงานอีกครั้ง',plus:'เพิ่ม',send:'ส่ง',bookmark:'บันทึก',eye:'ดูรายละเอียด','notebook-pen':'บันทึกงาน','layout-grid':'มุมมองตาราง',list:'มุมมองรายการ',save:'บันทึก','external-link':'เปิดลิงก์'};
+function _a11yIcon(el){ const i=el.querySelector('[data-lucide]'); if(i) return i.getAttribute('data-lucide'); const s=el.querySelector('svg[class*="lucide-"]'); const m=s&&(s.getAttribute('class')||'').match(/lucide-([a-z0-9-]+)/); return m?m[1]:null; }
 function initA11y(){
   document.querySelectorAll('[onclick]').forEach(el=>{
     if(el.matches('button,a,input,select,textarea')) return;
     if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
     if(!el.hasAttribute('role')) el.setAttribute('role','button');
+  });
+  // a11y: ปุ่ม icon ล้วน (ไม่มีข้อความ) → ใส่ aria-label ไทยจาก icon ให้ screen reader อ่านออก
+  document.querySelectorAll('button, [role="button"], a[onclick]').forEach(el=>{
+    if(el.getAttribute('aria-label') || (el.textContent||'').trim()) return;   // มี label/ข้อความแล้ว → ข้าม
+    const ic=_a11yIcon(el), lbl=ic&&A11Y_LBL[ic];
+    if(lbl) el.setAttribute('aria-label', lbl);
   });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Enter' && e.key!==' ') return;
