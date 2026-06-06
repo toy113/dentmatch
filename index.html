@@ -3041,7 +3041,7 @@ function dmJobCard(job){
   const wage=_dmEsc(_dmWage(job));
   return `<div class="jcard${job.urgent?' urg':''}" data-clinic="${cname}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">${pos}</span>${badge2}</div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${_dmEsc(job.title)}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> ${loc}</span></div>
@@ -3169,7 +3169,7 @@ function dmJobDetailHTML(job){
       <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border);position:relative;overflow:hidden">
         <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${accent};border-radius:4px 0 0 4px"></div>
         <div class="badges" style="margin-bottom:12px"><span class="bdg bdg-role">${pos}</span>${skill0}${urg}</div>
-        <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">${_dmEsc(job.title)}</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">${pos}</div>
         <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px"><i data-lucide="hospital"></i> ${cname}${jobAddr?' · '+jobAddr:''}</div>
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
           <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
@@ -4375,7 +4375,7 @@ function previewPost(){
   box.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="clipboard-list"></i> ตัวอย่างที่จะแสดงใน job board</div>'
     +'<div class="jcard" style="cursor:default;animation:none">'
     +'<div class="badges"><span class="bdg bdg-role">'+pos+'</span>'+(skills[0]?'<span class="bdg bdg-br">'+skills[0]+'</span>':'')+'</div>'
-    +'<div class="jcard-title" style="margin-bottom:3px">'+pos+(skills[0]?(' '+skills[0]):'')+'</div>'
+    +'<div class="jcard-title" style="margin-bottom:3px">'+pos+'</div>'
     +'<div class="jcard-clinic"><i data-lucide="hospital"></i> คลินิกทันตกรรมสยาม</div>'
     +'<div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">'+sched+'</span></div>'
     +'<div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> กรุงเทพฯ</span>'+(skills[0]?'<span class="pill pill-b">'+skills[0]+'</span>':'')+'</div>'
