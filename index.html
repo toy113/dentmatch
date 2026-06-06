@@ -3960,7 +3960,12 @@ function _dmNotiBump(){
 }
 function _dmNotiOnChange(){
   clearTimeout(_dmNotiDebounce);
-  _dmNotiDebounce=setTimeout(()=>{ dmLoadNoti(); _dmNotiBump(); }, 350);   // debounce กัน event รัวๆ
+  _dmNotiDebounce=setTimeout(()=>{
+    dmLoadNoti(); _dmNotiBump();
+    // re-derive รายการที่เกี่ยวข้องด้วย (ไม่ใช่แค่กระดิ่ง) → การ์ดใหม่โผล่ทันที ไม่ต้อง reload
+    if(dmUser && dmUser.role==='worker'){ dmLoadWorkerInbox(); dmLoadWorkerConfirm(); }
+    else if(dmUser && dmUser.role==='clinic'){ dmLoadClinicInvites(); dmLoadManageBoard(); }
+  }, 350);   // debounce กัน event รัวๆ
 }
 function dmSubscribeNoti(){
   if(!dmSb() || !dmUser) return;
