@@ -2448,7 +2448,7 @@ async function saveClinicProfile(){
     try{
       const { error } = await dmSb().from('clinics').update({ line_id, phone }).eq('id', dmUser.id);   // ★ name/province ไม่อยู่ใน grant → แก้ไม่ได้ (locked)
       if(error){ console.error('[cprofile] save ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
-      console.log('[cprofile] save สำเร็จ ✓ line_id+phone');
+      dmLog('[cprofile] save สำเร็จ ✓ line_id+phone');
       if(dmUser.clinic){ dmUser.clinic.line_id=line_id; dmUser.clinic.phone=phone; }
     }catch(e){ console.error('[cprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); return; }
   }
@@ -2907,6 +2907,9 @@ async function dmLoadProfile(){
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
 const DM_TOOTH_SVG = '<svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg>';
 const DM_POS_LABEL = { dentist:'ทันตแพทย์', assistant:'ผู้ช่วยฯ', counter:'เคาน์เตอร์' };
+// debug log gate: production = เงียบ · ตั้ง window.DM_DEBUG=true ใน console เพื่อเปิด diagnostic ([tag] logs) · console.error ยัง surface เสมอ
+let DM_DEBUG = false;
+function dmLog(){ if(DM_DEBUG){ try{ console.log.apply(console, arguments); }catch(e){} } }
 const DM_DAYS = ['จ','อ','พ','พฤ','ศ','ส','อา'];   // index+1 = day number (1=จ..7=อา)
 function _dmEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
@@ -3140,7 +3143,7 @@ async function dmPostJob(){
   try{
     const { data, error }=await dmSb().from('jobs').insert(row).select();
     if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
-    console.log('[postjob] insert สำเร็จ ✓', data);
+    dmLog('[postjob] insert สำเร็จ ✓', data);
     openSheet('s-post-success');
     await dmLoadJobsBoard();     // refresh บอร์ด → งานใหม่โผล่บนสุด
     await dmLoadManageBoard();   // refresh แท็บจัดการด้วย
@@ -3167,10 +3170,10 @@ async function dmOpenInvite(workerId, anon){
     } else if(attJob){   // ไม่มีงานเปิด + แนบประกาศงาน → empty state
       if(sel) sel.innerHTML=''; if(hasJobs) hasJobs.style.display='none'; if(noJobs) noJobs.style.display='block'; if(sendBtn) sendBtn.style.display='none';
     }
-  }catch(e){ console.warn('[invite] load jobs', e); }
+  }catch(e){ dmLog('[invite] load jobs', e); }
 }
 async function dmSendInvite(){
-  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ console.warn('[invite] ไม่ใช่ clinic session → mock'); openSheet('s-invite-success'); return; }
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ dmLog('[invite] ไม่ใช่ clinic session → mock'); openSheet('s-invite-success'); return; }
   if(!_inviteWorkerId){ showToast('ไม่พบบุคลากรที่จะเชิญ'); return; }
   let job_id=null;
   const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
@@ -3180,10 +3183,10 @@ async function dmSendInvite(){
     const { data, error }=await dmSb().from('invites')
       .insert({ clinic_id:dmUser.id, worker_id:_inviteWorkerId, job_id, message }).select();
     if(error){
-      if(/duplicate|unique/i.test(error.message)){ console.warn('[invite] ซ้ำ:', error.message); showToast('เคยส่งคำเชิญงานนี้ให้บุคลากรคนนี้แล้ว'); closeSheet('s-invite'); return; }
+      if(/duplicate|unique/i.test(error.message)){ dmLog('[invite] ซ้ำ:', error.message); showToast('เคยส่งคำเชิญงานนี้ให้บุคลากรคนนี้แล้ว'); closeSheet('s-invite'); return; }
       console.error('[invite] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ส่งคำเชิญไม่สำเร็จ: '+error.message); return;
     }
-    console.log('[invite] insert สำเร็จ ✓', data);
+    dmLog('[invite] insert สำเร็จ ✓', data);
     openSheet('s-invite-success');
     if(typeof dmLoadClinicInvites==='function') dmLoadClinicInvites();   // C4b: refresh "คำเชิญที่ส่ง" ทันที
   }catch(e){ console.error('[invite] exception', e); showToast('ส่งคำเชิญไม่สำเร็จ'); }
@@ -3234,7 +3237,7 @@ async function dmLoadManageBoard(){
     const { data, error } = await dmSb().from('jobs')
       .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
-    if(error){ console.warn('[manage] load', error); return; }
+    if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
     data.forEach(j=>{ _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้
     const wrap=document.getElementById('cc-manage-cards');
@@ -3245,15 +3248,15 @@ async function dmLoadManageBoard(){
     const setN=(id,n)=>{ const e=document.getElementById(id); if(e) e.textContent=n; };
     setN('m-stat-all',data.length); setN('m-stat-open',open); setN('m-stat-urg',urg); setN('m-stat-closed',data.length-open);
     refreshIcons();
-    console.log('[manage] โหลด', data.length, 'งาน');
-  }catch(e){ console.warn('[manage] exception', e); }
+    dmLog('[manage] โหลด', data.length, 'งาน');
+  }catch(e){ dmLog('[manage] exception', e); }
 }
 async function _dmJobUpdate(id, patch, msg){
   if(!dmSb() || !dmUser) return false;
   try{
     const { error } = await dmSb().from('jobs').update(patch).eq('id', id);   // RLS j_cud: clinic_id=auth.uid
     if(error){ console.error('[manage] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return false; }
-    console.log('[manage] update ✓', id, JSON.stringify(patch));
+    dmLog('[manage] update ✓', id, JSON.stringify(patch));
     if(_dmJobs[id]) Object.assign(_dmJobs[id], patch);
     await dmLoadManageBoard(); await dmLoadJobsBoard();
     if(msg) showToast(msg);
@@ -3269,7 +3272,7 @@ async function dmDeleteJob(id){
   try{
     const { error } = await dmSb().from('jobs').delete().eq('id', id);   // RLS j_cud
     if(error){ console.error('[manage] delete ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลบไม่สำเร็จ: '+error.message); return; }
-    console.log('[manage] deleted ✓', id); delete _dmJobs[id];
+    dmLog('[manage] deleted ✓', id); delete _dmJobs[id];
     await dmLoadManageBoard(); await dmLoadJobsBoard();
     showToast('ลบประกาศแล้ว');
   }catch(e){ console.error('[manage] delete exception', e); }
@@ -3296,7 +3299,7 @@ async function dmLoadLogWorkers(){
       return `<div data-workerid="${e.worker_id}" onclick="selectWorkerLog(this)" style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px">${DM_TOOTH_SVG}</div><div><div style="font-size:13px;font-weight:600;color:var(--ink)">${pos} · ${_dmEsc(w.anon_id||'')} · ${loc}</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE ${_dmEsc(_dmAgo(e.created_at))}</div></div></div>`;
     }).join('');
     refreshIcons();
-  }catch(e){ console.warn('[worklog] load workers', e); }
+  }catch(e){ dmLog('[worklog] load workers', e); }
 }
 async function dmSaveWorkLog(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ openSheet('s-log-success'); return; }   // demo = mock
@@ -3309,7 +3312,7 @@ async function dmSaveWorkLog(){
     const { data, error } = await dmSb().from('work_logs')
       .insert({ clinic_id:dmUser.id, worker_id:_logWorkerId, job_id:_logJobId, work_date, clinic_outcome:outcome }).select();
     if(error){ console.error('[worklog] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
-    console.log('[worklog] insert สำเร็จ ✓ outcome=', outcome, data);
+    dmLog('[worklog] insert สำเร็จ ✓ outcome=', outcome, data);
     openSheet('s-log-success');
   }catch(e){ console.error('[worklog] exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
@@ -3503,7 +3506,7 @@ async function dmSetAvailable(available){
   try{
     const { error }=await dmSb().from('worker_profiles').update({ available }).eq('id',dmUser.id);   // available อยู่ใน grant (ไม่ใช่ protected)
     if(error){ console.error('[wprofile] available ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return; }
-    console.log('[wprofile] available →', available);
+    dmLog('[wprofile] available →', available);
     if(dmUser.worker) dmUser.worker.available=available;
   }catch(e){ console.error('[wprofile] available exception', e); }
 }
@@ -3534,7 +3537,7 @@ async function dmSwapPosition(newPos){
   try{
     const { error } = await dmSb().from('worker_profiles').update({ position:newPos }).eq('id', dmUser.id);   // position อยู่ใน grant · trigger อนุญาต assistant↔counter
     if(error){ console.error('[swap-pos] ล้มเหลว:', error.message, '| code:', error.code, error); showToast('สลับไม่สำเร็จ: '+error.message); return; }
-    console.log('[swap-pos] →', newPos);
+    dmLog('[swap-pos] →', newPos);
     dmUser.worker.position=newPos;
     showToast('<i data-lucide="check"></i> สลับเป็น '+(DM_POS_LABEL[newPos]||newPos)+' แล้ว');
     dmRenderEditPos(newPos);              // อัปเดตปุ่ม
@@ -3572,11 +3575,11 @@ async function dmSaveWorkerProfile(){
   const provTags=[].map.call(root.querySelectorAll('#editProvSelected .sel-prov-tag'), t=>((t.childNodes[0]&&t.childNodes[0].textContent)||'').trim()).filter(Boolean);
   const patch={ skills, experience_years, available_days:days, bio };   // ★ เฉพาะ grant · ไม่แตะ trust/anon/license ฯลฯ
   if(provTags.length){ patch.provinces=provTags; patch.province=provTags[0]; }   // provinces=ครบ · province=ตัวหลัก
-  console.log('[wprofile] save', JSON.stringify(patch));
+  dmLog('[wprofile] save', JSON.stringify(patch));
   try{
     const { error } = await dmSb().from('worker_profiles').update(patch).eq('id', dmUser.id);
     if(error){ console.error('[wprofile] save ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
-    console.log('[wprofile] save สำเร็จ ✓');
+    dmLog('[wprofile] save สำเร็จ ✓');
     if(dmUser.worker) Object.assign(dmUser.worker, patch);
     dmFillWorkerProfile(dmUser.worker);   // อัปเดต profile body ทันที
     openSheet('s-save-success');
@@ -3609,7 +3612,7 @@ async function dmLoadWorkerInbox(){
     const { data, error } = await dmSb().from('invites')
       .select('id, status, message, created_at, clinics(name, province, district, line_id), jobs(title, wage_text)')
       .eq('worker_id', dmUser.id).order('created_at',{ascending:false}).limit(60);
-    if(error){ console.warn('[inbox] worker load', error); return; }
+    if(error){ dmLog('[inbox] worker load', error); return; }
     if(!data) return;
     const render=(arr)=>arr.length?arr.map(dmInviteCard).join(''):'<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีคำเชิญ</div>';
     const setPane=(id,arr)=>{ const el=document.getElementById(id); if(el) el.innerHTML=render(arr); };
@@ -3619,15 +3622,15 @@ async function dmLoadWorkerInbox(){
     setPane('inbox-all', data);
     const nb=document.querySelector('#wt-inbox .it .badge-new'); if(nb) nb.textContent=pending.length;
     refreshIcons();
-    console.log('[inbox] worker', data.length, 'คำเชิญ');
-  }catch(e){ console.warn('[inbox] worker exception', e); }
+    dmLog('[inbox] worker', data.length, 'คำเชิญ');
+  }catch(e){ dmLog('[inbox] worker exception', e); }
 }
 async function dmMarkSaved(id){
   if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
   try{
     const { error } = await dmSb().from('invites').update({ status:'accepted' }).eq('id', id);   // RLS inv_upd: worker_id=auth.uid
     if(error){ console.error('[inbox] บันทึก ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
-    console.log('[inbox] บันทึก ✓', id);
+    dmLog('[inbox] บันทึก ✓', id);
     showToast('<i data-lucide="bookmark"></i> บันทึกคำเชิญแล้ว');
     await dmLoadWorkerInbox();
   }catch(e){ console.error('[inbox] บันทึก exception', e); }
@@ -3655,7 +3658,7 @@ async function dmLoadClinicInvites(){
     const { data, error } = await dmSb().from('invites')
       .select('id, status, message, created_at, worker_profiles(anon_id, position, province, district, skills, experience_years), jobs(title)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(60);
-    if(error){ console.warn('[inbox] clinic load', error); return; }
+    if(error){ dmLog('[inbox] clinic load', error); return; }
     if(!data) return;
     const wrap=document.getElementById('cc-invites-cards');
     if(wrap) wrap.innerHTML = data.length?data.map(dmSinvCard).join(''):'<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่ได้ส่งคำเชิญ</div>';
@@ -3665,8 +3668,8 @@ async function dmLoadClinicInvites(){
     if(sn[1]) sn[1].textContent=read;
     if(sn[2]) sn[2].textContent=data.length-read;
     refreshIcons();
-    console.log('[inbox] clinic', data.length, 'คำเชิญที่ส่ง');
-  }catch(e){ console.warn('[inbox] clinic exception', e); }
+    dmLog('[inbox] clinic', data.length, 'คำเชิญที่ส่ง');
+  }catch(e){ dmLog('[inbox] clinic exception', e); }
 }
 /* ════════ C4c — worker ยืนยันผลงาน (2-party · RPC set_work_outcome) · ปิด loop trust ════════ */
 function dmWorkLogConfirmCard(wl){
@@ -3690,19 +3693,19 @@ async function dmLoadWorkerConfirm(){
     const { data, error } = await dmSb().from('work_logs')
       .select('id, work_date, clinics(name), jobs(title)')
       .eq('worker_id', dmUser.id).is('worker_outcome', null).order('work_date',{ascending:false}).limit(30);
-    if(error){ console.warn('[worklog-confirm] load', error); return; }
+    if(error){ dmLog('[worklog-confirm] load', error); return; }
     if(data && data.length){ cards.innerHTML=data.map(dmWorkLogConfirmCard).join(''); section.style.display=''; }
     else { cards.innerHTML=''; section.style.display='none'; }
     refreshIcons();
-    console.log('[worklog-confirm]', (data||[]).length, 'รอยืนยัน');
-  }catch(e){ console.warn('[worklog-confirm] exception', e); }
+    dmLog('[worklog-confirm]', (data||[]).length, 'รอยืนยัน');
+  }catch(e){ dmLog('[worklog-confirm] exception', e); }
 }
 async function dmConfirmWork(id, outcome){
   if(!dmSb() || !dmUser || dmUser.role!=='worker') return;
   try{
     const { error } = await dmSb().rpc('set_work_outcome', { p_log:id, p_outcome:outcome });   // RPC: worker → worker_outcome เท่านั้น
     if(error){ console.error('[worklog-confirm] RPC ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ยืนยันไม่สำเร็จ: '+error.message); return; }
-    console.log('[worklog-confirm] ยืนยัน ✓', outcome, id);
+    dmLog('[worklog-confirm] ยืนยัน ✓', outcome, id);
     showToast(outcome==='came'?'<i data-lucide="check"></i> ยืนยันแล้ว — ขอบคุณครับ':'บันทึกแล้ว');
     await dmLoadProfile();   // refresh: confirm list หาย + trust อาจ +1 (ถ้าตรงกับ clinic)
   }catch(e){ console.error('[worklog-confirm] exception', e); }
@@ -3767,8 +3770,8 @@ async function dmLoadNoti(){
       dmSetNotiBadge('clinic', items.length);
     }
     refreshIcons();
-    console.log('[noti]', dmUser.role, items.length);
-  }catch(e){ console.warn('[noti]', e); }
+    dmLog('[noti]', dmUser.role, items.length);
+  }catch(e){ dmLog('[noti]', e); }
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
@@ -3931,20 +3934,20 @@ function copyMsgAgain() {
 // C3b: บันทึก add_line_events ของจริง (worker → job) · ทำให้ "ADD LINE แล้ว N คน" เป็นยอดจริง
 // RLS ale_ins: worker_id=auth.uid() ; dedup 1 ครั้ง/worker/job (count = จำนวนคนจริง ไม่เฟ้อ)
 async function dmRecordAddLine(){
-  if(!dmSb() || !dmUser){ console.warn('[addline] ข้าม: ยังไม่ล็อกอิน', {sb:!!dmSb(), dmUser}); return; }
-  if(dmUser.role!=='worker'){ console.warn('[addline] ข้าม: role =', dmUser.role, '(ฟีเจอร์นี้สำหรับ worker เท่านั้น — clinic ไม่บันทึก)'); return; }
-  if(!_addLineJobId || !_addLineClinicId){ console.warn('[addline] ข้าม: ไม่มี id จริง (การ์ด mock?)', {jobId:_addLineJobId, clinicId:_addLineClinicId}); return; }
+  if(!dmSb() || !dmUser){ dmLog('[addline] ข้าม: ยังไม่ล็อกอิน', {sb:!!dmSb(), dmUser}); return; }
+  if(dmUser.role!=='worker'){ dmLog('[addline] ข้าม: role =', dmUser.role, '(ฟีเจอร์นี้สำหรับ worker เท่านั้น — clinic ไม่บันทึก)'); return; }
+  if(!_addLineJobId || !_addLineClinicId){ dmLog('[addline] ข้าม: ไม่มี id จริง (การ์ด mock?)', {jobId:_addLineJobId, clinicId:_addLineClinicId}); return; }
   try{
     // dedup 1/worker/job (count = จำนวนคนจริง)
     const dup = await dmSb().from('add_line_events').select('id',{count:'exact',head:true})
       .eq('worker_id', dmUser.id).eq('job_id', _addLineJobId);
-    if(dup.error) console.warn('[addline] เช็คซ้ำ error', dup.error);
-    if(dup.count && dup.count>0){ console.log('[addline] เคยกดงานนี้แล้ว ('+dup.count+') → ข้าม insert'); return; }
+    if(dup.error) dmLog('[addline] เช็คซ้ำ error', dup.error);
+    if(dup.count && dup.count>0){ dmLog('[addline] เคยกดงานนี้แล้ว ('+dup.count+') → ข้าม insert'); return; }
     // ★ supabase-js return {error} ไม่ throw → ต้องเช็คเอง (เดิมไม่เช็ค = บั๊กเงียบ)
     const { data, error } = await dmSb().from('add_line_events')
       .insert({ worker_id:dmUser.id, clinic_id:_addLineClinicId, job_id:_addLineJobId }).select();
     if(error){ console.error('[addline] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึก Add LINE ไม่สำเร็จ: '+error.message); return; }
-    console.log('[addline] insert สำเร็จ ✓', data);
+    dmLog('[addline] insert สำเร็จ ✓', data);
   }catch(e){ console.error('[addline] exception', e); }
 }
 function confirmLineSent() {
@@ -4122,7 +4125,7 @@ function setPayType(type) {
 }
 /* validate ฟอร์มลงงาน: ต้องเลือกวันทำงาน ≥1 + ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") */
 function validatePost(){
-  console.log('[postjob] validatePost เรียกแล้ว · role=', (dmUser&&dmUser.role), '· sb=', (typeof dmSb==='function'&&!!dmSb()));
+  dmLog('[postjob] validatePost เรียกแล้ว · role=', (dmUser&&dmUser.role), '· sb=', (typeof dmSb==='function'&&!!dmSb()));
   const days=document.getElementById('postDays');
   const wage=document.getElementById('wage-input');
   const err=document.getElementById('post-err');
@@ -4134,10 +4137,10 @@ function validatePost(){
   if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
     showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
   }
-  if(!ok){ console.warn('[postjob] validation fail:', msgs.join(' · ')); if(err){ err.innerHTML='<i data-lucide="triangle-alert"></i> กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
+  if(!ok){ dmLog('[postjob] validation fail:', msgs.join(' · ')); if(err){ err.innerHTML='<i data-lucide="triangle-alert"></i> กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
   if(err) err.style.display='none';
-  if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){ console.log('[postjob] → dmPostJob (insert จริง)'); dmPostJob(); }
-  else { console.warn('[postjob] ไม่ใช่ clinic session → mock success (ต้อง login เป็นคลินิกถึงจะ insert จริง) · role=', (dmUser&&dmUser.role)); openSheet('s-post-success'); }
+  if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){ dmLog('[postjob] → dmPostJob (insert จริง)'); dmPostJob(); }
+  else { dmLog('[postjob] ไม่ใช่ clinic session → mock success (ต้อง login เป็นคลินิกถึงจะ insert จริง) · role=', (dmUser&&dmUser.role)); openSheet('s-post-success'); }
 }
 /* ดูตัวอย่างการ์ดงานจากค่าที่กรอก (toggle) */
 function previewPost(){
