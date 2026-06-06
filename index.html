@@ -1865,7 +1865,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">1. ผู้ให้บริการ</div>DentMatch เป็นแพลตฟอร์มที่ดำเนินการโดย ผู้ให้บริการรายบุคคล (บุคคลธรรมดา) การใช้งานถือว่าคุณยอมรับเงื่อนไขนี้</div>
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">2. คุณสมบัติผู้ใช้</div>ผู้ใช้ต้องมีอายุ 18 ปีบริบูรณ์ขึ้นไป และให้ข้อมูลที่ถูกต้องและเป็นความจริง</div>
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">3. บัญชีผู้ใช้</div>ห้ามสร้างบัญชีปลอมหรือแอบอ้างตัวตนผู้อื่น บัญชีที่ละเมิดจะถูกระงับโดยไม่แจ้งล่วงหน้า</div>
-      <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">4. บทบาทการเป็นตัวกลาง</div>DentMatch เป็นเพียงตัวกลางเชื่อมต่อคลินิกและบุคลากร ไม่ได้เป็นนายจ้าง คู่สัญญาจ้าง หรือรับประกันผลของการจ้างงานระหว่างทั้งสองฝ่าย</div>
+      <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">4. บทบาทการเป็นตัวกลาง</div>DentMatch เป็นเพียงตัวกลางเชื่อมต่อคลินิกและบุคลากร ไม่ได้เป็นนายจ้าง คู่สัญญาจ้าง หรือรับประกันผลของการจ้างงานระหว่างทั้งสองฝ่าย และไม่ได้ตรวจสอบใบประกอบวิชาชีพหรือคุณสมบัติของบุคลากร — คลินิกมีหน้าที่ตรวจสอบใบประกอบและคุณสมบัติของผู้สมัครด้วยตนเองก่อนการจ้าง</div>
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">5. การจำกัดความรับผิด</div>ผู้ให้บริการไม่รับผิดต่อความเสียหายที่เกิดจากการตกลงจ้างงาน การติดต่อ หรือการใช้ข้อมูลระหว่างผู้ใช้ ผู้ใช้ควรตรวจสอบคู่สัญญาด้วยตนเองก่อนตกลง</div>
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">6. การยกเลิกบัญชี</div>ผู้ใช้สามารถขอลบบัญชีได้ตลอดเวลาผ่านการติดต่อทีมงาน ข้อมูลจะถูกลบภายใน 60 วัน</div>
       <div><div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px">7. การเปลี่ยนแปลงเงื่อนไข</div>DentMatch ขอสงวนสิทธิ์ในการปรับปรุง Terms of Use โดยจะแจ้งผู้ใช้ล่วงหน้า</div>
@@ -2057,6 +2057,15 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="font-size:11.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">ข้อมูลโปรไฟล์ (แสดงแบบไม่ระบุตัวตน)</div>
       <select class="inp" style="margin-bottom:9px" id="regWorkerPos" onchange="regWorkerSkills(this.value)"><option value="">เลือกตำแหน่ง...</option><option value="dentist">ทันตแพทย์</option><option value="assistant">ผู้ช่วยทันตแพทย์</option><option value="counter">เจ้าหน้าที่เคาน์เตอร์</option></select>
       <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:-2px 0 11px;font-size:11.5px;color:var(--orange2);line-height:1.55;display:flex;align-items:flex-start;gap:6px"><span><i data-lucide="triangle-alert"></i></span><span><strong>ทันตแพทย์</strong> = แก้ไขไม่ได้ · <strong>ผู้ช่วยฯ ↔ เคาน์เตอร์</strong> สลับกันได้ภายหลัง</span></div>
+      <!-- ใบประกอบ (เฉพาะทันตแพทย์ · self-attestation: เก็บเลข ไม่ verify) -->
+      <div id="rw-license-wrap" style="display:none;margin:-2px 0 11px">
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">เลขที่ใบประกอบวิชาชีพ *</label>
+        <input id="rw-license" class="inp" type="text" placeholder="เช่น ท.12345" style="margin-bottom:9px">
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--ink3);line-height:1.5;cursor:pointer">
+          <input id="rw-attest" type="checkbox" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--p600)">
+          <span>ยืนยันว่าข้าพเจ้ามีใบประกอบวิชาชีพทันตกรรมจริง — การให้ข้อมูลเท็จมีผลทางกฎหมาย</span>
+        </label>
+      </div>
       <div class="form-group" style="margin-bottom:9px">
         <label id="regSkillLabel" style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">ทักษะ / สาขา</label>
         <div class="chip-row" style="flex-wrap:wrap" id="regWorkerSkillChips"><span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span></div>
@@ -2712,6 +2721,12 @@ function validateRegWorker(){
   let ok=true;
   [fname,lname].forEach(el=>{if(el&&!el.value.trim()){showInpError(el);ok=false;}});
   if(!pos.value){showInpError(pos);ok=false;}
+  // dentist (self-attestation): ต้องกรอกเลขใบประกอบ + ติ๊กยืนยัน
+  if(pos.value==='dentist'){
+    const lic=document.getElementById('rw-license'), att=document.getElementById('rw-attest');
+    if(lic && !lic.value.trim()){ showInpError(lic); ok=false; }
+    if(att && !att.checked){ ok=false; const w=document.getElementById('rw-license-wrap'); if(w){ w.style.outline='2px solid var(--red)'; w.style.borderRadius='8px'; setTimeout(()=>w.style.outline='',2000); } }
+  }
   // phone must be 10 digits
   if(!phone.value.trim()||phone.value.replace(/\D/g,'').length<10){showInpError(phone);ok=false;}
   if(regProvs.size===0){
@@ -2746,12 +2761,15 @@ async function nextAfterRegWorker() {
   const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
   const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
   const bio=document.getElementById('rw-bio');
+  const _pos=document.getElementById('regWorkerPos').value||'assistant';
+  const _lic=((document.getElementById('rw-license')||{}).value||'').trim();
   pendingSignup={ role:'worker', email,
     first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
     phone:(document.getElementById('rw-phone').value||'').trim(),
-    position:document.getElementById('regWorkerPos').value||'assistant',
+    position:_pos,
     province:[...regProvs][0]||'', provinces:[...regProvs],   // province=ตัวหลัก · provinces=ครบ
-    bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value) };
+    bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value),
+    license_no:(_pos==='dentist'&&_lic)?_lic:null };
   _otpEmail=email; _otpMode='register';
   if(await dmSendEmailOtp(email,true)){
     const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
@@ -2882,9 +2900,12 @@ async function dmCreateRecords(uid, s){
   if(s.role==='clinic'){
     await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null });
   } else {
-    // หมายเหตุ: dentist ตอนสมัครยังไม่ verify ใบประกอบ — gate ฝั่ง insert ควรเพิ่มใน migration ถัดไป
+    // worker (รวม dentist self-attestation: license_verified=false เสมอ · trigger 0011 บังคับ)
     await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
     await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
+    if(s.position==='dentist' && s.license_no){   // เก็บเลขใบประกอบ (audit trail · ไม่ verify · ไม่มี badge)
+      await ins('worker_license', { worker_id:uid, license_no:s.license_no });
+    }
   }
 }
 // โหลดโปรไฟล์จริงจาก DB มาแสดงบนหัว (พิสูจน์ว่าไม่ใช่ mock)
@@ -3244,6 +3265,10 @@ async function dmOpenInvite(workerId, anon){
 async function dmSendInvite(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ dmLog('[invite] ไม่ใช่ clinic session → mock'); openSheet('s-invite-success'); return; }
   if(!_inviteWorkerId){ showToast('ไม่พบบุคลากรที่จะเชิญ'); return; }
+  if(!localStorage.getItem('dm_med_disclosure')){   // disclosure สื่อกลาง: โชว์ครั้งเดียวตอนส่งคำเชิญ
+    try{ localStorage.setItem('dm_med_disclosure','1'); }catch(e){}
+    showToast('DentMatch เป็นสื่อกลาง ไม่ได้ตรวจสอบใบประกอบวิชาชีพ โปรดตรวจสอบกับทันตแพทย์โดยตรง');
+  }
   let job_id=null;
   const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
   if(attJob){ const sel=document.getElementById('invite-job-select'); job_id=(sel && sel.value)||null; }
@@ -3455,7 +3480,7 @@ async function dmFinishLineSignup(role){
     s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
         phone:(document.getElementById('rw-phone').value||'').trim(),
         position:document.getElementById('regWorkerPos').value||'assistant',
-        province:[...regProvs][0]||'', provinces:[...regProvs], bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid };
+        province:[...regProvs][0]||'', provinces:[...regProvs], bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid, license_no:((document.getElementById('regWorkerPos').value==='dentist')?(((document.getElementById('rw-license')||{}).value||'').trim()||null):null) };
   }
   try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
   dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
@@ -3914,6 +3939,9 @@ const BIO_PLACEHOLDER = {
   counter:   'บุคลิกดี สื่อสารเก่ง รับนัดและจัดตารางได้ ใช้คอมพิวเตอร์คล่อง',
 };
 function regWorkerSkills(pos){
+  const licW=document.getElementById('rw-license-wrap');   // ใบประกอบ: โชว์เฉพาะทันตแพทย์
+  if(licW){ licW.style.display=(pos==='dentist')?'block':'none';
+    if(pos!=='dentist'){ const l=document.getElementById('rw-license'),a=document.getElementById('rw-attest'); if(l)l.value=''; if(a)a.checked=false; } }
   const wrap=document.getElementById('regWorkerSkillChips'); if(!wrap)return;
   if(!pos){wrap.innerHTML='<span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span>';return;}
   const conf=POS_SKILLS[pos];
