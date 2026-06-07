@@ -236,6 +236,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .badges{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap;align-items:center}
 .bdg{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;font-family:'Sarabun',sans-serif}
 .bdg-role{background:var(--p100);color:var(--p700)}
+@keyframes dmShim{0%{background-position:-300px 0}100%{background-position:300px 0}}
+.dm-sk{background:linear-gradient(90deg,#eef0f5 25%,#f6f7fb 50%,#eef0f5 75%);background-size:600px 100%;animation:dmShim 1.2s linear infinite;border-radius:8px}
 .bdg-br{background:var(--p50);color:var(--p600);border:1px solid var(--p200)}
 .bdg-urg{background:var(--orange-bg);color:var(--orange);display:flex;align-items:center;gap:4px}
 .jcard-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.3}
@@ -2954,6 +2956,9 @@ const DM_TOOTH_SVG = '<svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill=
 const DM_POS_LABEL = { dentist:'ทันตแพทย์', assistant:'ผู้ช่วยฯ', counter:'เคาน์เตอร์' };
 const _DM_POS_COLOR = { dentist:{bar:'var(--p600)',bg:'var(--p100)',fg:'var(--p700)'}, assistant:{bar:'var(--blue)',bg:'var(--blue-bg)',fg:'var(--blue)'}, counter:{bar:'var(--green)',bg:'var(--green-bg)',fg:'#1a7a3a'} };
 function _dmPosColor(p){ return _DM_POS_COLOR[p] || {bar:'var(--p600)',bg:'var(--p100)',fg:'var(--p700)'}; }   // สีตามตำแหน่ง → scan การ์ดงานเร็ว
+let _dmJobsSkelDone=false, _dmWorkersSkelDone=false;   // skeleton เฉพาะโหลดครั้งแรก (re-load ไม่ flash)
+function _dmSkelJobs(n){ const c='<div class="jcard" style="cursor:default;border-left:4px solid var(--border2)"><div class="dm-sk" style="width:88px;height:18px;margin-bottom:10px"></div><div class="dm-sk" style="width:65%;height:18px;margin-bottom:9px"></div><div class="dm-sk" style="width:45%;height:13px;margin-bottom:10px"></div><div class="dm-sk" style="width:100%;height:30px;border-radius:10px"></div></div>'; return c.repeat(n||4); }
+function _dmSkelWorkers(n){ const c='<div class="wcard"><div style="display:flex;gap:12px;margin-bottom:10px"><div class="dm-sk" style="width:54px;height:54px;border-radius:14px"></div><div style="flex:1;padding-top:6px"><div class="dm-sk" style="width:60%;height:15px;margin-bottom:9px"></div><div class="dm-sk" style="width:40%;height:12px"></div></div></div><div class="dm-sk" style="width:100%;height:13px;margin-bottom:9px"></div><div class="dm-sk" style="width:100%;height:32px;border-radius:10px"></div></div>'; return c.repeat(n||4); }
 // debug log gate: production = เงียบ · ตั้ง window.DM_DEBUG=true ใน console เพื่อเปิด diagnostic ([tag] logs) · console.error ยัง surface เสมอ
 let DM_DEBUG = false;
 function dmLog(){ if(DM_DEBUG){ try{ console.log.apply(console, arguments); }catch(e){} } }
@@ -2989,6 +2994,7 @@ function dmWorkerCard(w){
 }
 async function dmLoadWorkerBoard(){
   if(!dmSb() || !dmUser) return;   // ต้อง authenticated (RLS) ; guest = คง mock
+  if(!_dmWorkersSkelDone){ const _wsk=document.querySelector('#cc-workers .cards'); if(_wsk){ _wsk.innerHTML=_dmSkelWorkers(4); _dmWorkersSkelDone=true; } }   // skeleton โหลดครั้งแรก
   try{
     // ★ public-safe เท่านั้น — ไม่ select worker_private / ไม่มีคอลัมน์ PII ในตารางนี้
     const { data, error } = await dmSb().from('worker_profiles')
@@ -3063,6 +3069,7 @@ function dmJobCard(job){
 async function dmLoadJobsBoard(){
   if(!dmSb()) return;   // jobs เป็น public (RLS j_sel using(true)) → guest โหลดได้ด้วย
   const SEL=['#tcj-cards','#ccf-cards','#wtj-cards'];   // guest(main) · clinic-find · worker-jobs
+  if(!_dmJobsSkelDone){ const _sk=_dmSkelJobs(4); SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=_sk; }); _dmJobsSkelDone=true; }   // skeleton โหลดครั้งแรก
   try{
     // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
