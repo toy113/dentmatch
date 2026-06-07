@@ -4128,13 +4128,14 @@ let _addLineClinicId = null;    // C3b: clinic_id จริง (derive จาก
 
 function openAddLine(btn, clinic, jobName, lineId, jobId) {
   _addLineBtn = btn;
-  let _lid=(lineId||'').trim(); if(_lid && _lid[0]!=='@' && _lid[0]!=='~') _lid='@'+_lid;   // normalize: เติม @ ถ้าไม่มี
-  if(!_lid){ showToast('คลินิกนี้ยังไม่ได้ระบุ LINE — ติดต่อช่องทางอื่น'); return; }   // ไม่มี LINE → ไม่เปิดลิงก์ปลอม (กัน "user not found" จาก fallback)
+  let _lid=(lineId||'').trim();
+  if(!_lid){ showToast('คลินิกนี้ยังไม่ได้ระบุ LINE — ติดต่อช่องทางอื่น'); return; }   // ไม่มี LINE → ไม่เปิดลิงก์ปลอม
+  if(!/^https?:\/\//i.test(_lid) && _lid[0]!=='@' && _lid[0]!=='~') _lid='@'+_lid;   // ไม่ใช่ URL → ใส่ @ (OA id) · ลิงก์ lin.ee/line.me ใช้ตรง
   _addLineId = _lid;
   _addLineJobId = jobId || null;
   _addLineClinicId = (jobId && _dmJobs && _dmJobs[jobId]) ? _dmJobs[jobId].clinic_id : null;
   const clinicEl = document.getElementById('addline-clinic-name');
-  if(clinicEl){ clinicEl.textContent = clinic; clinicEl.insertAdjacentHTML('beforeend', ' <span class="addline-lineid">'+_addLineId+'</span>'); }
+  if(clinicEl){ clinicEl.textContent = clinic; const _disp=/^https?:\/\//i.test(_addLineId)?'LINE คลินิก':_addLineId; clinicEl.insertAdjacentHTML('beforeend', ' <span class="addline-lineid">'+_disp+'</span>'); }
   const msg = document.getElementById('addline-msg');
   if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${currentWorkerId})`;
   // เริ่มที่ขั้นตอน 1 (เขียนข้อความ) เสมอ
@@ -4155,7 +4156,9 @@ function _copyFallback(text) {
   document.body.removeChild(ta);
 }
 function _openLine() {
-  window.open(`https://line.me/R/ti/p/${_addLineId}`, '_blank');   // /R/ti/p/@id = ลิงก์เพิ่มเพื่อน OA ที่ถูกต้อง
+  const id=(_addLineId||'').trim();
+  const url=/^https?:\/\//i.test(id) ? id : `https://line.me/R/ti/p/${id}`;   // URL เต็ม (lin.ee) ใช้ตรง · ไม่งั้น @id ของ OA
+  window.open(url, '_blank');
 }
 function copyAndLine() {
   const msg = document.getElementById('addline-msg');
