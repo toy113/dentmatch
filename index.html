@@ -3000,6 +3000,7 @@ async function dmLoadWorkerBoard(){
       _dmSetCount('#cc-workers',0,'คน'); _dmSetCount('#wt-workers',0,'คน'); refreshIcons(); return;
     }
     if(!cards) return;
+    data.forEach(w=>{ _dmWorkers[w.id]=w; });   // cache → dmOpenWorker เติม detail ทันที
     try{ const { data:_vc } = await dmSb().rpc('profile_views_count',{ids:data.map(w=>w.id)}); (_vc||[]).forEach(r=>{ _dmWorkerViews[r.worker_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิวโปรไฟล์ public (RPC ไม่เผย viewer)
     cards.innerHTML = data.map(dmWorkerCard).join('');
     _dmSetCount('#cc-workers', data.length, 'คน'); _dmSetCount('#wt-workers', data.length, 'คน');
@@ -3147,6 +3148,7 @@ async function dmLoadStats(){
 let _dmJobs={};            // map job.id -> job (จาก dmLoadJobsBoard) ให้ dmOpenJob lookup
 let _dmJobViews={};        // map job.id -> ยอดวิว (จาก rpc job_views_count) · merge ไม่ reset
 let _dmWorkerViews={};     // map worker.id -> ยอดวิวโปรไฟล์ (จาก rpc profile_views_count)
+let _dmWorkers={};         // cache worker (จาก board) → dmOpenWorker เติม detail ทันที ไม่รอ network
 let _dmJDDefault=null;     // HTML mock เดิมของ v-job-detail .scroll (restore ตอนเปิดจากการ์ด mock)
 let _dmJDSubDefault=null;  // ข้อความ mini-hdr-sub เดิม (อยู่นอก .scroll → restore แยก)
 let _dmRealJobOpen=false;  // true = เปิด v-job-detail ครั้งนี้มาจาก dmOpenJob (อย่า restore)
@@ -3289,14 +3291,15 @@ let _inviteAnon=null;
 async function dmOpenWorker(id, anon){   // เก็บ context ตอนคลิกการ์ด + ดึงข้อมูลจริงมา render หน้า detail (เดิม static mock)
   _inviteWorkerId=id||null; _inviteAnon=anon||null;
   goView('v-worker-detail');
-  _dmResetWorkerDetail(anon);   // เคลียร์ค่าค้าง + ซ่อน trust row (กันสภาพครึ่ง ๆ "0 ครั้ง/0 เดือน" ถ้าโหลดไม่ได้)
+  const _wc=id&&_dmWorkers[id];
+  if(_wc) dmFillWorkerDetail(_wc); else _dmResetWorkerDetail(anon);   // มี cache → เติมทันที (ไม่รอ network) · ไม่มี → สะอาดรอ fetch
   if(!id || !dmSb()) return;
   try{
     const { data, error } = await dmSb().from('worker_profiles')
       .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio')
       .eq('id', id).maybeSingle();   // maybeSingle: 0 แถวคืน null (ไม่ throw 406 เหมือน single)
     if(error){ console.error('dmOpenWorker', error); return; }
-    if(!data){ const t=document.getElementById('wd-title'); if(t) t.textContent='ไม่พบข้อมูล — ลองเข้าสู่ระบบใหม่'; console.warn('dmOpenWorker: 0 rows (guest/หมด session หรือถูกลบ)', id); return; }
+    if(!data){ if(!_wc){ const t=document.getElementById('wd-title'); if(t) t.textContent='ไม่พบข้อมูล — ลองเข้าสู่ระบบใหม่'; } console.warn('dmOpenWorker: 0 rows', id); return; }
     dmFillWorkerDetail(data);
     if(dmUser && dmUser.id && dmUser.id!==id){   // log view (1 viewer=1 · dedup ผ่าน unique) · ไม่นับ self-view
       const { error: pvErr } = await dmSb().from('profile_views').upsert({ worker_id:id, viewer_id:dmUser.id }, { onConflict:'worker_id,viewer_id', ignoreDuplicates:true });
