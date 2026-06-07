@@ -2728,12 +2728,7 @@ function validateRegWorker(){
   let ok=true;
   [fname,lname].forEach(el=>{if(el&&!el.value.trim()){showInpError(el);ok=false;}});
   if(!pos.value){showInpError(pos);ok=false;}
-  // dentist (self-attestation): ต้องกรอกเลขใบประกอบ + ติ๊กยืนยัน
-  if(pos.value==='dentist'){
-    const lic=document.getElementById('rw-license'), att=document.getElementById('rw-attest');
-    if(lic && !lic.value.trim()){ showInpError(lic); ok=false; }
-    if(att && !att.checked){ ok=false; const w=document.getElementById('rw-license-wrap'); if(w){ w.style.outline='2px solid var(--red)'; w.style.borderRadius='8px'; setTimeout(()=>w.style.outline='',2000); } }
-  }
+  // ทันตแพทย์: ไม่บังคับเลขใบประกอบ/ยืนยันแล้ว (ซ่อนกล่อง)
   // phone must be 10 digits
   if(!phone.value.trim()||phone.value.replace(/\D/g,'').length<10){showInpError(phone);ok=false;}
   if(regProvs.size===0){
@@ -4055,9 +4050,8 @@ const BIO_PLACEHOLDER = {
   counter:   'บุคลิกดี สื่อสารเก่ง รับนัดและจัดตารางได้ ใช้คอมพิวเตอร์คล่อง',
 };
 function regWorkerSkills(pos){
-  const licW=document.getElementById('rw-license-wrap');   // ใบประกอบ: โชว์เฉพาะทันตแพทย์
-  if(licW){ licW.style.display=(pos==='dentist')?'block':'none';
-    if(pos!=='dentist'){ const l=document.getElementById('rw-license'),a=document.getElementById('rw-attest'); if(l)l.value=''; if(a)a.checked=false; } }
+  const licW=document.getElementById('rw-license-wrap');   // ใบประกอบ: ซ่อนเสมอ (ไม่บังคับกรอกแล้ว)
+  if(licW){ licW.style.display='none'; const l=document.getElementById('rw-license'),a=document.getElementById('rw-attest'); if(l)l.value=''; if(a)a.checked=false; }
   const wrap=document.getElementById('regWorkerSkillChips'); if(!wrap)return;
   if(!pos){wrap.innerHTML='<span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span>';return;}
   const conf=POS_SKILLS[pos];
