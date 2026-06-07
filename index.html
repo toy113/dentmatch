@@ -1751,7 +1751,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"><i data-lucide="clipboard-list"></i> ข้อความที่จะส่ง · <i data-lucide="square-pen"></i> แก้ไขได้</div>
         <textarea id="addline-msg" class="inp" rows="4" style="background:#fff;font-size:13.5px;line-height:1.65;border-color:var(--p200)"></textarea>
       </div>
-      <div style="text-align:center;margin-top:4px;font-size:11.5px;color:var(--ink5)"><i data-lucide="info" style="width:12px;height:12px;vertical-align:-1px"></i> กดชิป LINE ด้านบนเพื่อเปิดแอป — คัดลอกข้อความนี้ส่งได้เลย</div>
+      <div style="text-align:center;margin-top:4px;font-size:11.5px;color:var(--ink5)"><i data-lucide="info" style="width:12px;height:12px;vertical-align:-1px"></i> กดชิป LINE/เบอร์ เพื่อคัดลอก · เปิด LINE เองแล้วค้นหา/วางข้อความได้</div>
     </div>
     <!-- STEP 2: ยืนยัน / ลองใหม่ (กัน dead-end ถ้า LINE ไม่เปิด หรือยังไม่ได้วาง) -->
     <div id="addline-step2" style="display:none">
@@ -4123,6 +4123,7 @@ let _addLineId = '@661kqfot';
 let currentWorkerId = '4829';   // production: ดึงจาก auth session ของ worker ที่ล็อกอิน
 let _addLineJobId = null;       // C3b: job.id จริงของงานที่กด Add LINE (mock = null)
 let _addLineClinicId = null;    // C3b: clinic_id จริง (derive จาก _dmJobs)
+let _addLinePhone = '';         // เบอร์คลินิก (ดึงตอนเปิดป๊อปอัป) — ให้ชิปกดคัดลอก
 
 async function openAddLine(btn, clinic, jobName, lineId, jobId) {
   _addLineBtn = btn;
@@ -4135,12 +4136,13 @@ async function openAddLine(btn, clinic, jobName, lineId, jobId) {
   dmRecordAddLine();   // ★ นับยอด "Add LINE" ตอนกดที่การ์ด (dedup 1/คน/งาน) — ป๊อปอัปไม่ต้องมีปุ่มคัดลอกแล้ว
   let _phone='';   // ดึงเบอร์เฉพาะตอนเปิด (worker ล็อกอิน) — ไม่ใส่ใน board payload กัน guest เห็น (ตาม 0007)
   if(_addLineClinicId && dmSb()){ try{ const { data } = await dmSb().from('clinics').select('phone').eq('id',_addLineClinicId).maybeSingle(); if(data) _phone=(data.phone||'').trim(); }catch(e){} }
+  _addLinePhone=_phone;
   const clinicEl = document.getElementById('addline-clinic-name');
   if(clinicEl){
     const _lbl=/^https?:\/\//i.test(_addLineId)?'LINE คลินิก':_addLineId;
     let _h=_dmEsc(clinic)+'<div style="margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px">';
-    _h+='<span onclick="_openLine()" style="cursor:pointer;background:var(--green-bg);color:#1a7a3a;border:1px solid rgba(6,199,85,.4);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900">L</span>'+_dmEsc(_lbl)+'</span>';
-    if(_phone) _h+='<a href="tel:'+_dmEsc(_phone)+'" style="text-decoration:none;background:var(--p25);color:var(--p700);border:1px solid var(--p200);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px"><i data-lucide="phone" style="width:14px;height:14px"></i>'+_dmEsc(_phone)+'</a>';
+    _h+='<span onclick="dmCopyLineId()" title="กดเพื่อคัดลอก" style="cursor:pointer;background:var(--green-bg);color:#1a7a3a;border:1px solid rgba(6,199,85,.4);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px"><span style="width:16px;height:16px;background:var(--green);color:#fff;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900">L</span>'+_dmEsc(_lbl)+'<i data-lucide="copy" style="width:12px;height:12px;opacity:.55"></i></span>';
+    if(_phone) _h+='<span onclick="dmCopyPhone()" title="กดเพื่อคัดลอก" style="cursor:pointer;background:var(--p25);color:var(--p700);border:1px solid var(--p200);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px"><i data-lucide="phone" style="width:14px;height:14px"></i>'+_dmEsc(_phone)+'<i data-lucide="copy" style="width:12px;height:12px;opacity:.55"></i></span>';
     _h+='</div>';
     clinicEl.innerHTML=_h;
   }
@@ -4164,6 +4166,8 @@ function _copyFallback(text) {
   document.execCommand('copy');
   document.body.removeChild(ta);
 }
+function dmCopyLineId(){ _copyText(_addLineId); showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> คัดลอก LINE ID แล้ว — เปิด LINE ค้นหา/เพิ่มเพื่อนได้เลย'); }
+function dmCopyPhone(){ _copyText(_addLinePhone); showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> คัดลอกเบอร์แล้ว'); }
 function _openLine() {
   const id=(_addLineId||'').trim();
   const url=/^https?:\/\//i.test(id) ? id : `https://line.me/R/ti/p/${id}`;   // URL เต็ม (lin.ee) ใช้ตรง · ไม่งั้น @id ของ OA
