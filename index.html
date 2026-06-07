@@ -2972,9 +2972,10 @@ function dmWorkerCard(w){
   const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
   const ad = w.available_days||[];
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
-  const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
+  const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since), _vw=_dmWorkerViews[w.id]||0;   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
   const trust=[ _ts>0?`<span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ${_ts} ครั้ง</span>`:'',
-                _mo>0?`<span class="tr"><i data-lucide="calendar-days"></i> ${_mo} เดือน</span>`:'' ].join('');
+                _mo>0?`<span class="tr"><i data-lucide="calendar-days"></i> ${_mo} เดือน</span>`:'',
+                _vw>0?`<span class="tr"><i data-lucide="eye"></i> ${_vw} วิว</span>`:'' ].join('');
   const trustRow=trust?`<div class="trust">${trust}</div>`:'';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
           <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
@@ -3000,6 +3001,7 @@ async function dmLoadWorkerBoard(){
       _dmSetCount('#cc-workers',0,'คน'); _dmSetCount('#wt-workers',0,'คน'); refreshIcons(); return;
     }
     if(!cards) return;
+    try{ const { data:_vc } = await dmSb().rpc('profile_views_count',{ids:data.map(w=>w.id)}); (_vc||[]).forEach(r=>{ _dmWorkerViews[r.worker_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิวโปรไฟล์ public (RPC ไม่เผย viewer)
     cards.innerHTML = data.map(dmWorkerCard).join('');
     _dmSetCount('#cc-workers', data.length, 'คน'); _dmSetCount('#wt-workers', data.length, 'คน');
     if(typeof buildWorkerBoards==='function') buildWorkerBoards();   // propagate → wt-workers + teaser
@@ -3051,7 +3053,7 @@ function dmJobCard(job){
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
-          <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> ${loc}</span></div>
+          <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> ${loc}</span>${(_dmJobViews[job.id]>0)?`<span class="pill" style="background:var(--p25);color:var(--ink4)"><i data-lucide="eye"></i> ${_dmJobViews[job.id]}</span>`:''}</div>
           <div class="card-ft"><div class="wage">${wage}</div>${addBtn}</div>
         </div>`;
 }
@@ -3071,6 +3073,7 @@ async function dmLoadJobsBoard(){
       _dmSetCount('#tc-jobs',0,'งาน'); _dmSetCount('#cc-find',0,'งาน'); _dmSetCount('#wt-jobs',0,'งาน'); refreshIcons(); return;
     }
     data.forEach(j=>{ _dmJobs[j.id]=j; });   // merge ไม่ reset — กันงานที่ปิด/ไม่อยู่บอร์ดหายจาก cache (toggle/detail ใช้ได้)
+    try{ const { data:_vc } = await dmSb().rpc('job_views_count',{ids:data.map(j=>j.id)}); (_vc||[]).forEach(r=>{ _dmJobViews[r.job_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิว public (RPC ไม่เผย viewer)
     const html=data.map(dmJobCard).join('');
     SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
     _dmSetCount('#tc-jobs',data.length,'งาน'); _dmSetCount('#cc-find',data.length,'งาน'); _dmSetCount('#wt-jobs',data.length,'งาน');
@@ -3143,6 +3146,8 @@ async function dmLoadStats(){
 
 /* ════════ C2c — หน้ารายละเอียดงานจากของจริง (v-job-detail) ════════ */
 let _dmJobs={};            // map job.id -> job (จาก dmLoadJobsBoard) ให้ dmOpenJob lookup
+let _dmJobViews={};        // map job.id -> ยอดวิว (จาก rpc job_views_count) · merge ไม่ reset
+let _dmWorkerViews={};     // map worker.id -> ยอดวิวโปรไฟล์ (จาก rpc profile_views_count)
 let _dmJDDefault=null;     // HTML mock เดิมของ v-job-detail .scroll (restore ตอนเปิดจากการ์ด mock)
 let _dmJDSubDefault=null;  // ข้อความ mini-hdr-sub เดิม (อยู่นอก .scroll → restore แยก)
 let _dmRealJobOpen=false;  // true = เปิด v-job-detail ครั้งนี้มาจาก dmOpenJob (อย่า restore)
@@ -3233,6 +3238,8 @@ async function dmOpenJob(id){
   // ยอด ADD LINE จริง (เฉพาะเจ้าของงาน — RLS ale_sel) เติม async
   if(dmUser && job.clinic_id===dmUser.id){
     dmJobAddLineCount(job.id).then(n=>{ const el=document.getElementById('jd-addline'); if(el) el.textContent=n+' คน'; });
+  } else if(dmUser && dmUser.id && job.clinic_id){
+    dmSb().from('job_views').insert({ job_id: job.id, viewer_id: dmUser.id }).then(()=>{}, ()=>{});   // log วิว (dedup unique · RLS กันเจ้าของดูเอง)
   }
 }
 /* ════════ C3a — คลินิกโพสต์งานจริง (INSERT jobs · title auto-compose · is_boosted default false) ════════ */
@@ -3360,7 +3367,7 @@ function dmManageCard(job){
   const st = job.filled ? 'filled' : (past ? 'past' : (!job.is_open ? 'closed' : (expired ? 'expired' : 'open')));
   const title=_dmEsc(job.title);
   const dateStr = job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job));
-  const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
+  const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span><span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0} ยอดวิว</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
   let cardStyle='cursor:pointer', mf='mf-open', badge, body;
   if(st==='filled'){
@@ -3406,6 +3413,7 @@ async function dmLoadManageBoard(){
     if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
     data.forEach(j=>{ _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้
+    try{ const { data:_vc } = await dmSb().rpc('job_views_count',{ids:data.map(j=>j.id)}); (_vc||[]).forEach(r=>{ _dmJobViews[r.job_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิว
     const wrap=document.getElementById('cc-manage-cards');
     if(wrap) wrap.innerHTML = data.length ? data.map(dmManageCard).join('')
       : '<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีประกาศงาน — ลงงานใหม่ที่แท็บ “ลงงาน”</div>';
