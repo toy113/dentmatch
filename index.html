@@ -3575,6 +3575,11 @@ async function dmInitSession(){
 }
 // logout จริง (เรียกจาก logoutClinic/logoutWorker)
 async function dmSignOut(){ dmUnsubscribeNoti(); try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
+// re-validate session ตอนกลับมาที่แอป (มือถือ background นาน → token/UI อาจหลุด · supabase refresh เอง + กู้ dmUser ถ้าหาย)
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState!=='visible' || !dmSb()) return;
+  dmSb().auth.getSession().then(function(r){ var s=r&&r.data&&r.data.session; if(s && !dmUser && typeof dmInitSession==='function') dmInitSession(); }).catch(function(){});
+});
 
 /* ════════ LINE Login (Batch 3 · ผ่าน Edge Function line-auth) ════════ */
 let _lineSignup = null;   // { uid, name, lid } เมื่อผู้ใช้ LINE ใหม่ต้องเลือก role+กรอกฟอร์ม
