@@ -3302,8 +3302,8 @@ async function dmOpenWorker(id, anon){   // เก็บ context ตอนคล
     if(!data){ if(!_wc){ const t=document.getElementById('wd-title'); if(t) t.textContent='ไม่พบข้อมูล — ลองเข้าสู่ระบบใหม่'; } console.warn('dmOpenWorker: 0 rows', id); return; }
     dmFillWorkerDetail(data);
     if(dmUser && dmUser.id && dmUser.id!==id){   // log view (1 viewer=1 · dedup ผ่าน unique) · ไม่นับ self-view
-      const { error: pvErr } = await dmSb().from('profile_views').upsert({ worker_id:id, viewer_id:dmUser.id }, { onConflict:'worker_id,viewer_id', ignoreDuplicates:true });
-      if(pvErr) console.error('profile_views log', pvErr);
+      const { error: pvErr } = await dmSb().from('profile_views').insert({ worker_id:id, viewer_id:dmUser.id });   // insert ธรรมดา — upsert ต้องการสิทธิ์ UPDATE → 403 (มีแค่ INSERT/SELECT)
+      if(pvErr && !/duplicate|unique|23505/i.test((pvErr.message||'')+(pvErr.code||''))) console.error('profile_views log', pvErr);   // ดูซ้ำ = unique violation → ข้าม
     }
   }catch(e){ console.error('dmOpenWorker', e); }
 }
