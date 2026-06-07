@@ -2063,8 +2063,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:-2px 0 11px;font-size:11.5px;color:var(--orange2);line-height:1.55;display:flex;align-items:flex-start;gap:6px"><span><i data-lucide="triangle-alert"></i></span><span><strong>ทันตแพทย์</strong> = แก้ไขไม่ได้ · <strong>ผู้ช่วยฯ ↔ เคาน์เตอร์</strong> สลับกันได้ภายหลัง</span></div>
       <!-- ใบประกอบ (เฉพาะทันตแพทย์ · self-attestation: เก็บเลข ไม่ verify) -->
       <div id="rw-license-wrap" style="display:none;margin:-2px 0 11px">
-        <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">เลขที่ใบประกอบวิชาชีพ *</label>
-        <input id="rw-license" class="inp" type="text" placeholder="เช่น ท.12345" style="margin-bottom:9px">
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">ใบประกอบวิชาชีพทันตกรรม</label>
+        <input id="rw-license" class="inp" type="text" placeholder="เช่น ท.12345" style="display:none">
         <label style="display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--ink3);line-height:1.5;cursor:pointer">
           <input id="rw-attest" type="checkbox" style="margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--p600)">
           <span>ยืนยันว่าข้าพเจ้ามีใบประกอบวิชาชีพทันตกรรมจริง — การให้ข้อมูลเท็จมีผลทางกฎหมาย</span>
@@ -2728,7 +2728,11 @@ function validateRegWorker(){
   let ok=true;
   [fname,lname].forEach(el=>{if(el&&!el.value.trim()){showInpError(el);ok=false;}});
   if(!pos.value){showInpError(pos);ok=false;}
-  // ทันตแพทย์: ไม่บังคับเลขใบประกอบ/ยืนยันแล้ว (ซ่อนกล่อง)
+  // ทันตแพทย์: ต้องติ๊กยืนยันใบประกอบ (ไม่ต้องกรอกเลข)
+  if(pos.value==='dentist'){
+    const att=document.getElementById('rw-attest');
+    if(att && !att.checked){ ok=false; const w=document.getElementById('rw-license-wrap'); if(w){ w.style.outline='2px solid var(--red)'; w.style.borderRadius='8px'; setTimeout(()=>w.style.outline='',2000); } }
+  }
   // phone must be 10 digits
   if(!phone.value.trim()||phone.value.replace(/\D/g,'').length<10){showInpError(phone);ok=false;}
   if(regProvs.size===0){
@@ -4050,8 +4054,9 @@ const BIO_PLACEHOLDER = {
   counter:   'บุคลิกดี สื่อสารเก่ง รับนัดและจัดตารางได้ ใช้คอมพิวเตอร์คล่อง',
 };
 function regWorkerSkills(pos){
-  const licW=document.getElementById('rw-license-wrap');   // ใบประกอบ: ซ่อนเสมอ (ไม่บังคับกรอกแล้ว)
-  if(licW){ licW.style.display='none'; const l=document.getElementById('rw-license'),a=document.getElementById('rw-attest'); if(l)l.value=''; if(a)a.checked=false; }
+  const licW=document.getElementById('rw-license-wrap');   // กล่องยืนยันใบประกอบ: โชว์เฉพาะทันตแพทย์ (เฉพาะ checkbox · ไม่มีช่องเลข)
+  if(licW){ licW.style.display=(pos==='dentist')?'block':'none';
+    if(pos!=='dentist'){ const a=document.getElementById('rw-attest'); if(a)a.checked=false; } }
   const wrap=document.getElementById('regWorkerSkillChips'); if(!wrap)return;
   if(!pos){wrap.innerHTML='<span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span>';return;}
   const conf=POS_SKILLS[pos];
