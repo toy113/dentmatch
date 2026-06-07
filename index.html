@@ -162,6 +162,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 
 /* TAB BAR */
 .tab-bar{display:flex;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 2px;position:sticky;top:0;z-index:8;box-shadow:0 2px 10px rgba(60,30,130,0.06)}
+.dt-nl,.dt-sf{display:none}   /* sidebar chrome (เมนูหลัก/footer): ซ่อนบนมือถือ <768 · โชว์ใน desktop media query */
 .tb{flex:1;padding:11px 2px 10px;border:none;background:none;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:11.5px;font-weight:500;color:var(--ink4);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;transition:.2s}
 .tb .ti{font-size:19px;line-height:1}
 .tb.on{color:var(--p600);font-weight:700}
@@ -632,7 +633,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   }
   .tab-bar::-webkit-scrollbar{display:none}
   .dt-nl{
-    font-size:10px;font-weight:700;color:var(--ink5);
+    display:block;font-size:10px;font-weight:700;color:var(--ink5);
     text-transform:uppercase;letter-spacing:.9px;padding:2px 14px 10px;
   }
   .tb{
@@ -653,7 +654,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   }
 
   /* sidebar footer (login / copyright) */
-  .dt-sf{margin-top:auto;padding:14px 4px 4px;border-top:1px solid var(--border)}
+  .dt-sf{display:block;margin-top:auto;padding:14px 4px 4px;border-top:1px solid var(--border)}
   .dt-sf .dt-login-btn{
     width:100%;background:linear-gradient(135deg,var(--p700),var(--p500));
     color:#fff;border:none;border-radius:13px;padding:13px;cursor:pointer;
