@@ -1978,7 +1978,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
-          <button onclick="emailLoginRequestOtp()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ขอ OTP →</button>
+          <button onclick="emailLoginRequestOtp(this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--p600);border:none;border-radius:7px;padding:6px 12px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">ขอ OTP →</button>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);text-align:center;margin-bottom:4px">รหัส OTP จะส่งไปยัง Email ที่ลงทะเบียนไว้</div>
       </div>
@@ -2046,7 +2046,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <input id="rc-line" class="inp" placeholder="LINE ID หรือ @LINE OA *" style="margin-bottom:9px">
       <input id="rc-phone" class="inp" type="tel" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" style="margin-bottom:6px" oninput="fmtPhone(this)">
       <div id="rc-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"><i data-lucide="triangle-alert"></i> กรุณากรอกข้อมูลให้ครบ และเบอร์โทรให้ครบ 10 หลัก</div>
-      <button class="btn-primary" onclick="validateRegClinic()">ถัดไป →</button>
+      <button class="btn-primary" onclick="validateRegClinic(this)">ถัดไป →</button>
     </div>
     <div id="ls-reg-worker" style="display:none">
       <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot"></div></div>
@@ -2099,7 +2099,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <textarea id="rw-bio" class="inp" rows="3" placeholder="เช่น มีประสบการณ์จัดฟัน 3 ปี ชอบงาน part-time เสาร์-อาทิตย์..." style="resize:none;line-height:1.6;font-family:'Sarabun',sans-serif"></textarea>
       </div>
       <div id="rw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"><i data-lucide="triangle-alert"></i> กรุณากรอกข้อมูลให้ครบ และเบอร์โทรให้ครบ 10 หลัก</div>
-      <button class="btn-primary" onclick="validateRegWorker()">ถัดไป →</button>
+      <button class="btn-primary" onclick="validateRegWorker(this)">ถัดไป →</button>
     </div>
     <div id="ls-otp" style="display:none">
       <!-- login OTP: no step dots (direct flow), register OTP: show dots -->
@@ -2711,7 +2711,7 @@ function showInpError(el){
   el.style.borderColor='var(--red)';el.style.background='#FFF5F3';
   setTimeout(()=>{el.style.borderColor='';el.style.background='';},2000);
 }
-function validateRegClinic(){
+function validateRegClinic(btn){
   const name=document.getElementById('rc-name');
   const prov=document.getElementById('rc-province');
   const line=document.getElementById('rc-line');
@@ -2724,9 +2724,9 @@ function validateRegClinic(){
   if(!phone.value.trim()||phone.value.replace(/\D/g,'').length<10){showInpError(phone);ok=false;}
   if(!ok){err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
   err.style.display='none';
-  nextAfterRegClinic();
+  _dmBtnBusy(btn,true); Promise.resolve(nextAfterRegClinic()).finally(()=>_dmBtnBusy(btn,false));
 }
-function validateRegWorker(){
+function validateRegWorker(btn){
   const fname=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
   const lname=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
   const pos=document.getElementById('regWorkerPos');
@@ -2749,7 +2749,7 @@ function validateRegWorker(){
   }
   if(!ok){err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
   err.style.display='none';
-  nextAfterRegWorker();
+  _dmBtnBusy(btn,true); Promise.resolve(nextAfterRegWorker()).finally(()=>_dmBtnBusy(btn,false));
 }
 
 async function nextAfterRegClinic() {
@@ -2812,6 +2812,7 @@ function nextRole(){
   // login = ผู้ใช้เดิม → เข้าหน้า dashboard ตาม role ที่เลือกเลย (ไม่ต้องกรอกฟอร์มสมัคร)
   if(_loginMode==='login'){ loginSuccess(); return; }
   goLoginStep(selectedLoginRole==='clinic'?'ls-reg-clinic':'ls-reg-worker');
+  if(_lineSignup && _lineSignup.name){ if(selectedLoginRole==='clinic'){ const _n=document.getElementById('rc-name'); if(_n && !_n.value) _n.value=_lineSignup.name; } else { const _fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]'); if(_fn && !_fn.value) _fn.value=_lineSignup.name; } }   // prefill ชื่อจาก LINE
 }
 function otpNext(el,idx){
   if(el.value.length===1){const b=document.querySelectorAll('#otpRow .otp-box');if(b[idx+1])b[idx+1].focus()}
@@ -2863,6 +2864,7 @@ let _otpMode = null;        // 'login' | 'register'
 let pendingSignup = null;   // ข้อมูลสมัครรอ verify
 function dmSb(){ return window.sb || null; }
 
+function _dmBtnBusy(btn,on,txt){ if(!btn)return; if(on){ if(btn._h==null)btn._h=btn.innerHTML; btn.disabled=true; btn.style.opacity='.65'; btn.style.pointerEvents='none'; btn.innerHTML=txt||'กำลังส่ง...'; } else { btn.disabled=false; btn.style.opacity=''; btn.style.pointerEvents=''; if(btn._h!=null){ btn.innerHTML=btn._h; btn._h=null; } } }
 let _otpCooldownTimer=null;
 function _dmStartOtpCooldown(secs){
   const a=document.getElementById('otp-resend'); if(!a) return;
@@ -2880,21 +2882,20 @@ async function dmResendOtp(){
 async function dmSendEmailOtp(email, createUser){
   if(!dmSb()){ showToast('ระบบยังโหลดไม่เสร็จ ลองใหม่อีกครั้ง'); return false; }
   const { error } = await dmSb().auth.signInWithOtp({ email, options:{ shouldCreateUser: !!createUser } });
-  if(error){ showToast('ส่ง OTP ไม่สำเร็จ: '+error.message); return false; }
+  if(error){ showToast(createUser ? ('ส่ง OTP ไม่สำเร็จ: '+error.message) : 'ไม่พบบัญชีอีเมลนี้ — กรุณาสมัครก่อน (แท็บ "สมัคร") หรือตรวจอีเมลอีกครั้ง'); return false; }
   _dmStartOtpCooldown(30);   // เริ่มนับถอยหลังกันกดส่งใหม่รัว
   return true;
 }
 // ปุ่ม "ขอ OTP →" (login)
-async function emailLoginRequestOtp(){
+async function emailLoginRequestOtp(btn){
   if(_lineSignup){ showToast('กำลังสมัครด้วย LINE อยู่'); return; }   // กันส่ง OTP ระหว่าง LINE signup
   const email=(document.getElementById('login-email').value||'').trim();
   if(!email){ showToast('กรอกอีเมลก่อน'); return; }
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('อีเมลไม่ถูกต้อง'); return; }   // กันส่งไปค่าแปลกๆ
   _otpEmail=email; _otpMode='login'; pendingSignup=null;
-  if(await dmSendEmailOtp(email,false)){
-    const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
-    goLoginStep('ls-otp');
-  }
+  _dmBtnBusy(btn,true,'กำลังส่ง...');
+  try{ if(await dmSendEmailOtp(email,false)){ const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email; goLoginStep('ls-otp'); } }
+  finally{ _dmBtnBusy(btn,false); }
 }
 // ยืนยัน OTP (auto เมื่อครบ 6 หลัก หรือกดปุ่ม)
 async function emailOtpConfirm(){
@@ -2907,8 +2908,9 @@ async function emailOtpConfirm(){
   let role;
   try{
     if(_otpMode==='register' && pendingSignup){
-      role = pendingSignup.role;
-      await dmCreateRecords(uid, pendingSignup);
+      const { data:exist } = await dmSb().from('profiles').select('role').eq('id',uid).maybeSingle();
+      if(exist){ role=exist.role; _loginMode='login'; showToast('มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทน'); }   // อีเมลนี้สมัครไว้แล้ว → login แทน
+      else { role = pendingSignup.role; await dmCreateRecords(uid, pendingSignup); }
     } else {
       const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
       if(e || !prof){ showToast('ยังไม่มีโปรไฟล์ — กรุณาสมัครก่อน'); return; }
