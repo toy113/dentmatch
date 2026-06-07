@@ -1709,11 +1709,11 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="form-group">
         <label>ชื่อ - นามสกุล <span style="font-size:10.5px;color:var(--ink4);font-weight:400;background:var(--p50);padding:2px 7px;border-radius:8px;margin-left:4px"><i data-lucide="lock"></i> ไม่เผยแพร่</span></label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div style="border:1.5px solid var(--border);border-radius:var(--ri);padding:12px 14px;background:var(--p25);color:var(--ink4);font-family:'Sarabun',sans-serif;font-size:14px">สมชาย</div>
-          <div style="border:1.5px solid var(--border);border-radius:var(--ri);padding:12px 14px;background:var(--p25);color:var(--ink4);font-family:'Sarabun',sans-serif;font-size:14px">รักงาน</div>
+          <div id="ep-fname" style="border:1.5px solid var(--border);border-radius:var(--ri);padding:12px 14px;background:var(--p25);color:var(--ink4);font-family:'Sarabun',sans-serif;font-size:14px">—</div>
+          <div id="ep-lname" style="border:1.5px solid var(--border);border-radius:var(--ri);padding:12px 14px;background:var(--p25);color:var(--ink4);font-family:'Sarabun',sans-serif;font-size:14px">—</div>
         </div>
       </div>
-      <div class="form-group"><label>เบอร์โทร <span style="font-size:10.5px;color:var(--ink4);font-weight:400;background:var(--p50);padding:2px 7px;border-radius:8px;margin-left:4px"><i data-lucide="lock"></i> ไม่เผยแพร่</span></label><input type="tel" class="inp" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" oninput="fmtPhone(this)"><div style="font-size:11.5px;color:var(--ink4);display:flex;align-items:center;gap:5px;padding:6px 2px 0"><span>ℹ️</span><span>ชื่อ-นามสกุล และ เบอร์โทร ใช้ยืนยันตัวตนภายในระบบเท่านั้น ไม่แสดงต่อคลินิก</span></div></div>
+      <div class="form-group"><label>เบอร์โทร <span style="font-size:10.5px;color:var(--ink4);font-weight:400;background:var(--p50);padding:2px 7px;border-radius:8px;margin-left:4px"><i data-lucide="lock"></i> ไม่เผยแพร่</span></label><input type="tel" id="ep-phone" class="inp" placeholder="0XX-XXX-XXXX" readonly style="background:var(--p25);color:var(--ink4)"><div style="font-size:11.5px;color:var(--ink4);display:flex;align-items:center;gap:5px;padding:6px 2px 0"><span>ℹ️</span><span>ชื่อ-นามสกุล และ เบอร์โทร ใช้ยืนยันตัวตนภายในระบบเท่านั้น ไม่แสดงต่อคลินิก</span></div></div>
       <div class="form-group"><label id="editSkillLabel">สาขาหลัก / ทักษะ</label>
         <div class="chip-row" style="flex-wrap:wrap" id="editSkillChips"></div>
       </div>
@@ -3832,9 +3832,14 @@ function dmFillEditForm(w){
   document.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ d.classList.toggle('on', ad.has(i+1)); });
   refreshIcons();
 }
-function dmOpenEditProfile(){
+async function dmOpenEditProfile(){
   if(dmUser && dmUser.role==='worker' && dmUser.worker) dmFillEditForm(dmUser.worker);
   goView('v-edit-profile');
+  if(dmUser && dmUser.role==='worker' && dmSb()){   // prefill ชื่อ/เบอร์ จาก worker_private (เจ้าของอ่านของตัวเองได้ · ไม่โชว์คลินิก)
+    try{ const { data } = await dmSb().from('worker_private').select('first_name,last_name,phone').eq('worker_id',dmUser.id).maybeSingle();
+      if(data){ const f=document.getElementById('ep-fname'); if(f)f.textContent=data.first_name||'—'; const l=document.getElementById('ep-lname'); if(l)l.textContent=data.last_name||'—'; const p=document.getElementById('ep-phone'); if(p)p.value=data.phone||''; }
+    }catch(e){ console.warn('edit prefill', e); }
+  }
 }
 async function dmSaveWorkerProfile(){
   if(!dmSb() || !dmUser || dmUser.role!=='worker'){ openSheet('s-save-success'); return; }   // demo = mock
