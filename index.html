@@ -3061,7 +3061,7 @@ async function dmLoadJobsBoard(){
   try{
     // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('is_open', true).gt('expires_at', new Date().toISOString())   // ซ่อนงานหมดอายุจากบอร์ด
       .order('created_at', { ascending:false }).limit(60);
     if(error) console.warn('dmLoadJobsBoard', error);
@@ -3419,7 +3419,7 @@ async function _dmJobUpdate(id, patch, msg){
     return true;
   }catch(e){ console.error('[manage] update exception', e); return false; }
 }
-function dmToggleJob(id, el){ let open=_dmJobs[id]?_dmJobs[id].is_open:null; if(open===null){ const t=el&&el.querySelector?el.querySelector('.tog'):null; open=t?!t.classList.contains('off'):true; }   // fallback: อ่านสถานะจาก DOM ถ้าไม่อยู่ใน cache
+function dmToggleJob(id, el){ const t=el&&el.querySelector?el.querySelector('.tog'):null; const open=t?!t.classList.contains('off'):(_dmJobs[id]?!!_dmJobs[id].is_open:true);   // ★ อ่านสถานะจริงจาก DOM toggle (cache อาจไม่มี is_open จาก board overwrite)
   _dmJobUpdate(id, { is_open: !open }, open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
 function dmGotStaff(id){ _dmJobUpdate(id, { is_open:false }, 'บันทึกว่าได้คนแล้ว'); }
 function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true }, 'เปิดรับใหม่แล้ว'); }
