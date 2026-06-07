@@ -3966,12 +3966,7 @@ async function dmLoadNoti(){
         items.push({ icon:'heart', accent:'green', unread:true, ts:g.ts, time:_dmAgo(g.ts),
           title:'มีคนกด Add LINE แล้ว!', sub:g.title+' — '+g.n+' คน Add LINE',
           onclick:"closeSheet('s-noti-clinic');clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))" }); });
-      const ai = await dmSb().from('invites').select('id, created_at, worker_profiles(anon_id, position), jobs(title)')
-        .eq('clinic_id',dmUser.id).eq('status','accepted').order('created_at',{ascending:false}).limit(10);
-      (ai.data||[]).forEach(i=>{ const w=i.worker_profiles||{}, j=i.jobs||{};
-        items.push({ icon:'sparkles', accent:'purple', unread:true, ts:i.created_at, time:_dmAgo(i.created_at),
-          title:'บุคลากรสนใจคำเชิญ', sub:(DM_POS_LABEL[w.position]||'')+' '+(w.anon_id||'')+(j.title?' · '+j.title:''),
-          onclick:"closeSheet('s-noti-clinic');clinicTab('invites',document.querySelector('#v-clinic .tb:nth-child(5)'))" }); });
+      // เอา noti "บุคลากรสนใจคำเชิญ" ออก — ไม่แจ้งคลินิกเมื่อบุคลากรอ่าน/ตอบคำเชิญ (ดูได้ที่แท็บคำเชิญ)
       items.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
       const list=document.getElementById('noti-list-clinic');
       if(list) list.innerHTML = items.length?items.map(dmNotiItem).join(''):'<div style="text-align:center;padding:30px;color:var(--ink4);font-size:13px">ยังไม่มีการแจ้งเตือน</div>';
