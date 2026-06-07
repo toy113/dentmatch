@@ -1142,7 +1142,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
       <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border)">
         <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px">
-          <div class="av av-g0" style="width:64px;height:64px;border-radius:18px;flex-shrink:0"><div class="av-content"><span style="font-size:26px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl" id="wd-anon">—</span></div><div class="av-dot" id="wd-dot" style="width:12px;height:12px"></div></div>
+          <div class="av av-g0" id="wd-av" style="width:64px;height:64px;border-radius:18px;flex-shrink:0"><div class="av-content"><span style="font-size:26px"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl" id="wd-anon">—</span></div><div class="av-dot" id="wd-dot" style="width:12px;height:12px"></div></div>
           <div><div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px" id="wd-title">—</div><div style="font-size:13px;color:var(--ink4);margin-bottom:6px"><i data-lucide="map-pin"></i> <span id="wd-loc">—</span></div><div class="badges" id="wd-badges"></div></div>
         </div>
         <div class="skills" id="wd-skills" style="margin-bottom:12px"></div>
@@ -2952,6 +2952,7 @@ async function dmLoadProfile(){
       if(data){
         dmUser.worker=data;   // C4a: เก็บไว้ render body + prefill edit form
         document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id);
+        document.querySelectorAll('#v-worker .av').forEach(e=>e.style.background=_dmAvPos(data.position));   // สี avatar ตัวเองตามตำแหน่ง
         dmFillWorkerProfile(data);
         dmApplyAvailUI(data.available!==false);
         try{ const { count } = await dmSb().from('invites').select('id',{count:'exact',head:true}).eq('worker_id',dmUser.id);
@@ -3746,6 +3747,7 @@ function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข
   const ex=(w.experience_years==null)?'':(w.experience_years>0?w.experience_years+' ปี':'จบใหม่');
   const set=(id,txt)=>{ const e=document.getElementById(id); if(e) e.textContent=txt; };
   set('wd-anon', w.anon_id||'—');
+  const _wav=document.getElementById('wd-av'); if(_wav) _wav.style.background=_dmAvPos(w.position);   // สี avatar ตามตำแหน่ง
   set('wd-title', pos+(ex?' · '+ex:''));
   const loc=(w.province||'')+(w.district?' ('+w.district+')':''); set('wd-loc', loc||'—');
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อน 0
