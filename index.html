@@ -3778,6 +3778,7 @@ async function dmSetAvailable(available){
     if(error){ console.error('[wprofile] available ล้มเหลว:', error.message, '| code:', error.code, error); showToast('อัปเดตไม่สำเร็จ: '+error.message); return; }
     dmLog('[wprofile] available →', available);
     if(dmUser.worker) dmUser.worker.available=available;
+    if(typeof dmLoadWorkerBoard==='function') dmLoadWorkerBoard();   // re-render บอร์ดทันที → การ์ดตัวเองหาย (ปิด) / โผล่ (เปิด)
   }catch(e){ console.error('[wprofile] available exception', e); }
 }
 /* C4a-2 — แก้ไขโปรไฟล์: prefill ค่าปัจจุบัน + save จริง (UPDATE worker_profiles · เฉพาะฟิลด์ใน grant) */
