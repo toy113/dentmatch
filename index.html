@@ -2138,7 +2138,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="sheet-sub">เลือกสิ่งที่ต้องการแนบไปกับคำเชิญ</div>
     <div class="attach-cards">
       <div class="att-card on" onclick="attCard(this)"><div class="att-icon"><i data-lucide="clipboard-list"></i></div><div class="att-name">ประกาศงาน</div><div class="att-sub">แนบงานที่ต้องการ</div></div>
-      <div class="att-card" onclick="attCard(this)"><div class="att-icon"><i data-lucide="hospital"></i></div><div class="att-name">โปรไฟล์คลินิก</div><div class="att-sub">คลินิกทันตกรรมสยาม, กรุงเทพฯ</div></div>
+      <div class="att-card" onclick="attCard(this)"><div class="att-icon"><i data-lucide="hospital"></i></div><div class="att-name">โปรไฟล์คลินิก</div><div class="att-sub" id="inv-clinic-sub">คลินิกทันตกรรมสยาม, กรุงเทพฯ</div></div>
     </div>
     <div id="invite-job-section">
       <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">เลือกประกาศงาน</div>
@@ -2158,7 +2158,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <textarea class="inp" id="invite-msg" rows="3" placeholder="เช่น สวัสดีครับ สนใจโปรไฟล์ของคุณ..."></textarea>
 
     <div style="margin-top:12px;background:var(--p25);border:1px solid var(--border2);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--ink4);line-height:1.55;display:flex;gap:7px;align-items:flex-start"><i data-lucide="shield-alert" style="width:14px;height:14px;flex-shrink:0;margin-top:1px"></i><span>DentMatch เป็นเพียงสื่อกลาง ไม่ได้ตรวจสอบใบประกอบ/ตัวตน — โปรดตรวจสอบเอกสารยืนยันตัวตนของบุคลากรด้วยตนเองก่อนตกลงงาน</span></div>
-    <button class="btn-primary" style="margin-top:10px" onclick="dmSendInvite()">ส่งคำเชิญ <i data-lucide="send"></i></button>
+    <button class="btn-primary" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="dmSendInvite()">ส่งคำเชิญ <i data-lucide="send"></i></button>
   </div>
 </div>
 
@@ -3321,6 +3321,7 @@ async function dmOpenInvite(workerId, anon){
   if(workerId){ _inviteWorkerId=workerId; _inviteAnon=anon||_inviteAnon; }
   const msg=document.getElementById('invite-msg'); if(msg) msg.value='';
   openSheet('s-invite');   // เปิด sheet ทันที แล้วค่อย populate งาน
+  const _cs=document.getElementById('inv-clinic-sub'); if(_cs && dmUser && dmUser.clinic){ _cs.textContent=(dmUser.clinic.name||'คลินิก')+(dmUser.clinic.province?(', '+dmUser.clinic.province):''); }   // ชื่อคลินิกจริง
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;   // guest/demo = คง dropdown mock
   try{
     const { data } = await dmSb().from('jobs').select('id, title')
