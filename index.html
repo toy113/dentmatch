@@ -3026,7 +3026,8 @@ function _dmSched(job){
   const p=[days,time].filter(Boolean);
   return p.length?p.join(' · '):'ตามตกลง';
 }
-function dmCardAddLine(btn){ openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
+function dmCardAddLine(btn){ if(!dmUser || !dmUser.id){ openSheet('s-login'); return; }   // guest = ล็อก → login ก่อน Add LINE
+  openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
 // อัปเดต count ทั้ง sec-hdr (.cnt-pill) + dt-toolbar (.pill) ของแท็บ + เก็บ data-total ให้ filter
 function _dmSetCount(tabSel, n, unit){
   const tc=document.querySelector(tabSel); if(!tc) return;
@@ -3046,13 +3047,14 @@ function dmJobCard(job){
                            : (skill0?`<span class="bdg bdg-br">${_dmEsc(skill0)}</span>`:'');
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=_dmEsc(_dmWage(job));
+  const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id) ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button>` : `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>`;   // guest = ล็อก
   return `<div class="jcard${job.urgent?' urg':''}" data-clinic="${cname}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer">
           <div class="badges"><span class="bdg bdg-role">${pos}</span>${badge2}</div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> ${loc}</span></div>
-          <div class="card-ft"><div class="wage">${wage}</div><button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button></div>
+          <div class="card-ft"><div class="wage">${wage}</div>${addBtn}</div>
         </div>`;
 }
 async function dmLoadJobsBoard(){
