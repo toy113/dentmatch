@@ -4186,7 +4186,7 @@ function logStep2(){
   document.getElementById('log-step1').style.display='none';
   document.getElementById('log-step2').style.display='block';
   const sub=document.getElementById('log-step2-sub');
-  if(selectedOutcome==='noshow')sub.textContent='เลือก worker ที่ไม่มา (บันทึกภายใน — ไม่แสดงสาธารณะ)';
+  if(selectedOutcome==='noshow')sub.textContent='เลือก worker ที่ไม่มา';
   else sub.textContent='เลือก worker ที่มาทำงานจริงเพื่อ +1 completed';
   dmLoadLogWorkers();   // C3d-2: รายชื่อจริง = คนที่ Add LINE งานนี้
 }
