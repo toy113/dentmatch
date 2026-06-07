@@ -1673,7 +1673,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   </div>
   <div class="bot-nav">
     <button class="nb on" onclick="workerTab('profile',document.querySelector('#v-worker .tb:nth-child(1)'))"><span class="ni"><i data-lucide="user"></i></span><span class="nl">โปรไฟล์</span><div class="nb-bar"></div></button>
-    <button class="nb" onclick="workerTab('inbox',document.querySelector('#v-worker .tb:nth-child(2)'))"><span class="ni"><i data-lucide="inbox"></i></span><span class="nl">คำเชิญ</span><div class="nb-pip">3</div></button>
+    <button class="nb" onclick="workerTab('inbox',document.querySelector('#v-worker .tb:nth-child(2)'))"><span class="ni"><i data-lucide="inbox"></i></span><span class="nl">คำเชิญ</span><div class="nb-pip" id="wt-inbox-pip" style="display:none"></div></button>
     <button class="nb" onclick="workerTab('jobs',document.querySelector('#v-worker .tb:nth-child(3)'))"><span class="ni"><i data-lucide="briefcase"></i></span><span class="nl">งาน</span></button>
     <div style="flex:1"></div>
   </div>
@@ -2378,6 +2378,7 @@ function workerTab(name,el){
   });
   ['profile','inbox','jobs','workers'].forEach(n=>{const e=document.getElementById('wt-'+n);if(e)e.classList.remove('on')});
   const t=document.getElementById('wt-'+name); if(t)t.classList.add('on');
+  if(name==='inbox'){ try{ localStorage.setItem('dm_inbox_read', String(Date.now())); }catch(e){} if(typeof dmLoadNoti==='function') dmLoadNoti(); }   // อ่านคำเชิญแล้ว → เคลียร์ noti/pip
 }
 /* ── NOTIFICATION SYSTEM ── */
 const _notiCount = { worker: 2, clinic: 2 };
@@ -3939,7 +3940,10 @@ async function dmLoadNoti(){
     if(dmUser.role==='worker'){
       const inv = await dmSb().from('invites').select('id, created_at, clinics(name), jobs(title, wage_text)')
         .eq('worker_id',dmUser.id).eq('status','pending').order('created_at',{ascending:false}).limit(10);
-      (inv.data||[]).forEach(i=>{ const c=i.clinics||{}, j=i.jobs||{};
+      const _inboxRead=+(localStorage.getItem('dm_inbox_read')||0);   // เปิดแท็บคำเชิญ = อ่านแล้ว → คำเชิญเก่ากว่านี้ไม่เด้ง noti
+      const _newInv=(inv.data||[]).filter(i=> new Date(i.created_at).getTime() > _inboxRead);
+      const _pip=document.getElementById('wt-inbox-pip'); if(_pip){ _pip.textContent=_newInv.length; _pip.style.display=_newInv.length>0?'':'none'; }
+      _newInv.forEach(i=>{ const c=i.clinics||{}, j=i.jobs||{};
         items.push({ icon:'send', accent:'purple', unread:true, ts:i.created_at, time:_dmAgo(i.created_at),
           title:'คำเชิญใหม่จาก '+(c.name||'คลินิก'), sub:(j.title||'')+(j.wage_text?' — '+j.wage_text:''),
           onclick:"closeSheet('s-noti');workerTab('inbox',document.querySelector('#v-worker .tb:nth-child(3)'))" }); });
