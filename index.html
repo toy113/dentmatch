@@ -3068,9 +3068,9 @@ async function dmLoadJobsBoard(){
     if(!data || !data.length){   // ว่าง/error → empty state (ไม่คง mock เดิม)
       const empty=_dmEmptyBoard('ยังไม่มีงานที่เปิดรับตอนนี้','briefcase');
       SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=empty; });
-      _dmJobs={}; _dmSetCount('#tc-jobs',0,'งาน'); _dmSetCount('#cc-find',0,'งาน'); _dmSetCount('#wt-jobs',0,'งาน'); refreshIcons(); return;
+      _dmSetCount('#tc-jobs',0,'งาน'); _dmSetCount('#cc-find',0,'งาน'); _dmSetCount('#wt-jobs',0,'งาน'); refreshIcons(); return;
     }
-    _dmJobs={}; data.forEach(j=>{ _dmJobs[j.id]=j; });   // เก็บไว้ให้ dmOpenJob lookup ตอนคลิกการ์ด
+    data.forEach(j=>{ _dmJobs[j.id]=j; });   // merge ไม่ reset — กันงานที่ปิด/ไม่อยู่บอร์ดหายจาก cache (toggle/detail ใช้ได้)
     const html=data.map(dmJobCard).join('');
     SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
     _dmSetCount('#tc-jobs',data.length,'งาน'); _dmSetCount('#cc-find',data.length,'งาน'); _dmSetCount('#wt-jobs',data.length,'งาน');
@@ -3419,7 +3419,8 @@ async function _dmJobUpdate(id, patch, msg){
     return true;
   }catch(e){ console.error('[manage] update exception', e); return false; }
 }
-function dmToggleJob(id){ const j=_dmJobs[id]; if(!j) return; _dmJobUpdate(id, { is_open: !j.is_open }, j.is_open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
+function dmToggleJob(id, el){ let open=_dmJobs[id]?_dmJobs[id].is_open:null; if(open===null){ const t=el&&el.querySelector?el.querySelector('.tog'):null; open=t?!t.classList.contains('off'):true; }   // fallback: อ่านสถานะจาก DOM ถ้าไม่อยู่ใน cache
+  _dmJobUpdate(id, { is_open: !open }, open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
 function dmGotStaff(id){ _dmJobUpdate(id, { is_open:false }, 'บันทึกว่าได้คนแล้ว'); }
 function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true }, 'เปิดรับใหม่แล้ว'); }
 async function dmDeleteJob(id){
