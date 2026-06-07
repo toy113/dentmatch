@@ -238,6 +238,11 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .bdg-role{background:var(--p100);color:var(--p700)}
 @keyframes dmShim{0%{background-position:-300px 0}100%{background-position:300px 0}}
 .dm-sk{background:linear-gradient(90deg,#eef0f5 25%,#f6f7fb 50%,#eef0f5 75%);background-size:600px 100%;animation:dmShim 1.2s linear infinite;border-radius:8px}
+#dm-ptr{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;background:#fff;box-shadow:0 3px 12px rgba(60,30,130,.22);display:flex;align-items:center;justify-content:center;color:var(--p600);opacity:0;pointer-events:none;z-index:9000;transition:opacity .25s}
+#dm-ptr.show{opacity:1}
+#dm-ptr.ready{color:var(--green)}
+#dm-ptr.spin i{animation:dmSpin .7s linear infinite}
+@keyframes dmSpin{to{transform:rotate(360deg)}}
 .bdg-br{background:var(--p50);color:var(--p600);border:1px solid var(--p200)}
 .bdg-urg{background:var(--orange-bg);color:var(--orange);display:flex;align-items:center;gap:4px}
 .jcard-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.3}
@@ -3090,6 +3095,37 @@ async function dmLoadJobsBoard(){
     refreshIcons();
   }catch(e){ console.warn('dmLoadJobsBoard', e); }
 }
+/* pull-to-refresh (มือถือ) — ลากลงที่ขอบบนสุดของบอร์ดเพื่อรีเฟรช */
+async function _dmRefreshCurrent(){
+  try{
+    const r=(dmUser&&dmUser.role)||'guest';
+    if(r==='clinic'){ await dmLoadJobsBoard(); await dmLoadWorkerBoard(); if(typeof dmLoadManageBoard==='function') await dmLoadManageBoard(); if(typeof dmLoadClinicInvites==='function') dmLoadClinicInvites(); }
+    else if(r==='worker'){ await dmLoadJobsBoard(); if(typeof dmLoadWorkerInbox==='function') dmLoadWorkerInbox(); if(typeof dmLoadWorkerConfirm==='function') dmLoadWorkerConfirm(); }
+    else { await dmLoadJobsBoard(); if(typeof dmLoadStats==='function') dmLoadStats(); }
+  }catch(e){ console.warn('refresh', e); }
+}
+function _dmInitPullRefresh(){
+  let ind=document.getElementById('dm-ptr');
+  if(!ind){ ind=document.createElement('div'); ind.id='dm-ptr'; ind.innerHTML='<i data-lucide="refresh-cw" style="width:18px;height:18px"></i>'; (document.querySelector('.phone')||document.body).appendChild(ind); if(typeof refreshIcons==='function') refreshIcons(); }
+  const reset=()=>{ ind.classList.remove('show','ready','spin'); ind.style.transform='translateX(-50%)'; };
+  document.querySelectorAll('.scroll').forEach(sc=>{
+    if(sc._dmPR) return; sc._dmPR=true;
+    let sy=0, pull=false, d=0;
+    sc.addEventListener('touchstart',e=>{ pull = sc.scrollTop<=0; sy=e.touches[0].clientY; d=0; }, {passive:true});
+    sc.addEventListener('touchmove',e=>{
+      if(!pull) return;
+      d=e.touches[0].clientY - sy;
+      if(d>4 && sc.scrollTop<=0){ e.preventDefault(); const p=Math.min(d/90,1); ind.style.transform='translateX(-50%) translateY('+(p*42)+'px)'; ind.classList.add('show'); ind.classList.toggle('ready', d>=80); }
+      else if(d<=0){ pull=false; reset(); }
+    }, {passive:false});
+    const end=()=>{ if(!pull) return; pull=false;
+      if(d>=80){ ind.classList.add('spin'); ind.style.transform='translateX(-50%) translateY(42px)'; _dmRefreshCurrent().finally(()=>setTimeout(reset,450)); }
+      else reset();
+    };
+    sc.addEventListener('touchend',end,{passive:true});
+    sc.addEventListener('touchcancel',end,{passive:true});
+  });
+}
 /* ════════ stats band — ดึงเลขจริงจาก DB · auto-hide เมื่อ < เกณฑ์ (ใช้ LAUNCH_MODE เดิม) ════════ */
 function dmApplyStats(){
   // mobile #statRow (3 ตัว)
@@ -4949,6 +4985,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     if (!handled && typeof dmInitSession === 'function') await dmInitSession();                // ไม่ใช่ → restore session เดิม
     if (typeof dmLoadStats === 'function') dmLoadStats();             // สถิติจริง (public · guest ด้วย)
     if (typeof dmLoadJobsBoard === 'function') dmLoadJobsBoard();     // บอร์ดงาน public (guest เห็นงานจริง · authed ก็ refresh ซ้ำได้)
+    if (typeof _dmInitPullRefresh === 'function') _dmInitPullRefresh();   // pull-to-refresh (มือถือ)
   } catch(e){ console.warn('auth init', e); }
   finally { const _sp=document.getElementById('dm-splash'); if(_sp){ _sp.classList.add('hide'); setTimeout(()=>{ try{_sp.remove();}catch(_e){} }, 400); } }   // restore เสร็จ (login→routed / guest) → เปิด splash
 </script>
