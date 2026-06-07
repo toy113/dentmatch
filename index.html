@@ -4123,7 +4123,9 @@ let _addLineClinicId = null;    // C3b: clinic_id จริง (derive จาก
 
 function openAddLine(btn, clinic, jobName, lineId, jobId) {
   _addLineBtn = btn;
-  _addLineId = lineId || '@siamdental';
+  let _lid=(lineId||'').trim(); if(_lid && _lid[0]!=='@' && _lid[0]!=='~') _lid='@'+_lid;   // normalize: เติม @ ถ้าไม่มี
+  if(!_lid){ showToast('คลินิกนี้ยังไม่ได้ระบุ LINE — ติดต่อช่องทางอื่น'); return; }   // ไม่มี LINE → ไม่เปิดลิงก์ปลอม (กัน "user not found" จาก fallback)
+  _addLineId = _lid;
   _addLineJobId = jobId || null;
   _addLineClinicId = (jobId && _dmJobs && _dmJobs[jobId]) ? _dmJobs[jobId].clinic_id : null;
   const clinicEl = document.getElementById('addline-clinic-name');
@@ -4148,7 +4150,7 @@ function _copyFallback(text) {
   document.body.removeChild(ta);
 }
 function _openLine() {
-  window.open(`https://line.me/ti/p/${_addLineId}`, '_blank');
+  window.open(`https://line.me/R/ti/p/${_addLineId}`, '_blank');   // /R/ti/p/@id = ลิงก์เพิ่มเพื่อน OA ที่ถูกต้อง
 }
 function copyAndLine() {
   const msg = document.getElementById('addline-msg');
