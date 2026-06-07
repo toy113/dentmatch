@@ -2990,6 +2990,7 @@ function dmLog(){ if(DM_DEBUG){ try{ console.log.apply(console, arguments); }cat
 const DM_DAYS = ['จ','อ','พ','พฤ','ศ','ส','อา'];   // index+1 = day number (1=จ..7=อา)
 function _dmEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
+function _dmAvPos(p){ const m={dentist:'var(--p700),var(--p500)',assistant:'#2f6fe0,#1e4fa8',counter:'#0ea371,#0a7a52'}; return 'linear-gradient(135deg,'+(m[p]||m.dentist)+')'; }   // สี avatar ตามตำแหน่ง (ม่วง/ฟ้า/เขียว)
 function _dmMonths(d){ if(!d)return 0; const s=new Date(d),n=new Date(); return Math.max(0,(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())); }
 function _dmSince(d){ if(!d) return ''; const x=new Date(d); return 'ตั้งแต่ '+_thMonths[x.getMonth()]+' '+(x.getFullYear()+543); }   // member_since → "ตั้งแต่ <เดือนไทย> <พ.ศ.>"
 function _dmExpYears(s){ if(!s) return null; if(/จบใหม่/.test(s)) return 0; const m=String(s).match(/\d+/); return m?parseInt(m[0],10):null; }   // "5 ปี"->5, "10+ ปี"->10, "จบใหม่"->0
@@ -3009,7 +3010,7 @@ function dmWorkerCard(w){
                 _vw>0?`<span class="tr"><i data-lucide="eye"></i> ${_vw} วิว</span>`:'' ].join('');
   const trustRow=trust?`<div class="trust">${trust}</div>`:'';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
-          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av ${_dmAvGrad(w.anon_id)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
+          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
           <div class="skills">${skills}</div>
           ${quote}
           ${trustRow}
