@@ -3353,13 +3353,20 @@ function _dmJobIsPast(job){ if(!job.work_date) return false; const t=new Date();
 function dmManageCard(job){
   const past=_dmJobIsPast(job);
   const expired = !past && job.is_open && job.expires_at && (new Date(job.expires_at) < new Date());
-  const st = past ? 'past' : (!job.is_open ? 'closed' : (expired ? 'expired' : 'open'));
+  const st = job.filled ? 'filled' : (past ? 'past' : (!job.is_open ? 'closed' : (expired ? 'expired' : 'open')));
   const title=_dmEsc(job.title);
   const dateStr = job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job));
   const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
   let cardStyle='cursor:pointer', mf='mf-open', badge, body;
-  if(st==='past'){
+  if(st==='filled'){
+    cardStyle+=';border-color:rgba(59,130,246,.3);background:linear-gradient(to bottom,#fff,var(--blue-bg))';
+    badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>';
+    const canLog = past || !job.work_date;
+    const logBtn = canLog ? `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>` : `<button class="btn-sm" style="flex:1;opacity:.55;cursor:default"><i data-lucide="clock"></i> บันทึกผลได้หลังวันงาน</button>`;
+    body=`<div class="closed-banner" style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600"><i data-lucide="check"></i> ได้บุคลากรแล้ว — ปิดจาก job board แล้ว</div>
+      <div class="act-row">${logBtn}<button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดรับใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+  } else if(st==='past'){
     mf='mf-past'; cardStyle+=';border-color:rgba(107,78,194,.25);background:linear-gradient(to bottom,#fff,var(--p25))';
     badge='<div class="mstatus" style="color:var(--p600)"><div class="dot dot-p"></div>วันงานผ่านแล้ว</div>';
     body=`<div class="past-banner"><i data-lucide="calendar-days"></i> วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
@@ -3390,7 +3397,7 @@ async function dmLoadManageBoard(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
   try{
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, filled, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
     if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
@@ -3421,8 +3428,8 @@ async function _dmJobUpdate(id, patch, msg){
 }
 function dmToggleJob(id, el){ const t=el&&el.querySelector?el.querySelector('.tog'):null; const open=t?!t.classList.contains('off'):(_dmJobs[id]?!!_dmJobs[id].is_open:true);   // ★ อ่านสถานะจริงจาก DOM toggle (cache อาจไม่มี is_open จาก board overwrite)
   _dmJobUpdate(id, { is_open: !open }, open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
-function dmGotStaff(id){ _dmJobUpdate(id, { is_open:false }, 'บันทึกว่าได้คนแล้ว'); }
-function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true }, 'เปิดรับใหม่แล้ว'); }
+function dmGotStaff(id){ _dmJobUpdate(id, { filled:true, is_open:false }, 'บันทึกว่าได้คนแล้ว ✓'); }
+function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true, filled:false }, 'เปิดรับใหม่แล้ว'); }
 async function dmDeleteJob(id){
   if(!confirm('ลบประกาศงานนี้? กู้คืนไม่ได้')) return;
   if(!dmSb() || !dmUser) return;
