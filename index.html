@@ -3971,7 +3971,7 @@ async function dmLoadWorkerConfirm(){
     // งานที่ clinic รายงานแล้ว แต่ worker ยังไม่ยืนยัน (worker_outcome ว่าง) · ไม่ดึง clinic_outcome (honest 2-party)
     const { data, error } = await dmSb().from('work_logs')
       .select('id, work_date, clinics(name), jobs(title)')
-      .eq('worker_id', dmUser.id).is('worker_outcome', null).order('work_date',{ascending:false}).limit(30);
+      .eq('worker_id', dmUser.id).is('worker_outcome', null).neq('clinic_outcome','no_show').order('work_date',{ascending:false}).limit(30);   // no_show = บันทึกฝ่ายเดียว (admin) ไม่ดึง worker ยืนยัน
     if(error){ dmLog('[worklog-confirm] load', error); return; }
     if(data && data.length){ cards.innerHTML=data.map(dmWorkLogConfirmCard).join(''); section.style.display=''; }
     else { cards.innerHTML=''; section.style.display='none'; }
@@ -4022,7 +4022,7 @@ async function dmLoadNoti(){
           title:'คำเชิญใหม่จาก '+(c.name||'คลินิก'), sub:(j.title||'')+(j.wage_text?' — '+j.wage_text:''),
           onclick:"closeSheet('s-noti');workerTab('inbox',document.querySelector('#v-worker .tb:nth-child(3)'))" }); });
       const wl = await dmSb().from('work_logs').select('id, work_date, created_at, clinics(name), jobs(title)')
-        .eq('worker_id',dmUser.id).is('worker_outcome',null).order('created_at',{ascending:false}).limit(10);
+        .eq('worker_id',dmUser.id).is('worker_outcome',null).neq('clinic_outcome','no_show').order('created_at',{ascending:false}).limit(10);   // no_show ไม่เด้ง noti worker
       (wl.data||[]).forEach(l=>{ const c=l.clinics||{}, j=l.jobs||{};
         items.push({ icon:'clipboard-check', accent:'green', unread:true, ts:l.created_at, time:_dmAgo(l.created_at),
           title:'ยืนยันผลงานที่ '+(c.name||'คลินิก'), sub:(j.title?j.title+' · ':'')+_dmThaiDate(l.work_date),
