@@ -2124,7 +2124,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <input class="otp-box" maxlength="1" oninput="otpDone(this)">
       </div>
       <button class="btn-primary" onclick="emailOtpConfirm()"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ยืนยันและเข้าใช้งาน</button>
-      <div class="sheet-link">ไม่ได้รับ OTP? <a href="#">ส่งใหม่</a></div>
+      <div class="sheet-link">ไม่ได้รับ OTP? <a href="#" id="otp-resend" onclick="dmResendOtp();return false">ส่งใหม่</a></div>
     </div>
     <div id="ls-success" style="display:none">
       <div class="success-screen">
@@ -2863,10 +2863,25 @@ let _otpMode = null;        // 'login' | 'register'
 let pendingSignup = null;   // ข้อมูลสมัครรอ verify
 function dmSb(){ return window.sb || null; }
 
+let _otpCooldownTimer=null;
+function _dmStartOtpCooldown(secs){
+  const a=document.getElementById('otp-resend'); if(!a) return;
+  if(_otpCooldownTimer) clearInterval(_otpCooldownTimer);
+  let left=secs||30;
+  a.style.pointerEvents='none'; a.style.opacity='.5';
+  const tick=()=>{ if(left<=0){ clearInterval(_otpCooldownTimer); _otpCooldownTimer=null; a.textContent='ส่งใหม่'; a.style.pointerEvents=''; a.style.opacity=''; return; } a.textContent='ส่งใหม่ได้ใน '+left+' วิ'; left--; };
+  tick(); _otpCooldownTimer=setInterval(tick,1000);
+}
+async function dmResendOtp(){
+  if(!_otpEmail){ showToast('ไม่พบอีเมล ลองเริ่มใหม่'); return; }
+  const a=document.getElementById('otp-resend'); if(a && a.style.pointerEvents==='none') return;   // ยัง cooldown
+  if(await dmSendEmailOtp(_otpEmail, _otpMode==='register')) showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> ส่ง OTP ใหม่แล้ว');
+}
 async function dmSendEmailOtp(email, createUser){
   if(!dmSb()){ showToast('ระบบยังโหลดไม่เสร็จ ลองใหม่อีกครั้ง'); return false; }
   const { error } = await dmSb().auth.signInWithOtp({ email, options:{ shouldCreateUser: !!createUser } });
   if(error){ showToast('ส่ง OTP ไม่สำเร็จ: '+error.message); return false; }
+  _dmStartOtpCooldown(30);   // เริ่มนับถอยหลังกันกดส่งใหม่รัว
   return true;
 }
 // ปุ่ม "ขอ OTP →" (login)
