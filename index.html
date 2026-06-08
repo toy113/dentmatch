@@ -2238,18 +2238,41 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-edit-job" onclick="overlayClose(event,'s-edit-job')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title"><i data-lucide="square-pen"></i> แก้ไขประกาศ</div>
+    <div class="sheet-title"><i data-lucide="square-pen"></i> แก้ไขประกาศงาน</div>
     <div class="sheet-sub" id="editjob-title">ประกาศงาน</div>
-    <!-- ล็อค -->
-    <div style="background:var(--p50);border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--ink5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"><i data-lucide="lock"></i> เงื่อนไขหลัก (แก้ไม่ได้)</div>
-      <div id="editjob-locked" style="font-size:12.5px;color:var(--ink3);line-height:1.7"></div>
-      <div style="font-size:11px;color:var(--ink5);margin-top:8px">ต้องการเปลี่ยนตำแหน่ง/วัน/เวลา/ค่าตอบแทน? <a href="#" onclick="openSheet('s-contact');return false" style="color:var(--p600);font-weight:600">ติดต่อแอดมิน</a></div>
+    <div style="background:var(--p50);border:1.5px solid var(--border2);border-radius:12px;padding:11px 14px;margin:10px 0 16px">
+      <div style="font-size:11px;font-weight:700;color:var(--ink5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="lock"></i> ตำแหน่ง + ทักษะ (แก้ไม่ได้)</div>
+      <div id="editjob-locked" style="font-size:13px;color:var(--ink);font-weight:600"></div>
     </div>
-    <!-- แก้ได้ -->
-    <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">รายละเอียดเพิ่มเติม <span style="color:var(--green2);font-weight:700"><i data-lucide="square-pen"></i> แก้ได้</span></label>
-    <textarea id="editjob-desc" class="inp" rows="4" style="margin-bottom:16px">รับทันตแพทย์ช่วยดูแลคลินิก งานหลัก ถอน/อุด/ขูดหินปูน มีเครื่องมือ + ผู้ช่วยพร้อม บรรยากาศดี</textarea>
-    <button class="btn-primary" onclick="saveJobDetails()"><i data-lucide="save"></i> บันทึก</button>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">ค่าตอบแทน</label>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button type="button" id="ej-pay-day" onclick="_ejSetPay('day')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">รายวัน</button>
+      <button type="button" id="ej-pay-month" onclick="_ejSetPay('month')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">รายเดือน</button>
+      <button type="button" id="ej-pay-nego" onclick="_ejSetPay('nego')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">ตามตกลง</button>
+    </div>
+    <div id="ej-wage-wrap" style="position:relative;margin-bottom:16px">
+      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--p600)">฿</span>
+      <input type="number" class="inp" id="ej-wage" style="padding-left:32px">
+    </div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">วันทำงานที่ต้องการ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label>
+    <div class="chip-row" id="ej-days" style="flex-wrap:wrap;margin-bottom:16px">
+      <div class="chip" onclick="chipMulti(this)">จันทร์</div>
+      <div class="chip" onclick="chipMulti(this)">อังคาร</div>
+      <div class="chip" onclick="chipMulti(this)">พุธ</div>
+      <div class="chip" onclick="chipMulti(this)">พฤหัส</div>
+      <div class="chip" onclick="chipMulti(this)">ศุกร์</div>
+      <div class="chip" onclick="chipMulti(this)">เสาร์</div>
+      <div class="chip" onclick="chipMulti(this)">อาทิตย์</div>
+    </div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน · ไม่บังคับ)</span></label>
+    <input type="date" class="inp" id="ej-date" onchange="_editAddDate(this)" style="margin-bottom:8px">
+    <div id="ej-dates-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">เวลา <span style="font-size:11px;color:var(--ink4);font-weight:400">(HH:MM)</span></label>
+    <div class="inp-row" style="margin-bottom:16px"><input type="text" class="inp" id="ej-t1" inputmode="numeric" maxlength="5" placeholder="เริ่ม 10:00" oninput="fmtTime(this)"><input type="text" class="inp" id="ej-t2" inputmode="numeric" maxlength="5" placeholder="เลิก 19:30" oninput="fmtTime(this)"></div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">รายละเอียดเพิ่มเติม</label>
+    <textarea id="editjob-desc" class="inp" rows="3" style="margin-bottom:14px"></textarea>
+    <div id="ej-err" style="font-size:12.5px;color:var(--red);margin-bottom:8px;display:none;font-weight:600"></div>
+    <button class="btn-primary" onclick="dmSaveJobEdit()"><i data-lucide="save"></i> บันทึกการแก้ไข</button>
   </div>
 </div>
 
@@ -2620,15 +2643,72 @@ function finishWorkLog(){
   _logCard=null; _logWorkerIds=[]; _logWorkDate=null;
   dmLoadManageBoard();   // refresh → progress + สถานะการ์ดอัปเดต (รองรับหลายวัน/หลายคน)
 }
-function mEdit(btn){
-  const card=btn.closest('.mcard'); if(!card)return;
-  const title=((card.querySelector('.mcard-title')||{}).textContent||'ประกาศงาน').trim();
-  const t=document.getElementById('editjob-title'); if(t)t.textContent=title;
-  const lk=document.getElementById('editjob-locked');
-  if(lk)lk.innerHTML='<div style="font-weight:600;color:var(--ink);margin-bottom:3px"><i data-lucide="clipboard-list"></i> '+title+'</div>ตำแหน่ง · วันทำงาน · เวลา · ค่าตอบแทน — กำหนดไว้ตอนลงประกาศ';
-  openSheet('s-edit-job');
+/* ── แก้ไขประกาศงาน (ล็อก ตำแหน่ง+ทักษะ · แก้ ค่าตอบแทน/วัน/วันที่/เวลา/รายละเอียด → UPDATE jobs) ── */
+let _editJobId=null, _editPay='day', _editDates=[];
+const _EJ_DAYS=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+function _ejSetPay(type){
+  _editPay=type;
+  [['day','ej-pay-day'],['month','ej-pay-month'],['nego','ej-pay-nego']].forEach(function(p){
+    const b=document.getElementById(p[1]); if(!b) return; const on=(p[0]===type);
+    b.style.cssText='flex:1;padding:10px;border-radius:10px;cursor:pointer;font-family:\'Sarabun\',sans-serif;font-size:13.5px;transition:.2s;border:2px solid '+(on?'var(--p500)':'var(--border2)')+';background:'+(on?'var(--p600)':'#fff')+';color:'+(on?'#fff':'var(--ink3)')+';font-weight:'+(on?'700':'600');
+  });
+  const w=document.getElementById('ej-wage-wrap'); if(w) w.style.display=(type==='nego')?'none':'block';
 }
-function saveJobDetails(){ closeSheet('s-edit-job'); showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกรายละเอียดแล้ว'); }
+function _editRenderDates(){ const c=document.getElementById('ej-dates-chips'); if(!c) return; c.innerHTML=_editDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_editRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
+function _editAddDate(inp){ var v=inp.value; if(v && _editDates.indexOf(v)<0){ _editDates.push(v); _editDates.sort(); _editRenderDates(); } inp.value=''; }
+function _editRmDate(d){ _editDates=_editDates.filter(function(x){ return x!==d; }); _editRenderDates(); }
+function mEdit(btn){
+  const card=btn.closest('.mcard'); if(!card) return;
+  const id=card.dataset.jobid; const job=id?_dmJobs[id]:null;
+  if(!job){ showToast('ไม่พบข้อมูลงาน — ลองรีเฟรช'); return; }
+  _editJobId=id;
+  const ttl=document.getElementById('editjob-title'); if(ttl) ttl.textContent=job.title||'ประกาศงาน';
+  const lk=document.getElementById('editjob-locked');
+  if(lk) lk.innerHTML='<i data-lucide="briefcase"></i> '+_dmEsc(DM_POS_LABEL[job.position]||job.position||'-')+'  ·  <i data-lucide="sparkles"></i> '+_dmEsc((job.skills||[]).join(', ')||'—');
+  // ค่าตอบแทน — แกะจาก wage_text
+  const wt=job.wage_text||''; let pay='day', wageVal='';
+  if(/ตามตกลง/.test(wt)) pay='nego'; else { if(/เดือน/.test(wt)) pay='month'; wageVal=wt.replace(/[^0-9]/g,'')||''; }
+  _ejSetPay(pay); const wEl=document.getElementById('ej-wage'); if(wEl) wEl.value=wageVal;
+  // วันทำงาน
+  const wd=job.work_days||[];
+  [].forEach.call(document.querySelectorAll('#ej-days .chip'), function(c){ const idx=_EJ_DAYS.indexOf(c.textContent.trim()); c.classList.toggle('on', wd.indexOf(idx+1)>=0); });
+  // วันที่เจาะจง
+  _editDates=(job.work_dates&&job.work_dates.length)?job.work_dates.slice().sort():[]; _editRenderDates();
+  // เวลา + รายละเอียด
+  const t1=document.getElementById('ej-t1'), t2=document.getElementById('ej-t2'), de=document.getElementById('editjob-desc');
+  if(t1) t1.value=job.time_start||''; if(t2) t2.value=job.time_end||''; if(de) de.value=job.description||'';
+  const err=document.getElementById('ej-err'); if(err) err.style.display='none';
+  openSheet('s-edit-job'); refreshIcons();
+}
+async function dmSaveJobEdit(){
+  if(!_editJobId){ closeSheet('s-edit-job'); return; }
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ closeSheet('s-edit-job'); showToast('ต้องเข้าสู่ระบบคลินิก'); return; }
+  const err=document.getElementById('ej-err'); if(err) err.style.display='none';
+  // ค่าตอบแทน
+  const wv=(document.getElementById('ej-wage')||{}).value; let wage_text;
+  if(_editPay==='nego') wage_text='ตามตกลง';
+  else { if(!wv || +wv<=0){ if(err){ err.textContent='กรุณากรอกค่าตอบแทน'; err.style.display='block'; } return; } wage_text='฿'+(+wv).toLocaleString()+(_editPay==='month'?'/เดือน':'/วัน'); }
+  // วันทำงาน → int[]
+  const work_days=[].filter.call(document.querySelectorAll('#ej-days .chip.on'), function(c){ return _EJ_DAYS.indexOf(c.textContent.trim())>=0; }).map(function(c){ return _EJ_DAYS.indexOf(c.textContent.trim())+1; });
+  // วันที่
+  const work_dates=_editDates.length?_editDates.slice():null;
+  const work_date=_editDates.length?_editDates.slice().sort()[0]:null;
+  // เวลา + รายละเอียด
+  const time_start=(((document.getElementById('ej-t1')||{}).value)||'').trim()||null;
+  const time_end=(((document.getElementById('ej-t2')||{}).value)||'').trim()||null;
+  const description=(((document.getElementById('editjob-desc')||{}).value)||'').trim()||null;
+  const row={ wage_text, work_days, work_dates, work_date, time_start, time_end, description };
+  try{
+    const { data, error } = await dmSb().from('jobs').update(row).eq('id',_editJobId).select('id');   // RLS j_cud: clinic_id=auth.uid
+    if(error){ console.error('[editjob] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    if(!data || !data.length){ showToast('บันทึกไม่สำเร็จ — เซสชันอาจหมดอายุ ลองเข้าสู่ระบบใหม่'); return; }
+    if(_dmJobs[_editJobId]) Object.assign(_dmJobs[_editJobId], row);
+    dmLog('[editjob] update ✓', _editJobId, JSON.stringify(row));
+    _editJobId=null; closeSheet('s-edit-job');
+    await dmLoadManageBoard(); await dmLoadJobsBoard();
+    showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกการแก้ไขแล้ว');
+  }catch(e){ console.error('[editjob] exception', e); showToast('บันทึกไม่สำเร็จ'); }
+}
 function mReopen(btn,cardId){
   const card=document.getElementById(cardId); if(!card)return;
   const statusEl=card.querySelector('.mstatus');
@@ -3477,7 +3557,7 @@ function dmManageCard(job){
     cardStyle+=';opacity:.9;border-color:rgba(229,83,58,.2)';
     badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
     body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
-      <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else if(st==='expired'){
     cardStyle+=';opacity:.7';
     badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
@@ -3487,7 +3567,7 @@ function dmManageCard(job){
     if(job.urgent) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
     badge = job.urgent ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
                        : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
-    body=`<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+    body=`<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
   const toggle=(st==='open'||st==='closed')?`<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="padding:11px;margin:-11px;cursor:pointer;display:inline-flex;align-items:center" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"><div class="tog${st==='closed'?' off':''}"></div></div>`:'';
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
