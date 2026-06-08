@@ -3151,8 +3151,7 @@ function _dmSched(job){
   const time=(job.time_start&&job.time_end)?(job.time_start+'–'+job.time_end+' น.'):'';
   if(job.work_dates && job.work_dates.length){ return [job.work_dates.map(_dmDateShort).join(', '),time].filter(Boolean).join(' · '); }   // วันที่เจาะจง (หลายวัน)
   const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
-  const p=[days,time].filter(Boolean);
-  return p.length?p.join(' · '):'วันตามตกลง';
+  return [days||'วันตามตกลง', time].filter(Boolean).join(' · ');   // ส่วนวันแสดงเสมอ (ไม่มีวัน = "วันตามตกลง")
 }
 let _postDates=[];
 function _postRenderDates(){ const c=document.getElementById('postDatesChips'); if(!c) return; c.innerHTML=_postDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_postRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
