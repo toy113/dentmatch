@@ -4596,10 +4596,9 @@ function validatePost(){
   else { dmLog('[postjob] ไม่ใช่ clinic session → mock success (ต้อง login เป็นคลินิกถึงจะ insert จริง) · role=', (dmUser&&dmUser.role)); openSheet('s-post-success'); }
 }
 /* ดูตัวอย่างการ์ดงานจากค่าที่กรอก (toggle) */
-function previewPost(){
+function _dmRenderPreview(){
   const box=document.getElementById('post-preview'); if(!box)return;
-  if(box.style.display==='block'){ box.style.display='none'; box.innerHTML=''; return; }
-  const post=document.getElementById('cc-post');
+  const post=document.getElementById('cc-post'); if(!post)return;
   const pos=((post.querySelector('.pos-card.on .pos-name')||{}).textContent||'ตำแหน่ง').trim();
   const pc=_dmPosColor(((post.querySelector('.pos-card.on')||{}).dataset||{}).pos||'');   // สีตามตำแหน่งให้ตรงบอร์ด
   const skills=[].map.call(post.querySelectorAll('#postSkillChips .chip.on'),c=>c.textContent.trim());
@@ -4624,6 +4623,17 @@ function previewPost(){
     +'</div>';
   box.style.display='block';
   refreshIcons();
+}
+function _dmPreviewLive(){ const box=document.getElementById('post-preview'); if(box && box.style.display==='block') _dmRenderPreview(); }   // อัปเดตสดถ้า preview เปิดอยู่
+let _dmPreviewBound=false;
+function previewPost(){
+  const box=document.getElementById('post-preview'); if(!box)return;
+  if(box.style.display==='block'){ box.style.display='none'; box.innerHTML=''; return; }   // toggle ปิด
+  _dmRenderPreview();
+  if(!_dmPreviewBound){   // ผูก listener ครั้งเดียว → พิมพ์/เลือกด้านบนแล้ว preview ขยับสด
+    const post=document.getElementById('cc-post');
+    if(post){ ['input','change','click'].forEach(function(ev){ post.addEventListener(ev,_dmPreviewLive); }); _dmPreviewBound=true; }
+  }
 }
 
 let editProvs = new Set(['กรุงเทพมหานคร']);
