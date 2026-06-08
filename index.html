@@ -350,7 +350,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .wk-lock-txt{font-size:12.5px;font-weight:700;color:var(--p700);background:#fff;padding:7px 16px;border-radius:20px;box-shadow:0 4px 14px rgba(60,30,130,.2);border:1px solid var(--border)}
 
 /* MANAGE */
-.stat4{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px 16px}
+.stat4{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 16px}
 .s4{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center}
 .s4-n{font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--p700);line-height:1}
 .s4-l{font-size:10px;color:var(--ink4);margin-top:3px}
@@ -837,7 +837,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   /* ══════════════════════════════════════════════
      MANAGE / INVITE / SENT GRIDS
   ══════════════════════════════════════════════ */
-  .stat4{padding:24px 34px 8px;display:grid;grid-template-columns:repeat(2,minmax(200px,240px));gap:14px;justify-content:start}
+  .stat4{padding:24px 34px 8px;display:grid;grid-template-columns:repeat(3,minmax(170px,220px));gap:14px;justify-content:start}
   .sinv-stat{padding:24px 34px 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .s4{border:1px solid var(--border);border-radius:16px;padding:18px 16px;box-shadow:var(--sh-soft);position:relative;overflow:hidden;text-align:left}
   .s4::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--p600),var(--p400))}
@@ -1320,6 +1320,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="stat4">
         <div class="s4"><div class="s4-n" id="m-stat-all">6</div><div class="s4-l">โพสทั้งหมด</div></div>
         <div class="s4"><div class="s4-n" style="color:var(--green)" id="m-stat-open">3</div><div class="s4-l">เปิดรับ</div></div>
+        <div class="s4"><div class="s4-n" style="color:var(--blue)" id="m-stat-filled">0</div><div class="s4-l">ได้บุคลากรแล้ว</div></div>
       </div>
       <!-- filter tabs -->
       <div class="ftabs">
@@ -3681,8 +3682,9 @@ async function dmLoadManageBoard(){
     if(wrap) wrap.innerHTML = data.length ? data.map(dmManageCard).join('')
       : '<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีประกาศงาน — โพสต์งานใหม่ที่แท็บ “โพสต์งาน”</div>';
     const open=data.filter(j=>j.is_open && !_dmJobIsPast(j)).length;
+    const filled=data.filter(j=>j.filled).length;
     const setN=(id,n)=>{ const e=document.getElementById(id); if(e) e.textContent=n; };
-    setN('m-stat-all',data.length); setN('m-stat-open',open);
+    setN('m-stat-all',data.length); setN('m-stat-open',open); setN('m-stat-filled',filled);
     refreshIcons();
     dmLog('[manage] โหลด', data.length, 'งาน');
   }catch(e){ dmLog('[manage] exception', e); }
