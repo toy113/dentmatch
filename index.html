@@ -3643,16 +3643,13 @@ async function dmLoadLogWorkers(){
   _logWorkerId=null;
   if(!dmSb() || !dmUser || !_logJobId) return;   // ไม่มี job จริง = คง mock list
   try{
-    // กันซ้ำ: คนที่บันทึกผล "วันนี้" ของงานนี้ไปแล้ว → ตัดออกจากลิสต์
-    let done=[];
-    if(_logWorkDate){ try{ const { data:dl } = await dmSb().from('work_logs').select('worker_id').eq('job_id',_logJobId).eq('clinic_id',dmUser.id).eq('work_date',_logWorkDate); done=(dl||[]).map(function(r){ return r.worker_id; }); }catch(_e){} }
-    // คนที่ Add LINE งานนี้ (ale_sel: clinic เจ้าของอ่านได้) + join worker_profiles (public-safe)
+    // คนที่ Add LINE งานนี้ (ale_sel: clinic เจ้าของอ่านได้) + join worker_profiles (public-safe) · เลือกคนเดียว — ไม่กรองคนที่บันทึกแล้ว
     const { data } = await dmSb().from('add_line_events')
       .select('worker_id, created_at, worker_profiles(anon_id, position, province, district)')
       .eq('job_id', _logJobId).eq('clinic_id', dmUser.id).order('created_at',{ascending:false});
-    const rows=(data||[]).filter(function(e){ return done.indexOf(e.worker_id)<0; });
+    const rows=(data||[]);
     if(!rows.length){
-      list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">'+(done.length?'บันทึกครบทุกคนของวันนี้แล้ว ✓':'ยังไม่มีใคร Add LINE งานนี้')+'</div>'; return;
+      list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">ยังไม่มีใคร Add LINE งานนี้</div>'; return;
     }
     list.innerHTML = rows.map(function(e){
       const w=e.worker_profiles||{}; const pos=DM_POS_LABEL[w.position]||_dmEsc(w.position);
