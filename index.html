@@ -3094,9 +3094,8 @@ function dmJobCard(job){
   const cname=_dmEsc(clinic.name||'คลินิก');
   const pos=DM_POS_LABEL[job.position]||_dmEsc(job.position);
   const pc=_dmPosColor(job.position);   // สีตามตำแหน่ง
-  const skill0=(job.skills&&job.skills[0])?job.skills[0]:'';
-  const badge2= job.urgent ? '<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>'
-                           : (skill0?`<span class="bdg bdg-br">${_dmEsc(skill0)}</span>`:'');
+  const skillBadges=(job.skills||[]).map(s=>`<span class="bdg bdg-br">${_dmEsc(s)}</span>`).join('');
+  const badge2= (job.urgent ? '<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>' : '') + skillBadges;   // ด่วน (ถ้ามี) + ทุกทักษะ
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=_dmEsc(_dmWage(job));
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=Add LINE · guest=login · clinic=ซ่อน
@@ -4536,7 +4535,7 @@ function previewPost(){
   const _cloc=_dmEsc(_cl.province||'-')+(_cl.district?' ('+_dmEsc(_cl.district)+')':'');
   box.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="clipboard-list"></i> ตัวอย่างที่จะแสดงใน job board</div>'
     +'<div class="jcard" style="cursor:default;animation:none;border-left:4px solid '+pc.bar+'">'
-    +'<div class="badges"><span class="bdg bdg-role" style="background:'+pc.bg+';color:'+pc.fg+'">'+pos+'</span>'+(skills[0]?'<span class="bdg bdg-br">'+skills[0]+'</span>':'')+'</div>'
+    +'<div class="badges"><span class="bdg bdg-role" style="background:'+pc.bg+';color:'+pc.fg+'">'+pos+'</span>'+skills.map(function(s){return '<span class="bdg bdg-br">'+_dmEsc(s)+'</span>';}).join('')+'</div>'
     +'<div class="jcard-title" style="margin-bottom:3px">'+pos+'</div>'
     +'<div class="jcard-clinic"><i data-lucide="hospital"></i> '+_cname+'</div>'
     +'<div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">'+sched+'</span></div>'
