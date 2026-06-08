@@ -3102,6 +3102,7 @@ async function dmLoadProfile(){
         .eq('id',dmUser.id).single();
       if(data){
         dmUser.worker=data;   // C4a: เก็บไว้ render body + prefill edit form
+        if(data.anon_id && typeof currentWorkerId!=='undefined') currentWorkerId=data.anon_id;   // sync รหัสจริงให้ข้อความ Add LINE
         document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id);
         document.querySelectorAll('#v-worker .av').forEach(e=>e.style.background=_dmAvPos(data.position));   // สี avatar ตัวเองตามตำแหน่ง
         dmFillWorkerProfile(data);
@@ -4392,7 +4393,7 @@ function dayToggle(el){el.classList.toggle('on')}
 /* ── ADD LINE + AUTO MESSAGE ── */
 let _addLineBtn = null;
 let _addLineId = '@661kqfot';
-let currentWorkerId = '4829';   // production: ดึงจาก auth session ของ worker ที่ล็อกอิน
+let currentWorkerId = '';   // sync จาก dmUser.worker.anon_id ใน dmLoadProfile (ว่าง = ยังไม่โหลด → ข้อความตัดบรรทัดรหัสออก)
 let _addLineJobId = null;       // C3b: job.id จริงของงานที่กด Add LINE (mock = null)
 let _addLineClinicId = null;    // C3b: clinic_id จริง (derive จาก _dmJobs)
 let _addLinePhone = '';         // เบอร์คลินิก (ดึงตอนเปิดป๊อปอัป) — ให้ชิปกดคัดลอก
@@ -4418,7 +4419,8 @@ async function openAddLine(btn, clinic, jobName, lineId, jobId) {
     clinicEl.innerHTML=_h;
   }
   const msg = document.getElementById('addline-msg');
-  if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏\n(จาก DentMatch · รหัส ${currentWorkerId})`;
+  const _myCode = ((dmUser && dmUser.worker && dmUser.worker.anon_id) || currentWorkerId || '').toString().trim();   // รหัสจริงของ worker ที่ล็อกอิน (anon_id) · ให้คลินิกจับคู่โปรไฟล์ได้
+  if(msg) msg.value = `สวัสดีครับ/ค่ะ สนใจงาน ${jobName} ที่ประกาศไว้\nรบกวนขอรายละเอียดเพิ่มเติมได้ไหมครับ/คะ 🙏` + (_myCode ? `\n(จาก DentMatch · รหัส ${_myCode})` : `\n(จาก DentMatch)`);
   // เริ่มที่ขั้นตอน 1 (เขียนข้อความ) เสมอ
   const s1=document.getElementById('addline-step1'), s2=document.getElementById('addline-step2');
   if(s1) s1.style.display=''; if(s2) s2.style.display='none';
