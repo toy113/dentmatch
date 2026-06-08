@@ -2236,7 +2236,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">LINE ID</label>
     <input class="inp" type="text" id="edit-clinic-line" placeholder="LINE ID หรือ @LINE OA" style="margin-bottom:12px">
     <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">เบอร์โทร</label>
-    <input class="inp" type="tel" id="edit-clinic-phone" placeholder="0XX-XXX-XXXX" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:16px">
+    <input class="inp" type="tel" id="edit-clinic-phone" placeholder="0XX-XXX-XXXX" maxlength="12" oninput="fmtPhone(this)" style="margin-bottom:12px">
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">รายละเอียดคลินิก <span style="font-size:11px;color:var(--ink5);font-weight:400;text-transform:none">· แสดงในหน้ารายละเอียดงาน</span></label>
+    <textarea class="inp" id="edit-clinic-about" rows="3" placeholder="เช่น คลินิกทันสมัย ทีมงานเป็นกันเอง เครื่องมือครบ ที่จอดรถสะดวก เดินทางสะดวก..." style="margin-bottom:16px"></textarea>
     <button class="btn-primary" onclick="saveClinicProfile()"><i data-lucide="save"></i> บันทึก</button>
   </div>
 </div>
@@ -2528,25 +2530,27 @@ function logoutClinic(){
 function dmOpenEditClinic(){
   if(dmUser && dmUser.role==='clinic' && dmUser.clinic){
     const c=dmUser.clinic;
-    const set=(id,v)=>{ const e=document.getElementById(id); if(!e)return; if('value' in e && e.tagName==='INPUT') e.value=v||''; else e.textContent=v||'-'; };
+    const set=(id,v)=>{ const e=document.getElementById(id); if(!e)return; if('value' in e && (e.tagName==='INPUT'||e.tagName==='TEXTAREA')) e.value=v||''; else e.textContent=v||'-'; };
     set('edit-clinic-name', c.name); set('edit-clinic-prov', c.province);
-    set('edit-clinic-line', c.line_id); set('edit-clinic-phone', c.phone);
+    set('edit-clinic-line', c.line_id); set('edit-clinic-phone', c.phone); set('edit-clinic-about', c.about);
   }
   openSheet('s-edit-clinic');
 }
 async function saveClinicProfile(){
-  const lineEl=document.getElementById('edit-clinic-line'), phoneEl=document.getElementById('edit-clinic-phone');
+  const lineEl=document.getElementById('edit-clinic-line'), phoneEl=document.getElementById('edit-clinic-phone'), aboutEl=document.getElementById('edit-clinic-about');
   const line_id=(lineEl&&lineEl.value.trim())||null;
   const phone=(phoneEl&&phoneEl.value.trim())||null;
+  const about=(aboutEl&&aboutEl.value.trim())||null;
   if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){
     try{
-      const { error } = await dmSb().from('clinics').update({ line_id, phone }).eq('id', dmUser.id);   // ★ name/province ไม่อยู่ใน grant → แก้ไม่ได้ (locked)
+      const { error } = await dmSb().from('clinics').update({ line_id, phone, about }).eq('id', dmUser.id);   // ★ name/province ไม่อยู่ใน grant → แก้ไม่ได้ (locked)
       if(error){ console.error('[cprofile] save ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
-      dmLog('[cprofile] save สำเร็จ ✓ line_id+phone');
-      if(dmUser.clinic){ dmUser.clinic.line_id=line_id; dmUser.clinic.phone=phone; }
+      dmLog('[cprofile] save สำเร็จ ✓ line_id+phone+about');
+      if(dmUser.clinic){ dmUser.clinic.line_id=line_id; dmUser.clinic.phone=phone; dmUser.clinic.about=about; }
     }catch(e){ console.error('[cprofile] save exception', e); showToast('บันทึกไม่สำเร็จ'); return; }
   }
   closeSheet('s-edit-clinic');
+  if(typeof dmLoadManageBoard==='function') dmLoadManageBoard(); if(typeof dmLoadJobsBoard==='function') dmLoadJobsBoard();   // refresh join clinics(about) ในการ์ด/รายละเอียดงาน
   showToast('<i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกสำเร็จ');
 }
 
@@ -3084,7 +3088,7 @@ async function dmLoadProfile(){
           const pv=document.getElementById('pf-views'); if(pv && vc!=null) pv.textContent=vc; }catch(e){ console.error('pf-views', e); }
       }
     } else if(dmUser.role==='clinic'){
-      const { data } = await dmSb().from('clinics').select('name, province, district, line_id, phone').eq('id',dmUser.id).single();
+      const { data } = await dmSb().from('clinics').select('name, province, district, line_id, phone, about').eq('id',dmUser.id).single();
       if(data){
         dmUser.clinic={ name:data.name, province:data.province, district:data.district, line_id:data.line_id, phone:data.phone };   // C3a โพสต์งาน + C4d แก้โปรไฟล์
         document.querySelectorAll('#v-clinic .rp-full').forEach(e=>e.textContent=data.name);
