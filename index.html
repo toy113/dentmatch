@@ -1280,7 +1280,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
             <div class="chip" onclick="chipMulti(this)">ตามตกลง</div>
           </div>
         </div>
-        <div class="form-group"><label>วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input type="date" class="inp" id="workdate" placeholder="เว้นว่างถ้าไม่ระบุ" onchange="showThaiDate(this)"><div id="workdate-th" style="display:none;font-size:12.5px;color:var(--p700);font-weight:600;margin-top:6px"></div></div>
+        <div class="form-group"><label>วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input type="date" class="inp" id="workdate" placeholder="เลือกวันแล้วเพิ่มอัตโนมัติ" onchange="_postAddDate(this)"><div id="postDatesChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div></div>
         <div class="form-group"><label>เวลา <span style="font-size:11px;color:var(--ink4);font-weight:400">(24 ชม. · HH:MM)</span></label><div class="inp-row"><input type="text" class="inp" value="10:00" inputmode="numeric" maxlength="5" placeholder="เริ่ม เช่น 10:00" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"><input type="text" class="inp" value="19:30" inputmode="numeric" maxlength="5" placeholder="เลิก เช่น 19:30" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"></div></div>
         <div class="form-group">
           <label>ค่าตอบแทน</label>
@@ -3055,12 +3055,18 @@ function _dmAgo(ts){
   if(d<30) return Math.floor(d/7)+' สัปดาห์ที่แล้ว';
   return Math.floor(d/30)+' เดือนที่แล้ว';
 }
+function _dmDateShort(d){ const p=String(d).split('-'); if(p.length!==3) return _dmEsc(d); return (+p[2])+' '+(_thMonthsAbbr[+p[1]-1]||''); }   // 'YYYY-MM-DD' → '10 มิ.ย.'
 function _dmSched(job){
-  const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
   const time=(job.time_start&&job.time_end)?(job.time_start+'–'+job.time_end+' น.'):'';
+  if(job.work_dates && job.work_dates.length){ return [job.work_dates.map(_dmDateShort).join(', '),time].filter(Boolean).join(' · '); }   // วันที่เจาะจง (หลายวัน)
+  const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
   const p=[days,time].filter(Boolean);
   return p.length?p.join(' · '):'ตามตกลง';
 }
+let _postDates=[];
+function _postRenderDates(){ const c=document.getElementById('postDatesChips'); if(!c) return; c.innerHTML=_postDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_postRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
+function _postAddDate(inp){ var v=inp.value; if(v && _postDates.indexOf(v)<0){ _postDates.push(v); _postDates.sort(); _postRenderDates(); } inp.value=''; }
+function _postRmDate(d){ _postDates=_postDates.filter(function(x){ return x!==d; }); _postRenderDates(); }
 function dmCardAddLine(btn){ if(!dmUser || !dmUser.id){ openSheet('s-login'); return; }   // guest = ล็อก → login ก่อน Add LINE
   openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
 // อัปเดต count ทั้ง sec-hdr (.cnt-pill) + dt-toolbar (.pill) ของแท็บ + เก็บ data-total ให้ filter
@@ -3100,7 +3106,7 @@ async function dmLoadJobsBoard(){
   try{
     // jobs + clinics(name,province,district,about,line_id) — public-safe ไม่มี PII
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('is_open', true).gt('expires_at', new Date().toISOString())   // ซ่อนงานหมดอายุจากบอร์ด
       .order('created_at', { ascending:false }).limit(60);
     if(error) console.warn('dmLoadJobsBoard', error);
@@ -3279,7 +3285,7 @@ async function dmJobAddLineCount(jobId){
 async function dmOpenJob(id){
   let job=_dmJobs[id];
   if(!job && id && dmSb()){   // ไม่อยู่ใน cache (เปิดจากคำเชิญ/งานปิด) → ดึงจาก DB
-    try{ const { data } = await dmSb().from('jobs').select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)').eq('id', id).maybeSingle();
+    try{ const { data } = await dmSb().from('jobs').select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)').eq('id', id).maybeSingle();
       if(data){ _dmJobs[id]=data; job=data; } }catch(e){ console.error('dmOpenJob fetch', e); }
   }
   const sc=document.querySelector('#v-job-detail .scroll');
@@ -3331,7 +3337,8 @@ async function dmPostJob(){
   if(_payType==='nego') wage_text='ตามตกลง';
   else if(wv) wage_text='฿'+(+wv).toLocaleString()+(_payType==='month'?'/เดือน':'/วัน');
   const de=document.getElementById('post-desc'); const description=(de&&de.value.trim())||null;
-  const work_date=(document.getElementById('workdate')||{}).value||null;
+  const work_dates=_postDates.length?_postDates.slice():null;
+  const work_date=_postDates.length?_postDates.slice().sort()[0]:((document.getElementById('workdate')||{}).value||null);   // work_date = วันแรก (backward compat)
   // จังหวัด/อำเภอ = ที่ตั้งคลินิก (jobs.province NOT NULL)
   let prov=(dmUser.clinic&&dmUser.clinic.province)||null, dist=(dmUser.clinic&&dmUser.clinic.district)||null;
   if(!prov){
@@ -3343,11 +3350,11 @@ async function dmPostJob(){
   const title=[posLabel, skills[0]||'', dayPhrase].filter(Boolean).join(' ').trim();
   // ★ row = เฉพาะคอลัมน์ใน INSERT grant (ไม่มี id/is_boosted/created_at → is_boosted default false)
   const row={ clinic_id:dmUser.id, title, position:pos, province:prov, district:dist,
-    wage_text, work_date, urgent:false, is_open:true, skills, work_days, time_start, time_end, description };
+    wage_text, work_date, work_dates, urgent:false, is_open:true, skills, work_days, time_start, time_end, description };
   try{
     const { data, error }=await dmSb().from('jobs').insert(row).select();
     if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
-    dmLog('[postjob] insert สำเร็จ ✓', data);
+    dmLog('[postjob] insert สำเร็จ ✓', data); _postDates=[]; _postRenderDates();   // เคลียร์วันที่ที่เลือกหลังโพสต์
     openSheet('s-post-success');
     await dmLoadJobsBoard();     // refresh บอร์ด → งานใหม่โผล่บนสุด
     await dmLoadManageBoard();   // refresh แท็บจัดการด้วย
@@ -3479,7 +3486,7 @@ async function dmLoadManageBoard(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
   try{
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_days, time_start, time_end, work_date, urgent, is_open, filled, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, work_date, urgent, is_open, filled, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
     if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
@@ -4501,7 +4508,7 @@ function previewPost(){
   const nego=(typeof _payType!=='undefined'&&_payType==='nego');
   const month=(typeof _payType!=='undefined'&&_payType==='month');
   const payHtml = nego ? 'ค่าตอบแทนตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
-  const sched = (days.length?days.join(' '):'ตามตกลง') + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
+  const sched = (_postDates.length ? _postDates.map(_dmDateShort).join(', ') : (days.length?days.join(' '):'ตามตกลง')) + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
   const _cl=(typeof dmUser!=='undefined'&&dmUser&&dmUser.clinic)||{};   // ชื่อ/ที่ตั้งคลินิกจริง (ไม่ใช่ mock)
   const _cname=_dmEsc(_cl.name||'คลินิกของคุณ');
   const _cloc=_dmEsc(_cl.province||'-')+(_cl.district?' ('+_dmEsc(_cl.district)+')':'');
