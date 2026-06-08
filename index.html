@@ -3544,6 +3544,8 @@ function dmManageCard(job){
   const dateStr = (_dts.length>1) ? _dmEsc(_dmSched(job)) : (job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job)));
   const _lgd=_dmJobLogged[job.id]||[]; const _lgN=_dts.filter(function(d){ return _lgd.indexOf(String(d).slice(0,10))>=0; }).length;
   const progStr = (_dts.length>1) ? `<span style="color:var(--p600);font-weight:600"><i data-lucide="notebook-pen"></i> บันทึก ${_lgN}/${_dts.length} วัน</span>` : '';
+  const _unlogPast = _dmPastDates(job).filter(function(d){ return _lgd.indexOf(String(d).slice(0,10))<0; }).length;   // วันที่ผ่านแล้วแต่ยังไม่บันทึก
+  const _logRow = _unlogPast>0 ? `<button class="btn-sm log" style="width:100%;justify-content:center;margin-bottom:8px;background:var(--p50);border-color:var(--p200);color:var(--p700);font-weight:700" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน${_dts.length>1?` (${_unlogPast} วันที่ผ่านแล้ว)`:''}</button>` : '';
   const meta = `<span class="mm-date"><i data-lucide="calendar-days"></i> ${dateStr}</span>${progStr}<span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
   let cardStyle='cursor:pointer', mf='mf-open', badge, body;
@@ -3563,7 +3565,7 @@ function dmManageCard(job){
     cardStyle+=';opacity:.9;border-color:rgba(229,83,58,.2)';
     badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
     body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
-      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+      ${_logRow}<div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else if(st==='expired'){
     cardStyle+=';opacity:.7';
     badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
@@ -3574,7 +3576,7 @@ function dmManageCard(job){
     if(_urg) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
     badge = _urg ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
                        : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
-    body=`<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+    body=`${_logRow}<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
   const toggle=(st==='open'||st==='closed')?`<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="padding:11px;margin:-11px;cursor:pointer;display:inline-flex;align-items:center" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"><div class="tog${st==='closed'?' off':''}"></div></div>`:'';
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
