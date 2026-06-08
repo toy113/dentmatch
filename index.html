@@ -3637,7 +3637,7 @@ function dmManageCard(job){
     else if(_dts.length===0 && !_noDateLoggedOnce){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>`; }   // วันประจำ/ตามตกลง
     else { logBtn = ''; }   // วันตามตกลงที่บันทึกแล้ว หรือ วันเจาะจงบันทึกครบ → ไม่มีปุ่ม
     body=`<div class="closed-banner" style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600"><i data-lucide="check"></i> ได้บุคลากรแล้ว — ปิดจาก job board แล้ว</div>
-      <div class="act-row">${logBtn}<button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดรับใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+      <div class="act-row">${logBtn}<button class="btn-sm" style="flex:1" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดรับใหม่</button><button class="btn-sm del" style="flex:none" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   } else if(st==='past'){
     mf='mf-past'; cardStyle+=';border-color:rgba(107,78,194,.25);background:linear-gradient(to bottom,#fff,var(--p25))';
     badge='<div class="mstatus" style="color:var(--p600)"><div class="dot dot-p"></div>วันงานผ่านแล้ว</div>';
