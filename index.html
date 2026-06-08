@@ -3152,7 +3152,7 @@ function _dmSched(job){
   if(job.work_dates && job.work_dates.length){ return [job.work_dates.map(_dmDateShort).join(', '),time].filter(Boolean).join(' · '); }   // วันที่เจาะจง (หลายวัน)
   const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
   const p=[days,time].filter(Boolean);
-  return p.length?p.join(' · '):'ตามตกลง';
+  return p.length?p.join(' · '):'วันตามตกลง';
 }
 let _postDates=[];
 function _postRenderDates(){ const c=document.getElementById('postDatesChips'); if(!c) return; c.innerHTML=_postDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_postRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
@@ -3353,7 +3353,7 @@ function dmJobDetailHTML(job){
         <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px"><i data-lucide="hospital"></i> ${cname}${jobAddr?' · '+jobAddr:''}</div>
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
           <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
-          <div style="font-size:14px;font-weight:600;color:var(--p800)">${days?_dmEsc(days):'ตามตกลง'}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--p800)">${days?_dmEsc(days):'วันตามตกลง'}</div>
           ${time?`<div style="font-size:13px;color:var(--ink3);margin-top:3px">${time}</div>`:''}
         </div>
       </div>
@@ -4614,7 +4614,7 @@ function _dmRenderPreview(){
   const nego=(typeof _payType!=='undefined'&&_payType==='nego');
   const month=(typeof _payType!=='undefined'&&_payType==='month');
   const payHtml = nego ? 'ค่าตอบแทนตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
-  const sched = (_postDates.length ? _postDates.map(_dmDateShort).join(', ') : (days.length?days.join(' '):'ตามตกลง')) + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
+  const sched = (_postDates.length ? _postDates.map(_dmDateShort).join(', ') : (days.length?days.join(' '):'วันตามตกลง')) + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
   const _cl=(typeof dmUser!=='undefined'&&dmUser&&dmUser.clinic)||{};   // ชื่อ/ที่ตั้งคลินิกจริง (ไม่ใช่ mock)
   const _cname=_dmEsc(_cl.name||'คลินิกของคุณ');
   const _pu=_postDates.length?_dmIsUrgent({work_dates:_postDates.slice()}):false;   // ด่วน auto ≤7 วัน (จากวันที่ที่เลือก)
