@@ -1651,6 +1651,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <button id="search-wtj-clear" onclick="clearSearch('wtj')" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);width:38px;height:34px;align-items:center;justify-content:center;background:none;border:none;font-size:16px;color:var(--ink4);cursor:pointer;padding:0;display:none"><i data-lucide="x"></i></button>
         </div>
       </div>
+      <div style="padding:8px 16px 0"><button onclick="openInterestedJobs()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--p50);border:1.5px solid var(--p200);border-radius:12px;padding:11px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:700;color:var(--p700);cursor:pointer"><i data-lucide="heart"></i> งานที่ฉันสนใจ<span id="wtj-interested-cnt"></span></button></div>
       <div class="sec-hdr"><h2><i data-lucide="briefcase"></i> งานที่เปิดรับ</h2><span id="wtj-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="wtj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
@@ -2299,6 +2300,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 </div>
 
 <!-- ════════ PROVINCE SEARCH SHEET ════════ -->
+<div class="overlay" id="s-interested" onclick="overlayClose(event,'s-interested')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><i data-lucide="heart"></i> งานที่ฉันสนใจ</div>
+    <div class="sheet-sub">งานที่คุณกด Add LINE ติดต่อคลินิกไปแล้ว</div>
+    <div id="interested-list" style="display:flex;flex-direction:column;gap:10px;margin-top:14px"></div>
+  </div>
+</div>
 <div class="overlay" id="s-province" onclick="overlayClose(event,'s-province')">
   <div class="sheet" style="max-height:88%">
     <div class="sheet-handle"></div>
@@ -3231,7 +3240,7 @@ async function _dmRefreshCurrent(){
   try{
     const r=(dmUser&&dmUser.role)||'guest';
     if(r==='clinic'){ await dmLoadJobsBoard(); await dmLoadWorkerBoard(); if(typeof dmLoadManageBoard==='function') await dmLoadManageBoard(); if(typeof dmLoadClinicInvites==='function') dmLoadClinicInvites(); }
-    else if(r==='worker'){ await dmLoadJobsBoard(); if(typeof dmLoadWorkerInbox==='function') dmLoadWorkerInbox(); if(typeof dmLoadWorkerConfirm==='function') dmLoadWorkerConfirm(); }
+    else if(r==='worker'){ await dmLoadJobsBoard(); if(typeof dmLoadWorkerInbox==='function') dmLoadWorkerInbox(); if(typeof dmLoadWorkerConfirm==='function') dmLoadWorkerConfirm(); if(typeof dmUpdateInterestedCount==='function') dmUpdateInterestedCount(); }
     else { await dmLoadJobsBoard(); if(typeof dmLoadStats==='function') dmLoadStats(); }
   }catch(e){ console.warn('refresh', e); }
 }
@@ -4425,8 +4434,37 @@ async function dmRecordAddLine(){
     const { data, error } = await dmSb().from('add_line_events')
       .insert({ worker_id:dmUser.id, clinic_id:_addLineClinicId, job_id:_addLineJobId }).select();
     if(error){ console.error('[addline] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึก Add LINE ไม่สำเร็จ: '+error.message); return; }
-    dmLog('[addline] insert สำเร็จ ✓', data);
+    dmLog('[addline] insert สำเร็จ ✓', data); dmUpdateInterestedCount();   // อัปเดตจำนวน "งานที่ฉันสนใจ"
   }catch(e){ console.error('[addline] exception', e); }
+}
+function openInterestedJobs(){ openSheet('s-interested'); dmLoadInterestedJobs(); }
+async function dmUpdateInterestedCount(){
+  const el=document.getElementById('wtj-interested-cnt'); if(!el) return;
+  if(!dmSb()||!dmUser||dmUser.role!=='worker'){ el.textContent=''; return; }
+  try{ const { count } = await dmSb().from('add_line_events').select('id',{count:'exact',head:true}).eq('worker_id', dmUser.id); el.textContent=count?(' ('+count+')'):''; }catch(e){}
+}
+async function dmLoadInterestedJobs(){
+  const list=document.getElementById('interested-list'); if(!list) return;
+  if(!dmSb()||!dmUser||dmUser.role!=='worker'){ list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">เข้าสู่ระบบเป็นบุคลากรก่อน</div>'; return; }
+  list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';
+  try{
+    const { data } = await dmSb().from('add_line_events')
+      .select('created_at, job_id, jobs(id, title, position, province, district, wage_text, is_open, clinics(name))')
+      .eq('worker_id', dmUser.id).order('created_at',{ascending:false}).limit(50);
+    const rows=(data||[]).filter(function(e){ return e.jobs; });   // job ถูกลบ = job_id set null → ข้าม
+    if(!rows.length){ list.innerHTML='<div style="text-align:center;padding:30px 18px;color:var(--ink4);font-size:13.5px;line-height:1.8"><i data-lucide="heart" style="color:var(--ink5)"></i><br>ยังไม่มีงานที่สนใจ<br><span style="font-size:12px;color:var(--ink5)">กด "Add LINE" ที่งานเพื่อบันทึกไว้ที่นี่</span></div>'; refreshIcons(); return; }
+    list.innerHTML = rows.map(function(e){
+      const j=e.jobs||{}; const c=j.clinics||{}; const pos=DM_POS_LABEL[j.position]||_dmEsc(j.position);
+      const loc=_dmEsc(j.province||'')+(j.district?' ('+_dmEsc(j.district)+')':'');
+      const closed=!j.is_open;
+      return `<div onclick="closeSheet('s-interested');dmOpenJob('${j.id}')" style="border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;cursor:pointer;${closed?'opacity:.65':''}">
+        <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:3px">${pos}${closed?' <span style="font-size:11px;color:var(--red);font-weight:600">· ปิดรับแล้ว</span>':''}</div>
+        <div style="font-size:12px;color:var(--ink4);margin-bottom:4px"><i data-lucide="hospital"></i> ${_dmEsc(c.name||'คลินิก')} · ${loc}</div>
+        <div style="font-size:11.5px;color:var(--ink5)">Add LINE เมื่อ ${_dmEsc(_dmAgo(e.created_at))} · ${_dmEsc(_dmWage(j))}</div>
+      </div>`;
+    }).join('');
+    refreshIcons();
+  }catch(e){ console.error('[interested]', e); list.innerHTML='<div style="text-align:center;padding:24px;color:var(--red);font-size:13px">โหลดไม่สำเร็จ</div>'; }
 }
 function confirmLineSent() {
   dmRecordAddLine();
