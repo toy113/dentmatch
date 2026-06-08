@@ -3629,8 +3629,8 @@ function dmManageCard(job){
     cardStyle+=';border-color:rgba(59,130,246,.3);background:linear-gradient(to bottom,#fff,var(--blue-bg))';
     badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>';
     // ปุ่มบันทึก: โชว์เฉพาะเมื่อมีวันที่ผ่านแล้ว+ยังไม่บันทึก (เหมือน open state) · มีแต่วันอนาคต = ปุ่มจาง · บันทึกครบ = ไม่มีปุ่ม
-    // งานไม่มีวันเจาะจง (วันประจำ recurring + วันตามตกลง) บันทึกได้ · "ตามตกลง" = ครั้งเดียว (บันทึกแล้วซ่อน) · recurring = บันทึกแต่ละรอบได้เรื่อยๆ
-    const _noDateLoggedOnce = _dts.length===0 && !(job.work_days && job.work_days.length) && (_dmJobLogged[job.id]||[]).length>0;
+    // งานไม่มีวันเจาะจง (วันประจำ + วันตามตกลง) บันทึกได้ครั้งเดียว แล้วซ่อนปุ่ม
+    const _noDateLoggedOnce = _dts.length===0 && (_dmJobLogged[job.id]||[]).length>0;
     let logBtn;
     if(_unlogPast>0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน (${_unlogPast} วันที่ผ่านแล้ว)</button>`; }
     else if(_dts.length>0 && _dmPastDates(job).length===0){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.55;cursor:default"><i data-lucide="clock"></i> บันทึกผลได้หลังวันงาน</button>`; }   // มีวันเจาะจงแต่ยังไม่ถึง
