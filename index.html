@@ -3657,7 +3657,7 @@ async function dmLoadLogWorkers(){
     list.innerHTML = rows.map(function(e){
       const w=e.worker_profiles||{}; const pos=DM_POS_LABEL[w.position]||_dmEsc(w.position);
       const loc=_dmEsc(w.province||'')+(w.district?' ('+_dmEsc(w.district)+')':'');
-      return `<div data-workerid="${e.worker_id}" onclick="selectWorkerLog(this)" style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px">${DM_TOOTH_SVG}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">${pos} · ${_dmEsc(w.anon_id||'')} · ${loc}</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE ${_dmEsc(_dmAgo(e.created_at))}</div></div><span class="wlchk" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center"></span></div>`;
+      return `<div data-workerid="${e.worker_id}" onclick="selectWorkerLog(this)" style="border:2px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p150),var(--p300));display:flex;align-items:center;justify-content:center;font-size:18px">${DM_TOOTH_SVG}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--ink)">${pos} · ${_dmEsc(w.anon_id||'')} · ${loc}</div><div style="font-size:11.5px;color:var(--ink4)">Add LINE ${_dmEsc(_dmAgo(e.created_at))}</div></div><span class="wlchk" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center"></span></div>`;
     }).join('');
     refreshIcons();
   }catch(e){ dmLog('[worklog] load workers', e); }
@@ -4314,18 +4314,19 @@ function logStep2(){
   _logWorkerIds=[];
   _logShowStep('step2');
   const sub=document.getElementById('log-step2-sub');
-  if(selectedOutcome==='noshow')sub.textContent='เลือกคนที่ไม่มา (เลือกได้หลายคน)';
-  else sub.textContent='เลือกคนที่มาทำงานจริง (เลือกได้หลายคน)';
+  if(selectedOutcome==='noshow')sub.textContent='เลือกคนที่ไม่มา';
+  else sub.textContent='เลือกคนที่มาทำงานจริง';
   dmLoadLogWorkers();   // C3d-2: รายชื่อจริง = คนที่ Add LINE งานนี้ (กรองคนที่บันทึกวันนั้นแล้ว)
 }
 function selectWorkerLog(el){
   const id=el.dataset.workerid; if(!id) return;
-  const i=_logWorkerIds.indexOf(id); const on=(i<0);   // toggle เลือกได้หลายคน
-  if(on) _logWorkerIds.push(id); else _logWorkerIds.splice(i,1);
-  el.style.borderColor = on?'var(--p500)':'var(--border2)';
-  el.style.background  = on?'var(--p50)':'#fff';
-  const chk=el.querySelector('.wlchk');
-  if(chk){ chk.style.borderColor=on?'var(--p500)':'var(--border2)'; chk.style.background=on?'var(--p500)':'transparent'; chk.innerHTML=on?'<i data-lucide="check" style="color:#fff;width:15px;height:15px"></i>':''; refreshIcons(); }
+  const already=(_logWorkerIds.length===1 && _logWorkerIds[0]===id);
+  document.querySelectorAll('#workerSelectList > div').forEach(function(c){ c.style.borderColor='var(--border2)'; c.style.background='#fff'; const k=c.querySelector('.wlchk'); if(k){ k.style.borderColor='var(--border2)'; k.style.background='transparent'; k.innerHTML=''; } });   // reset ทั้งหมด (เลือกได้คนเดียว)
+  if(already){ _logWorkerIds=[]; refreshIcons(); return; }   // กดซ้ำ = ยกเลิก
+  _logWorkerIds=[id];
+  el.style.borderColor='var(--p500)'; el.style.background='var(--p50)';
+  const chk=el.querySelector('.wlchk'); if(chk){ chk.style.borderColor='var(--p500)'; chk.style.background='var(--p500)'; chk.innerHTML='<i data-lucide="check" style="color:#fff;width:15px;height:15px"></i>'; }
+  refreshIcons();
 }
 function dayToggle(el){el.classList.toggle('on')}
 /* ── ADD LINE + AUTO MESSAGE ── */
