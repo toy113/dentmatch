@@ -1516,24 +1516,24 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="profile-section"><div class="ps-title"><i data-lucide="bar-chart-3"></i> ภาพรวมโปรไฟล์</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
             <div class="trust-card" style="text-align:center;padding:14px"><div id="pf-views" style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">0</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="eye"></i> โปรไฟล์ถูกดู</div></div>
-            <div class="trust-card" style="text-align:center;padding:14px"><div id="pf-invites" style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">7</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="send"></i> ได้รับคำเชิญ</div></div>
+            <div class="trust-card" style="text-align:center;padding:14px"><div id="pf-invites" style="font-family:'Prompt',sans-serif;font-size:24px;font-weight:800;color:var(--p700);line-height:1">0</div><div style="font-size:12px;color:var(--ink4);margin-top:5px"><i data-lucide="send"></i> ได้รับคำเชิญ</div></div>
           </div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="shield-check"></i> ความน่าเชื่อถือ</div>
           <div class="trust-card">
-            <div class="trust-item" id="pf-trust-row"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label" id="pf-trust">ผ่านงาน DentMatch 8 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
-            <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label" id="pf-member">สมาชิก 14 เดือน</div><div class="trust-val" id="pf-since">ตั้งแต่ เมษายน 2567</div></div></div>
+            <div class="trust-item" id="pf-trust-row" style="display:none"><div class="trust-icon ti-green"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="trust-info"><div class="trust-label" id="pf-trust">ผ่านงาน DentMatch 0 ครั้ง</div><div class="trust-val">ได้รับการยืนยันจากคลินิก</div></div></div>
+            <div class="trust-item"><div class="trust-icon ti-purple"><i data-lucide="calendar-days"></i></div><div class="trust-info"><div class="trust-label" id="pf-member">สมาชิกใหม่</div><div class="trust-val" id="pf-since"></div></div></div>
             <div class="trust-item"><div class="trust-icon ti-blue"><i data-lucide="map-pin"></i></div><div class="trust-info"><div class="trust-label" id="profileProvDisplay">กรุงเทพมหานคร</div><div class="trust-val">จังหวัดที่รับงาน</div></div></div>
           </div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="zap"></i> ทักษะ / สาขา</div>
-          <div class="skills-wrap" id="pf-skills"><span class="sk" style="font-size:13px;padding:5px 12px">GP</span><span class="sk" style="font-size:13px;padding:5px 12px">Orthodontic</span><span class="sk" style="font-size:13px;padding:5px 12px">Extraction</span><span class="sk" style="font-size:13px;padding:5px 12px">Root Canal</span></div>
+          <div class="skills-wrap" id="pf-skills"><span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="message-circle"></i> แนะนำตัวเอง</div>
-          <div class="intro-box"><div class="intro-txt" id="pf-bio">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์ มีใบประกอบวิชาชีพ ทันตแพทยสภา ทำงานได้ทั้งคลินิกและโรงพยาบาล</div></div>
+          <div class="intro-box"><div class="intro-txt" id="pf-bio">ยังไม่ได้แนะนำตัว</div></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
-          <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big on">ส</div><div class="d-big on">อา</div></div></div>
+          <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big">ส</div><div class="d-big">อา</div></div></div>
         </div>
         <button class="btn-edit-profile" onclick="dmOpenEditProfile()"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
         <button onclick="openSheet('s-contact')" style="width:100%;background:#fff;color:var(--ink4);border:1.5px solid var(--border2);border-radius:var(--rb);padding:12px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background='#fff'"><i data-lucide="message-circle"></i> ติดต่อเรา</button>
