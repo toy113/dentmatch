@@ -4298,8 +4298,8 @@ function _dmNotiBump(){
   showToast('<i data-lucide="bell"></i> มีการแจ้งเตือนใหม่');
 }
 function _dmNotiOnChange(payload){
-  // worker: no_show เป็นการบันทึกฝ่ายเดียว (ไม่ให้ยืนยัน) → ไม่ต้องเด้งกระดิ่ง/แจ้งเตือน · event อื่นเด้งปกติ
-  const _silent = !!(payload && payload.table==='work_logs' && payload.new && payload.new.clinic_outcome==='no_show' && dmUser && dmUser.role==='worker');
+  // worker: เงียบเมื่อ (ก) no_show = บันทึกฝ่ายเดียว · (ข) worker_outcome ถูกตั้งแล้ว = worker เพิ่งกดยืนยันเอง (ไม่เด้งกระดิ่งตัวเอง) · event อื่นเด้งปกติ
+  const _silent = !!(payload && payload.table==='work_logs' && dmUser && dmUser.role==='worker' && payload.new && (payload.new.clinic_outcome==='no_show' || payload.new.worker_outcome));
   if(!_silent) _dmNotiAnyReal=true;
   clearTimeout(_dmNotiDebounce);
   _dmNotiDebounce=setTimeout(()=>{
