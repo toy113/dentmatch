@@ -1733,7 +1733,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="form-group"><label id="editSkillLabel">สาขาหลัก / ทักษะ</label>
         <div class="chip-row" style="flex-wrap:wrap" id="editSkillChips"></div>
       </div>
-      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp" id="edit-exp"><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
+      <div class="form-group"><label>ประสบการณ์ (ปี)</label><select class="inp" id="edit-exp"><option>เริ่มต้นทำงาน</option><option>1 ปี</option><option>2 ปี</option><option>3 ปี</option><option>4 ปี</option><option selected>5 ปี</option><option>6+ ปี</option><option>10+ ปี</option></select></div>
       <div class="form-group">
         <label>จังหวัดที่รับงาน <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายจังหวัด)</span></label>
         <div id="editProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
@@ -2099,7 +2099,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <label id="regSkillLabel" style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">ทักษะ / สาขา</label>
         <div class="chip-row" style="flex-wrap:wrap" id="regWorkerSkillChips"><span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span></div>
       </div>
-      <select class="inp" style="margin-bottom:9px" id="rw-exp"><option value="">ประสบการณ์ *</option><option>จบใหม่ / ยังไม่มีประสบการณ์</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
+      <select class="inp" style="margin-bottom:9px" id="rw-exp"><option value="">ประสบการณ์ *</option><option>เริ่มต้นทำงาน</option><option>1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
       <div class="form-group" style="margin-bottom:9px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">จังหวัดที่รับงาน <span style="font-size:10px;font-weight:400;color:var(--ink4)">(เลือกได้หลายจังหวัด)</span></label>
         <div id="regProvSelected" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:4px"></div>
@@ -3146,11 +3146,11 @@ function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
 function _dmAvPos(p){ const m={dentist:'var(--p700),var(--p500)',assistant:'#2f6fe0,#1e4fa8',counter:'#0ea371,#0a7a52'}; return 'linear-gradient(135deg,'+(m[p]||m.dentist)+')'; }   // สี avatar ตามตำแหน่ง (ม่วง/ฟ้า/เขียว)
 function _dmMonths(d){ if(!d)return 0; const s=new Date(d),n=new Date(); return Math.max(0,(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())); }
 function _dmSince(d){ if(!d) return ''; const x=new Date(d); return 'ตั้งแต่ '+_thMonths[x.getMonth()]+' '+(x.getFullYear()+543); }   // member_since → "ตั้งแต่ <เดือนไทย> <พ.ศ.>"
-function _dmExpYears(s){ if(!s) return null; if(/จบใหม่/.test(s)) return 0; const m=String(s).match(/\d+/); return m?parseInt(m[0],10):null; }   // "5 ปี"->5, "10+ ปี"->10, "จบใหม่"->0
+function _dmExpYears(s){ if(!s) return null; if(/จบใหม่|เริ่มต้น/.test(s)) return 0; const m=String(s).match(/\d+/); return m?parseInt(m[0],10):null; }   // "5 ปี"->5, "10+ ปี"->10, "เริ่มต้นทำงาน"->0
 function dmWorkerCard(w){
   const dot = w.available ? '<div class="av-dot"></div>' : '';
   const pos = DM_POS_LABEL[w.position] || _dmEsc(w.position);
-  const exp = (w.experience_years==null) ? '' : `<span class="w-exp">${w.experience_years>0 ? w.experience_years+' ปี' : 'จบใหม่'}</span>`;
+  const exp = (w.experience_years==null) ? '' : `<span class="w-exp">${w.experience_years>0 ? w.experience_years+' ปี' : 'เริ่มต้นทำงาน'}</span>`;
   const provs = (w.provinces&&w.provinces.length) ? w.provinces : (w.province?[w.province]:[]);
   const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
   const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
@@ -3924,7 +3924,7 @@ function dmFillWorkerProfile(w){
 function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข้อมูลจริง (public-safe เท่านั้น · ไม่มี PII)
   if(!w) return;
   const pos=DM_POS_LABEL[w.position]||w.position||'บุคลากร';
-  const ex=(w.experience_years==null)?'':(w.experience_years>0?w.experience_years+' ปี':'จบใหม่');
+  const ex=(w.experience_years==null)?'':(w.experience_years>0?w.experience_years+' ปี':'เริ่มต้นทำงาน');
   const set=(id,txt)=>{ const e=document.getElementById(id); if(e) e.textContent=txt; };
   set('wd-anon', w.anon_id||'—');
   const _wav=document.getElementById('wd-av'); if(_wav) _wav.style.background=_dmAvPos(w.position);   // สี avatar ตามตำแหน่ง
