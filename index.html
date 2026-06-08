@@ -761,8 +761,13 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   }
   .dt-filter-clear:hover{border-color:var(--red);color:var(--red);background:#fff5f3}
   .filter-wrap:not(.dt-open) .dt-filter-clear{display:none}
-  .filter-wrap.dt-collapsible .chip-row{display:none}
-  .filter-wrap.dt-collapsible.dt-open .dt-filterbar{margin-bottom:12px}
+  .filter-wrap.dt-collapsible .dt-filter-panel{display:none}
+  .filter-wrap.dt-collapsible.dt-open .dt-filter-panel{
+    display:block;position:absolute;left:0;right:0;top:100%;
+    background:#fff;border-bottom:1px solid var(--border);
+    box-shadow:0 14px 30px rgba(54,26,120,.16);
+    padding:14px 34px 16px;max-height:62vh;overflow-y:auto;z-index:60;
+  }
   .filter-wrap.dt-collapsible.dt-open .chip-row{display:flex}
   .chip{padding:7px 15px;font-size:13px;transition:.16s}
   .chip:hover:not(.on){border-color:var(--p400);color:var(--p700)}
@@ -5242,6 +5247,10 @@ function initDesktop(){
     bar.className='dt-filterbar';
     bar.innerHTML='<button class="dt-filter-toggle" type="button">ตัวกรอง <span class="dt-filter-badge">0</span><span class="chev"><i data-lucide="chevron-down"></i></span></button><span class="dt-filter-summary"></span><button class="dt-filter-clear" type="button"><i data-lucide="x"></i> ล้างทั้งหมด</button>';
     fw.insertBefore(bar,fw.firstChild);
+    // ห่อ chip rows เป็น panel ลอย (dropdown) → ตอนเปิดไม่ดันเนื้อหา/ไม่ทำ sticky header สูง
+    const panel=document.createElement('div'); panel.className='dt-filter-panel';
+    [...fw.querySelectorAll(':scope > .chip-row')].forEach(r=>panel.appendChild(r));
+    fw.appendChild(panel);
     const toggle=bar.querySelector('.dt-filter-toggle');
     const badge=bar.querySelector('.dt-filter-badge');
     const summary=bar.querySelector('.dt-filter-summary');
