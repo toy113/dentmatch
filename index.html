@@ -1325,7 +1325,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="ftabs">
         <button class="ft on" onclick="mFilter('all',this)">ทั้งหมด</button>
         <button class="ft" onclick="mFilter('open',this)">เปิดรับ</button>
-        <button class="ft" onclick="mFilter('past',this)">วันงานผ่านแล้ว</button>
+        <button class="ft" onclick="mFilter('filled',this)">ได้บุคลากรแล้ว</button>
       </div>
 
       <div id="cc-manage-cards">
@@ -2617,7 +2617,7 @@ function mFilter(type,btn){
   document.querySelectorAll('#cc-manage .mcard').forEach(card=>{
     if(type==='all'){card.style.display='';return;}
     if(type==='open') card.style.display=card.classList.contains('mf-open')?'':'none';
-    if(type==='past') card.style.display=card.classList.contains('mf-past')?'':'none';
+    if(type==='filled') card.style.display=card.classList.contains('mf-filled')?'':'none';
   });
 }
 function mToggle(tog,cardId){
@@ -3660,6 +3660,7 @@ function dmManageCard(job){
       <div class="act-row"><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
   const toggle='';   // ตัดสวิตช์ออก — ใช้ปุ่ม "ได้บุคลากรแล้ว"/"พักรับสมัคร"/"เปิดรับอีกครั้ง" แทน (label ชัด ไม่งงกับ "ด่วน")
+  mf='mf-'+st;   // class ตามสถานะจริง (open/filled/past/closed/expired) → ใช้กรองแท็บ เปิดรับ/ได้บุคลากรแล้ว
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
     <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
     ${body}
