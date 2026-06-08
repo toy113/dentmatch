@@ -1992,7 +1992,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── LOGIN ── -->
       <div id="login-panel">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
-        <div style="font-size:11px;color:var(--ink4);text-align:center;margin:6px 2px 2px;line-height:1.45"><i data-lucide="info" style="width:11px;height:11px;vertical-align:-1px"></i> เลือก "Log-in with LINE app" เพื่อเข้าเร็วขึ้น (ไม่ต้องพิมพ์รหัส)</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
@@ -2301,7 +2300,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 </div>
 
 <div class="overlay" id="s-post-success" onclick="overlayClose(event,'s-post-success')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="rocket"></i></div><div class="success-title">ลงประกาศสำเร็จ!</div><div class="success-sub">ประกาศของคุณจะปรากฏใน job board ทันที คลินิกจะได้รับ notification เมื่อมีคน Add LINE</div><button class="btn-primary" onclick="closeSheet('s-post-success');clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))">ดูโพสของฉัน →</button></div></div>
+  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="rocket"></i></div><div class="success-title">ลงประกาศสำเร็จ!</div><div class="success-sub">ประกาศของคุณจะปรากฏใน job board ทันที</div><button class="btn-primary" onclick="closeSheet('s-post-success');clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))">ดูโพสของฉัน →</button></div></div>
 </div>
 <div class="overlay" id="s-invite-success" onclick="overlayClose(event,'s-invite-success')">
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="send"></i></div><div class="success-title">ส่งคำเชิญแล้ว!</div><div class="success-sub">บุคลากรจะเห็นคำเชิญในแอป — ถ้าสนใจ จะทักหาคุณผ่าน <b>LINE</b> เอง<br><span style="font-size:12px;color:var(--ink4)">เปิด LINE ไว้ · ดูสถานะได้ที่แท็บ "คำเชิญที่ส่ง"</span></div><button class="btn-primary" onclick="closeSheet('s-invite-success');closeSheet('s-invite')">เสร็จสิ้น</button></div></div>
