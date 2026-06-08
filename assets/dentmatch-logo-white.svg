@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="130" viewBox="0 0 480 130">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@800');</style>
+  <text x="240" y="65" text-anchor="middle" dominant-baseline="central"
+        font-family="'Prompt','Poppins','Segoe UI',system-ui,sans-serif"
+        font-size="72" font-weight="800" letter-spacing="-2">
+    <tspan fill="#ffffff">Dent</tspan><tspan fill="#E8C86A">Match</tspan>
+  </text>
+</svg>
