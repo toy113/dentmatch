@@ -3596,7 +3596,9 @@ function _dmJobDates(job){ if(job && job.work_dates && job.work_dates.length) re
 function _dmPastDates(job){ const t=new Date(); t.setHours(0,0,0,0); return _dmJobDates(job).filter(function(d){ return new Date(d) < t; }); }   // เฉพาะวันที่ผ่านไปแล้ว (บันทึกได้)
 function _dmJobIsPast(job){ const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(ds[ds.length-1]) < t; }   // วันสุดท้ายผ่านแล้ว = งานจบ
 function _dmIsUrgent(job){ if(job&&job.urgent) return true; const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); const up=ds.map(function(d){return new Date(d);}).filter(function(x){return x>=t;}).sort(function(a,b){return a-b;}); if(!up.length) return false; return Math.floor((up[0]-t)/86400000)<=7; }   // ด่วนอัตโนมัติ: วันงานที่ใกล้สุดเหลือ ≤7 วัน (หรือ urgent=true จาก DB)
-function _dmJobNeedsLog(job){ const lg=_dmJobLogged[job.id]||[]; return _dmPastDates(job).some(function(d){ return lg.indexOf(String(d).slice(0,10))<0; }); }   // มีวันที่ผ่านแล้วยังไม่บันทึก
+function _dmNoHire(job){ const a=(job&&job.no_hire_dates)||[]; return Array.isArray(a)?a.map(function(d){ return String(d).slice(0,10); }):[]; }   // วันที่คลินิกมาร์ค "ยังหาคนอยู่" (ปิดโดยไม่ได้จ้าง) = ถือว่าบันทึกแล้ว
+function _dmDateDone(job,d){ const k=String(d).slice(0,10); return (_dmJobLogged[job.id]||[]).indexOf(k)>=0 || _dmNoHire(job).indexOf(k)>=0; }   // วันนี้บันทึกแล้ว (work_log หรือ no_hire)
+function _dmJobNeedsLog(job){ return _dmPastDates(job).some(function(d){ return !_dmDateDone(job,d); }); }   // มีวันที่ผ่านแล้วยังไม่บันทึก
 function _dmLogBadge(n){ ['mgr-pip-tb','mgr-pip-nb'].forEach(function(id){ const el=document.getElementById(id); if(!el) return; if(n>0){ el.textContent=(n>9?'9+':String(n)); el.style.display='flex'; } else { el.style.display='none'; } }); }   // เตือน "งานรอบันทึกผล" ที่แท็บจัดการ
 function dmManageCard(job){
   const past=_dmJobIsPast(job);
@@ -3605,9 +3607,9 @@ function dmManageCard(job){
   const title=_dmEsc(job.title);
   const _dts=_dmJobDates(job);
   const dateStr = (_dts.length>1) ? _dmEsc(_dmSched(job)) : (job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job)));
-  const _lgd=_dmJobLogged[job.id]||[]; const _lgN=_dts.filter(function(d){ return _lgd.indexOf(String(d).slice(0,10))>=0; }).length;
+  const _lgN=_dts.filter(function(d){ return _dmDateDone(job,d); }).length;   // บันทึกแล้ว = work_log หรือ no_hire
   const progStr = (_dts.length>1) ? `<span style="color:var(--p600);font-weight:600"><i data-lucide="notebook-pen"></i> บันทึก ${_lgN}/${_dts.length} วัน</span>` : '';
-  const _unlogPast = _dmPastDates(job).filter(function(d){ return _lgd.indexOf(String(d).slice(0,10))<0; }).length;   // วันที่ผ่านแล้วแต่ยังไม่บันทึก
+  const _unlogPast = _dmPastDates(job).filter(function(d){ return !_dmDateDone(job,d); }).length;   // วันที่ผ่านแล้วแต่ยังไม่บันทึก
   const _logRow = _unlogPast>0 ? `<button class="btn-sm log" style="width:100%;justify-content:center;margin-bottom:8px;background:var(--p50);border-color:var(--p200);color:var(--p700);font-weight:700" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน${_dts.length>1?` (${_unlogPast} วันที่ผ่านแล้ว)`:''}</button>` : '';
   const meta = `<span class="mm-date"><i data-lucide="calendar-days"></i> ${dateStr}</span>${progStr}<span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
@@ -3651,7 +3653,7 @@ async function dmLoadManageBoard(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;
   try{
     const { data, error } = await dmSb().from('jobs')
-      .select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, work_date, urgent, is_open, filled, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
+      .select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, work_date, urgent, is_open, filled, no_hire_dates, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)')
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
     if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
@@ -3736,12 +3738,31 @@ async function dmSaveWorkLog(){
     if(error && error.code!=='23505'){ console.error('[worklog] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
     dmLog('[worklog] insert สำเร็จ ✓ outcome=', outcome, 'n=', _logWorkerIds.length, data);
     const dd=String(work_date).slice(0,10); _dmJobLogged[_logJobId]=_dmJobLogged[_logJobId]||[]; if(_dmJobLogged[_logJobId].indexOf(dd)<0) _dmJobLogged[_logJobId].push(dd);
+    try{ const _nh=_dmNoHire(_dmJobs[_logJobId]||{}); const _i=_nh.indexOf(dd); if(_i>=0){ _nh.splice(_i,1); await dmSb().from('jobs').update({ no_hire_dates:_nh }).eq('id',_logJobId); if(_dmJobs[_logJobId]) _dmJobs[_logJobId].no_hire_dates=_nh.slice(); } }catch(_e){ dmLog('[nohire] prune', _e); }   // เคยมาร์ค "ยังหาคนอยู่" วันนี้ → มีผลจริงแล้ว เอาออก
     _logWorkerIds=[];
     await dmLoadManageBoard();
     const job=_dmJobs[_logJobId]||{};
     if(_dmPastDates(job).length>1){ showToast('บันทึกวันนี้แล้ว ✓ — เลือกวันอื่นต่อได้'); _logBuildDateList(job); _logShowStep('step0'); }   // หลายวัน → กลับไปเลือกวันอื่น
     else { openSheet('s-log-success'); }
   }catch(e){ console.error('[worklog] exception', e); showToast('บันทึกไม่สำเร็จ'); }
+}
+async function _dmMarkNoHire(){   // "ยังหาคนอยู่" สำหรับวันที่ผ่านแล้ว → เก็บวันลง jobs.no_hire_dates (นับเป็นบันทึกแล้ว · ไม่แตะ worker/trust)
+  const jobId=_logJobId, d=_logWorkDate;
+  if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ closeSheet('s-log'); _logWorkerIds=[]; _logWorkDate=null; showToast('<i data-lucide="info" style="color:var(--p600)"></i> รับทราบ — ยังหาคนอยู่ (โพสต์ยังเปิดรับสมัคร)'); return; }
+  if(!jobId || !d){ closeSheet('s-log'); _logWorkerIds=[]; _logWorkDate=null; showToast('<i data-lucide="info" style="color:var(--p600)"></i> รับทราบ — ยังหาคนอยู่'); return; }
+  const dd=String(d).slice(0,10);
+  const cur=_dmNoHire(_dmJobs[jobId]||{}); if(cur.indexOf(dd)<0) cur.push(dd);
+  try{
+    const { error }=await dmSb().from('jobs').update({ no_hire_dates:cur }).eq('id', jobId);
+    if(error){ console.error('[nohire] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
+    if(_dmJobs[jobId]) _dmJobs[jobId].no_hire_dates=cur.slice();
+    _logWorkerIds=[]; _logWorkDate=null;
+    await dmLoadManageBoard();
+    const j2=_dmJobs[jobId]||{};
+    const remain=_dmPastDates(j2).filter(function(x){ return !_dmDateDone(j2,x); }).length;
+    if(remain>0){ showToast('บันทึก “ยังหาคนอยู่” แล้ว ✓ — เลือกวันอื่นต่อได้'); _logBuildDateList(j2); _logShowStep('step0'); }
+    else { closeSheet('s-log'); showToast('<i data-lucide="check" style="color:var(--green)"></i> บันทึก “ยังหาคนอยู่” แล้ว'); }
+  }catch(e){ console.error('[nohire] exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
 // restore session ตอนโหลด (เรียกจาก module หลัง sb พร้อม)
 async function dmInitSession(){
@@ -4371,7 +4392,7 @@ function outCard(el,outcome){
   selectedOutcome=outcome;
 }
 function logStep2(){
-  if(selectedOutcome==='finding'){ closeSheet('s-log'); _logWorkerIds=[]; _logWorkDate=null; showToast('<i data-lucide="info" style="color:var(--p600)"></i> รับทราบ — ยังหาคนอยู่ (โพสต์ยังเปิดรับสมัคร)'); return; }   // ยังหาคนอยู่ = ไม่บันทึก worker/ไม่ +Completed
+  if(selectedOutcome==='finding'){ _dmMarkNoHire(); return; }   // ยังหาคนอยู่ = บันทึกวันลง no_hire_dates (ไม่แตะ worker/trust)
   _logWorkerIds=[];
   _logShowStep('step2');
   const sub=document.getElementById('log-step2-sub');
