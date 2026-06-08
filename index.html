@@ -1320,13 +1320,13 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="stat4">
         <div class="s4"><div class="s4-n" id="m-stat-all">6</div><div class="s4-l">โพสทั้งหมด</div></div>
         <div class="s4"><div class="s4-n" style="color:var(--green)" id="m-stat-open">3</div><div class="s4-l">เปิดรับ</div></div>
-        <div class="s4"><div class="s4-n" style="color:var(--blue)" id="m-stat-filled">0</div><div class="s4-l">ได้บุคลากรแล้ว</div></div>
+        <div class="s4"><div class="s4-n" style="color:var(--ink4)" id="m-stat-closed">0</div><div class="s4-l">ปิดแล้ว</div></div>
       </div>
       <!-- filter tabs -->
       <div class="ftabs">
         <button class="ft on" onclick="mFilter('all',this)">ทั้งหมด</button>
         <button class="ft" onclick="mFilter('open',this)">เปิดรับ</button>
-        <button class="ft" onclick="mFilter('filled',this)">ได้บุคลากรแล้ว</button>
+        <button class="ft" onclick="mFilter('closed',this)">ปิดแล้ว</button>
       </div>
 
       <div id="cc-manage-cards">
@@ -2618,7 +2618,7 @@ function mFilter(type,btn){
   document.querySelectorAll('#cc-manage .mcard').forEach(card=>{
     if(type==='all'){card.style.display='';return;}
     if(type==='open') card.style.display=card.classList.contains('mf-open')?'':'none';
-    if(type==='filled') card.style.display=card.classList.contains('mf-filled')?'':'none';
+    if(type==='closed') card.style.display=card.classList.contains('mf-closed')?'':'none';
   });
 }
 function mToggle(tog,cardId){
@@ -3613,57 +3613,44 @@ function _dmDateDone(job,d){ const k=String(d).slice(0,10); return (_dmJobLogged
 function _dmJobNeedsLog(job){ return _dmPastDates(job).some(function(d){ return !_dmDateDone(job,d); }); }   // มีวันที่ผ่านแล้วยังไม่บันทึก
 function _dmLogBadge(n){ ['mgr-pip-tb','mgr-pip-nb'].forEach(function(id){ const el=document.getElementById(id); if(!el) return; if(n>0){ el.textContent=(n>9?'9+':String(n)); el.style.display='flex'; } else { el.style.display='none'; } }); }   // เตือน "งานรอบันทึกผล" ที่แท็บจัดการ
 function dmManageCard(job){
-  const past=_dmJobIsPast(job);
-  const expired = !past && job.is_open && job.expires_at && (new Date(job.expires_at) < new Date());
-  const st = job.filled ? 'filled' : (past ? 'past' : (!job.is_open ? 'closed' : (expired ? 'expired' : 'open')));
+  const isOpen=!!job.is_open;
+  const expired = isOpen && job.expires_at && (new Date(job.expires_at) < new Date());
   const title=_dmEsc(job.title);
   const _dts=_dmJobDates(job);
   const dateStr = (_dts.length>1) ? _dmEsc(_dmSched(job)) : (job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job)));
   const _lgN=_dts.filter(function(d){ return _dmDateDone(job,d); }).length;   // บันทึกแล้ว = work_log หรือ no_hire
   const progStr = (_dts.length>1) ? `<span style="color:var(--p600);font-weight:600"><i data-lucide="notebook-pen"></i> บันทึก ${_lgN}/${_dts.length} วัน</span>` : '';
   const _unlogPast = _dmPastDates(job).filter(function(d){ return !_dmDateDone(job,d); }).length;   // วันที่ผ่านแล้วแต่ยังไม่บันทึก
-  const _logRow = _unlogPast>0 ? `<button class="btn-sm log" style="width:100%;justify-content:center;margin-bottom:8px;background:var(--p50);border-color:var(--p200);color:var(--p700);font-weight:700" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน${_dts.length>1?` (${_unlogPast} วันที่ผ่านแล้ว)`:''}</button>` : '';
   const meta = `<span class="mm-date"><i data-lucide="calendar-days"></i> ${dateStr}</span>${progStr}<span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
-  let cardStyle='cursor:pointer', mf='mf-open', badge, body;
-  if(st==='filled'){
-    cardStyle+=';border-color:rgba(59,130,246,.3);background:linear-gradient(to bottom,#fff,var(--blue-bg))';
-    badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้บุคลากรแล้ว</div>';
-    // ปุ่มบันทึก: โชว์เฉพาะเมื่อมีวันที่ผ่านแล้ว+ยังไม่บันทึก (เหมือน open state) · มีแต่วันอนาคต = ปุ่มจาง · บันทึกครบ = ไม่มีปุ่ม
-    // งานไม่มีวันเจาะจง (วันประจำ + วันตามตกลง) บันทึกได้ครั้งเดียว แล้วซ่อนปุ่ม
-    const _noDateLoggedOnce = _dts.length===0 && (_dmJobLogged[job.id]||[]).length>0;
-    let logBtn;
-    if(_unlogPast>0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน (${_unlogPast} วันที่ผ่านแล้ว)</button>`; }
-    else if(_dts.length>0 && _dmPastDates(job).length===0){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.55;cursor:default"><i data-lucide="clock"></i> บันทึกผลได้หลังวันงาน</button>`; }   // มีวันเจาะจงแต่ยังไม่ถึง
-    else if(_dts.length===0 && !_noDateLoggedOnce){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>`; }   // วันประจำ/ตามตกลง
-    else { logBtn = ''; }   // วันตามตกลงที่บันทึกแล้ว หรือ วันเจาะจงบันทึกครบ → ไม่มีปุ่ม
-    body=`<div class="closed-banner" style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600"><i data-lucide="check"></i> ได้บุคลากรแล้ว — ปิดจาก job board แล้ว</div>
-      <div class="act-row">${logBtn}<button class="btn-sm" style="flex:1" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดรับใหม่</button><button class="btn-sm del" style="flex:none" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
-  } else if(st==='past'){
-    mf='mf-past'; cardStyle+=';border-color:rgba(107,78,194,.25);background:linear-gradient(to bottom,#fff,var(--p25))';
-    badge='<div class="mstatus" style="color:var(--p600)"><div class="dot dot-p"></div>วันงานผ่านแล้ว</div>';
-    body=`<div class="past-banner"><i data-lucide="calendar-days"></i> วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
-      <div class="act-row"><button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
-  } else if(st==='closed'){
-    cardStyle+=';opacity:.95;border-color:var(--border2)';
-    badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>พักรับสมัคร</div>';
-    body=`<div class="closed-banner" style="background:var(--p25);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--ink4);font-weight:600"><i data-lucide="pause"></i> พักรับสมัครอยู่ — ไม่แสดงใน job board</div>
-      ${_logRow}<div class="act-row" style="margin-bottom:7px"><button class="btn-sm" style="flex:1;background:var(--green-bg);border-color:rgba(6,199,85,.4);color:#1a7a3a;font-weight:700" onclick="event.stopPropagation();dmReopenJob('${job.id}')"><i data-lucide="play"></i> เปิดรับอีกครั้ง</button></div>
-      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
-  } else if(st==='expired'){
-    cardStyle+=';opacity:.7';
-    badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
-    body=`<div style="background:var(--p25);border:1px dashed var(--border2);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12px;color:var(--ink4)">โพสถูกซ่อนจาก job board แล้ว</span><button onclick="event.stopPropagation();dmRenewJob('${job.id}')" style="background:var(--p600);border:none;border-radius:7px;padding:7px 13px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap"><i data-lucide="refresh-cw"></i> ต่ออายุ 60 วัน</button></div>
-      <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
-  } else {
-    badge = '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';   // หน้าจัดการไม่ใช้สถานะ "ด่วน" (ด่วนยังโชว์บน job board ที่ worker เห็น)
-    body=`${_logRow}<div class="act-row"><button class="btn-sm" style="flex:1;background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}')"><i data-lucide="user-check"></i> ได้บุคลากรแล้ว</button><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+
+  // ── หมดอายุ (auto-ซ่อน 60 วัน) → การ์ดต่ออายุ แยกต่างหาก ──
+  if(expired){
+    return `<div class="mcard mf-expired" ${attrs} style="cursor:pointer;opacity:.7" onclick="dmOpenJob('${job.id}')">
+      <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div class="mstatus" style="color:var(--ink4);flex-shrink:0"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div></div>
+      <div style="background:var(--p25);border:1px dashed var(--border2);border-radius:8px;padding:9px 12px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12px;color:var(--ink4)">โพสถูกซ่อนจาก job board แล้ว</span><button onclick="event.stopPropagation();dmRenewJob('${job.id}')" style="background:var(--p600);border:none;border-radius:7px;padding:7px 13px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap"><i data-lucide="refresh-cw"></i> ต่ออายุ 60 วัน</button></div>
+      <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>
+    </div>`;
   }
-  const toggle='';   // ไม่มีสวิตช์/พักรับสมัครแล้ว — ใช้ปุ่ม "ได้บุคลากรแล้ว"/"แก้ไข"/"ลบ" · สถานะ closed เหลือไว้กู้คืนงานที่เคยพัก (เปิดรับอีกครั้ง)
-  mf='mf-'+st;   // class ตามสถานะจริง (open/filled/past/closed/expired) → ใช้กรองแท็บ เปิดรับ/ได้บุคลากรแล้ว
+
+  // ── ปุ่มบันทึกงาน (smart) · โชว์ทุกการ์ด · จาง+กดไม่ได้ถ้ายังไม่ถึงวันงาน ──
+  const _noDateLoggedOnce = _dts.length===0 && (_dmJobLogged[job.id]||[]).length>0;
+  let logBtn;
+  if(_unlogPast>0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> บันทึกงาน (${_unlogPast} วันที่ผ่านแล้ว)</button>`; }
+  else if(_dts.length>0 && _dmPastDates(job).length===0){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.5;cursor:default" title="บันทึกได้หลังวันงาน"><i data-lucide="clock"></i> บันทึกได้หลังวันงาน</button>`; }   // มีแต่วันอนาคต → กดไม่ได้
+  else if(_dts.length===0 && !_noDateLoggedOnce){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> บันทึกงาน</button>`; }   // วันประจำ/ตามตกลง
+  else { logBtn = `<button class="btn-sm" style="flex:1;opacity:.5;cursor:default"><i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกครบแล้ว</button>`; }   // บันทึกครบ/บันทึกแล้ว
+
+  // ── toggle เปิด/ปิด (ขวาบน) · มี label กำกับ กันงง ──
+  const toggle = `<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="display:flex;align-items:center;gap:7px;cursor:pointer;flex-shrink:0;padding:6px;margin:-6px" aria-label="${isOpen?'ปิดรับสมัคร':'เปิดรับสมัคร'}"><span style="font-size:12px;font-weight:700;color:${isOpen?'var(--green2)':'var(--ink4)'}">${isOpen?'เปิดรับ':'ปิด'}</span><div class="tog${isOpen?'':' off'}"></div></div>`;
+  const banner = isOpen ? '' : `<div class="closed-banner" style="background:var(--p25);border:1px solid var(--border2);border-radius:8px;padding:8px 11px;margin-bottom:10px;font-size:12px;color:var(--ink4);font-weight:600"><i data-lucide="eye-off"></i> ปิดอยู่ — ไม่แสดงบน job board</div>`;
+  const cardStyle = 'cursor:pointer'+(isOpen?'':';opacity:.94');
+  const mf = isOpen ? 'mf-open' : 'mf-closed';
+
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
-    <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
-    ${body}
+    <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div>${toggle}</div>
+    ${banner}
+    <div class="act-row">${logBtn}<button class="btn-sm" style="flex:1" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" style="flex:none" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>
   </div>`;
 }
 async function dmLoadManageBoard(){
@@ -3681,10 +3668,11 @@ async function dmLoadManageBoard(){
     const wrap=document.getElementById('cc-manage-cards');
     if(wrap) wrap.innerHTML = data.length ? data.map(dmManageCard).join('')
       : '<div style="text-align:center;padding:40px 20px;color:var(--ink4);font-size:13.5px">ยังไม่มีประกาศงาน — โพสต์งานใหม่ที่แท็บ “โพสต์งาน”</div>';
-    const open=data.filter(j=>j.is_open && !_dmJobIsPast(j)).length;
-    const filled=data.filter(j=>j.filled).length;
+    const _exp=j=>j.is_open && j.expires_at && new Date(j.expires_at)<new Date();
+    const open=data.filter(j=>j.is_open && !_exp(j)).length;
+    const closed=data.filter(j=>!j.is_open).length;
     const setN=(id,n)=>{ const e=document.getElementById(id); if(e) e.textContent=n; };
-    setN('m-stat-all',data.length); setN('m-stat-open',open); setN('m-stat-filled',filled);
+    setN('m-stat-all',data.length); setN('m-stat-open',open); setN('m-stat-closed',closed);
     refreshIcons();
     dmLog('[manage] โหลด', data.length, 'งาน');
   }catch(e){ dmLog('[manage] exception', e); }
