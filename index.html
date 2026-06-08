@@ -3627,10 +3627,11 @@ function dmManageCard(job){
     body=`<div class="past-banner"><i data-lucide="calendar-days"></i> วันทำงานผ่านไปแล้ว — กรุณาบันทึกผลการทำงาน</div>
       <div class="act-row"><button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   } else if(st==='closed'){
-    cardStyle+=';opacity:.9;border-color:rgba(229,83,58,.2)';
-    badge='<div class="mstatus" style="color:var(--red)"><div class="dot dot-r"></div>ปิดรับ</div>';
-    body=`<div class="closed-banner" style="background:var(--red-bg);border:1px solid rgba(229,83,58,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--red);font-weight:600"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);vertical-align:middle"></span> ปิดรับแล้ว — ไม่แสดงใน job board</div>
-      ${_logRow}<div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
+    cardStyle+=';opacity:.95;border-color:var(--border2)';
+    badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>พักรับสมัคร</div>';
+    body=`<div class="closed-banner" style="background:var(--p25);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--ink4);font-weight:600"><i data-lucide="pause"></i> พักรับสมัครอยู่ — ไม่แสดงใน job board</div>
+      ${_logRow}<div class="act-row" style="margin-bottom:7px"><button class="btn-sm" style="flex:1;background:var(--green-bg);border-color:rgba(6,199,85,.4);color:#1a7a3a;font-weight:700" onclick="event.stopPropagation();dmReopenJob('${job.id}')"><i data-lucide="play"></i> เปิดรับอีกครั้ง</button></div>
+      <div class="act-row"><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)" style="flex:1"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else if(st==='expired'){
     cardStyle+=';opacity:.7';
     badge='<div class="mstatus" style="color:var(--ink4)"><div class="dot" style="background:var(--ink5)"></div>หมดอายุ</div>';
@@ -3638,9 +3639,10 @@ function dmManageCard(job){
       <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else {
     badge = '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';   // หน้าจัดการไม่ใช้สถานะ "ด่วน" (ด่วนยังโชว์บน job board ที่ worker เห็น)
-    body=`${_logRow}<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
+    body=`${_logRow}<div class="act-row" style="margin-bottom:7px"><button class="btn-sm" style="flex:1;background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}')"><i data-lucide="user-check"></i> ได้คนแล้ว</button><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();dmPauseJob('${job.id}')"><i data-lucide="pause"></i> พักรับสมัคร</button></div>
+      <div class="act-row"><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
-  const toggle=(st==='open'||st==='closed')?`<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="padding:11px;margin:-11px;cursor:pointer;display:inline-flex;align-items:center" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"><div class="tog${st==='closed'?' off':''}"></div></div>`:'';
+  const toggle='';   // ตัดสวิตช์ออก — ใช้ปุ่ม "ได้คนแล้ว"/"พักรับสมัคร"/"เปิดรับอีกครั้ง" แทน (label ชัด ไม่งงกับ "ด่วน")
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
     <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
     ${body}
@@ -3684,6 +3686,7 @@ async function _dmJobUpdate(id, patch, msg){
 }
 function dmToggleJob(id, el){ const t=el&&el.querySelector?el.querySelector('.tog'):null; const open=t?!t.classList.contains('off'):(_dmJobs[id]?!!_dmJobs[id].is_open:true);   // ★ อ่านสถานะจริงจาก DOM toggle (cache อาจไม่มี is_open จาก board overwrite)
   _dmJobUpdate(id, { is_open: !open }, open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
+function dmPauseJob(id){ _dmJobUpdate(id, { is_open:false }, 'พักรับสมัครแล้ว — ซ่อนจาก job board'); }   // พักชั่วคราว (ยังหาคนอยู่) · เปิดใหม่ได้
 function dmGotStaff(id){ _dmJobUpdate(id, { filled:true, is_open:false }, 'บันทึกว่าได้คนแล้ว ✓'); }
 function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true, filled:false }, 'เปิดรับใหม่แล้ว'); }
 async function dmDeleteJob(id){
