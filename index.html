@@ -176,6 +176,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .nb .nl{font-size:10px;color:var(--ink4);font-weight:500;font-family:'Sarabun',sans-serif}
 .nb.on .nl{color:var(--p600);font-weight:700}
 .nb-pip{position:absolute;top:0;right:calc(50% - 19px);width:17px;height:17px;background:var(--red);border-radius:50%;font-size:9px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.tb-pip{position:absolute;top:5px;right:calc(50% - 22px);min-width:16px;height:16px;padding:0 4px;background:var(--red);border-radius:8px;font-size:9.5px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;line-height:1}
 .nb-bar{position:absolute;top:0;left:20%;right:20%;height:2.5px;background:linear-gradient(90deg,var(--p600),var(--p400));border-radius:0 0 3px 3px}
 
 /* CHIPS */
@@ -1190,7 +1191,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <button class="tb on" onclick="clinicTab('find',this)"><span class="ti"><i data-lucide="briefcase"></i></span>งาน</button>
     <button class="tb" onclick="clinicTab('workers',this)"><span class="ti"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span>บุคลากร</button>
     <button class="tb" onclick="clinicTab('post',this)"><span class="ti"><i data-lucide="plus"></i></span>โพสต์งาน</button>
-    <button class="tb" onclick="clinicTab('manage',this)"><span class="ti"><i data-lucide="clipboard-list"></i></span>จัดการ</button>
+    <button class="tb" onclick="clinicTab('manage',this)"><span class="ti"><i data-lucide="clipboard-list"></i></span>จัดการ<span class="tb-pip" id="mgr-pip-tb" style="display:none"></span></button>
     <button class="tb" onclick="clinicTab('invites',this)"><span class="ti"><i data-lucide="send"></i></span>คำเชิญ</button>
   </div>
   <div class="scroll">
@@ -1470,7 +1471,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <button class="nb on" onclick="clinicTab('find',document.querySelector('#v-clinic .tb:nth-child(1)'))"><span class="ni"><i data-lucide="briefcase"></i></span><span class="nl">งาน</span><div class="nb-bar"></div></button>
     <button class="nb" onclick="clinicTab('workers',document.querySelector('#v-clinic .tb:nth-child(2)'))"><span class="ni"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="nl">บุคลากร</span></button>
     <button class="nb" onclick="clinicTab('post',document.querySelector('#v-clinic .tb:nth-child(3)'))"><span class="ni"><i data-lucide="plus"></i></span><span class="nl">โพสต์งาน</span></button>
-    <button class="nb" onclick="clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))"><span class="ni"><i data-lucide="clipboard-list"></i></span><span class="nl">จัดการ</span></button>
+    <button class="nb" onclick="clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))"><span class="ni"><i data-lucide="clipboard-list"></i></span><span class="nl">จัดการ</span><span class="nb-pip" id="mgr-pip-nb" style="display:none"></span></button>
     <button class="nb" onclick="clinicTab('invites',document.querySelector('#v-clinic .tb:nth-child(5)'))"><span class="ni"><i data-lucide="send"></i></span><span class="nl">คำเชิญ</span></button>
   </div>
 </div>
@@ -3544,6 +3545,8 @@ function _dmJobDates(job){ if(job && job.work_dates && job.work_dates.length) re
 function _dmPastDates(job){ const t=new Date(); t.setHours(0,0,0,0); return _dmJobDates(job).filter(function(d){ return new Date(d) < t; }); }   // เฉพาะวันที่ผ่านไปแล้ว (บันทึกได้)
 function _dmJobIsPast(job){ const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(ds[ds.length-1]) < t; }   // วันสุดท้ายผ่านแล้ว = งานจบ
 function _dmIsUrgent(job){ if(job&&job.urgent) return true; const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); const up=ds.map(function(d){return new Date(d);}).filter(function(x){return x>=t;}).sort(function(a,b){return a-b;}); if(!up.length) return false; return Math.floor((up[0]-t)/86400000)<=7; }   // ด่วนอัตโนมัติ: วันงานที่ใกล้สุดเหลือ ≤7 วัน (หรือ urgent=true จาก DB)
+function _dmJobNeedsLog(job){ const lg=_dmJobLogged[job.id]||[]; return _dmPastDates(job).some(function(d){ return lg.indexOf(String(d).slice(0,10))<0; }); }   // มีวันที่ผ่านแล้วยังไม่บันทึก
+function _dmLogBadge(n){ ['mgr-pip-tb','mgr-pip-nb'].forEach(function(id){ const el=document.getElementById(id); if(!el) return; if(n>0){ el.textContent=(n>9?'9+':String(n)); el.style.display='flex'; } else { el.style.display='none'; } }); }   // เตือน "งานรอบันทึกผล" ที่แท็บจัดการ
 function dmManageCard(job){
   const past=_dmJobIsPast(job);
   const expired = !past && job.is_open && job.expires_at && (new Date(job.expires_at) < new Date());
@@ -3603,6 +3606,7 @@ async function dmLoadManageBoard(){
     if(!data) return;
     data.forEach(j=>{ _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้
     try{ const { data:_wl } = await dmSb().from('work_logs').select('job_id, work_date').eq('clinic_id', dmUser.id).in('job_id', data.map(j=>j.id)); _dmJobLogged={}; (_wl||[]).forEach(w=>{ if(!w.job_id) return; const dd=String(w.work_date).slice(0,10); _dmJobLogged[w.job_id]=_dmJobLogged[w.job_id]||[]; if(_dmJobLogged[w.job_id].indexOf(dd)<0) _dmJobLogged[w.job_id].push(dd); }); }catch(e){ dmLog('[manage] logged dates', e); }   // วันที่บันทึกผลแล้ว/งาน (สำหรับ progress)
+    _dmLogBadge(data.filter(_dmJobNeedsLog).length);   // อัปเดต badge เตือนงานรอบันทึกผลที่แท็บจัดการ
     try{ const { data:_vc } = await dmSb().rpc('job_views_count',{ids:data.map(j=>j.id)}); (_vc||[]).forEach(r=>{ _dmJobViews[r.job_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิว
     const wrap=document.getElementById('cc-manage-cards');
     if(wrap) wrap.innerHTML = data.length ? data.map(dmManageCard).join('')
