@@ -3637,10 +3637,7 @@ function dmManageCard(job){
     body=`<div style="background:var(--p25);border:1px dashed var(--border2);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12px;color:var(--ink4)">โพสถูกซ่อนจาก job board แล้ว</span><button onclick="event.stopPropagation();dmRenewJob('${job.id}')" style="background:var(--p600);border:none;border-radius:7px;padding:7px 13px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap"><i data-lucide="refresh-cw"></i> ต่ออายุ 60 วัน</button></div>
       <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else {
-    const _urg=_dmIsUrgent(job);
-    if(_urg) cardStyle+=';border-color:rgba(245,129,31,.3);background:linear-gradient(to bottom,#fff,var(--orange-bg))';
-    badge = _urg ? '<div class="mstatus" style="color:var(--orange)"><div class="dot" style="background:var(--orange)"></div>ด่วน</div>'
-                       : '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';
+    badge = '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';   // หน้าจัดการไม่ใช้สถานะ "ด่วน" (ด่วนยังโชว์บน job board ที่ worker เห็น)
     body=`${_logRow}<div class="act-row"><button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}',this)"><i data-lucide="check"></i> ได้คนแล้ว</button><button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
   const toggle=(st==='open'||st==='closed')?`<div onclick="event.stopPropagation();dmToggleJob('${job.id}',this)" style="padding:11px;margin:-11px;cursor:pointer;display:inline-flex;align-items:center" aria-label="${st==='closed'?'เปิดรับสมัคร':'ปิดรับสมัคร'}"><div class="tog${st==='closed'?' off':''}"></div></div>`:'';
