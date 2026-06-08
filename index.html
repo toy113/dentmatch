@@ -2633,11 +2633,20 @@ function openLogFromCard(btn){
   _logShowStep('step1'); openSheet('s-log');
 }
 function _logShowStep(which){ ['step0','step1','step2'].forEach(function(s){ const el=document.getElementById('log-'+s); if(el) el.style.display=(s===which)?'':'none'; }); }
-function _logBuildDateList(job){
+async function _logBuildDateList(job){
   const list=document.getElementById('logDateList'); if(!list) return;
-  const logged=_dmJobLogged[job.id]||[]; const past=_dmPastDates(job);
-  list.innerHTML = past.map(function(d){ const done=logged.indexOf(String(d).slice(0,10))>=0;
-    return `<div onclick="_logPickDate('${d}')" style="border:2px solid ${done?'rgba(6,199,85,.4)':'var(--border2)'};border-radius:12px;padding:13px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-size:14px;font-weight:600;color:var(--ink)"><i data-lucide="calendar-days" style="color:var(--p600)"></i> ${_dmThaiDate(d)}</span>${done?'<span style="font-size:12px;font-weight:700;color:var(--green2)"><i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกแล้ว</span>':'<i data-lucide="chevron-right" style="color:var(--ink5)"></i>'}</div>`;
+  const past=_dmPastDates(job);
+  let byDate={};   // วันที่ -> [{anon_id, outcome}] (ใครถูกบันทึกในวันนั้น)
+  try{
+    const { data } = await dmSb().from('work_logs').select('work_date, clinic_outcome, worker_profiles(anon_id)').eq('job_id', job.id).eq('clinic_id', dmUser.id);
+    (data||[]).forEach(function(r){ const d=String(r.work_date).slice(0,10); (byDate[d]=byDate[d]||[]).push(r); });
+  }catch(e){ dmLog('[worklog] date list', e); }
+  list.innerHTML = past.map(function(d){
+    const key=String(d).slice(0,10); const logs=byDate[key]||[]; const done=logs.length>0;
+    const who = logs.map(function(r){ const w=r.worker_profiles||{}; const oc=(r.clinic_outcome==='no_show')?'ไม่มา':'มา'; return _dmEsc(w.anon_id||'?')+' ('+oc+')'; }).join(', ');
+    return `<div onclick="_logPickDate('${d}')" style="border:2px solid ${done?'rgba(6,199,85,.4)':'var(--border2)'};border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="min-width:0"><div style="font-size:14px;font-weight:600;color:var(--ink)"><i data-lucide="calendar-days" style="color:var(--p600)"></i> ${_dmThaiDate(d)}</div>${done?`<div style="font-size:11.5px;color:var(--green2);font-weight:600;margin-top:3px">บันทึกแล้ว: ${who}</div>`:''}</div>
+      ${done?'<i data-lucide="circle-check-big" style="color:var(--green);flex-shrink:0"></i>':'<i data-lucide="chevron-right" style="color:var(--ink5);flex-shrink:0"></i>'}</div>`;
   }).join(''); refreshIcons();
 }
 function _logPickDate(d){ _logWorkDate=d; _logShowStep('step1'); }
