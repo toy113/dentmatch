@@ -2263,6 +2263,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="chip" onclick="chipMulti(this)">ศุกร์</div>
       <div class="chip" onclick="chipMulti(this)">เสาร์</div>
       <div class="chip" onclick="chipMulti(this)">อาทิตย์</div>
+      <div class="chip" onclick="chipMulti(this)">ตามตกลง</div>
     </div>
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน · ไม่บังคับ)</span></label>
     <input type="date" class="inp" id="ej-date" onchange="_editAddDate(this)" style="margin-bottom:8px">
@@ -2652,7 +2653,7 @@ function _ejSetPay(type){
     const b=document.getElementById(p[1]); if(!b) return; const on=(p[0]===type);
     b.style.cssText='flex:1;padding:10px;border-radius:10px;cursor:pointer;font-family:\'Sarabun\',sans-serif;font-size:13.5px;transition:.2s;border:2px solid '+(on?'var(--p500)':'var(--border2)')+';background:'+(on?'var(--p600)':'#fff')+';color:'+(on?'#fff':'var(--ink3)')+';font-weight:'+(on?'700':'600');
   });
-  const w=document.getElementById('ej-wage-wrap'); if(w) w.style.display=(type==='nego')?'none':'block';
+  const w=document.getElementById('ej-wage'); if(w){ const ng=(type==='nego'); w.disabled=ng; w.placeholder=ng?'ไม่ต้องระบุ (ตามตกลง)':''; w.style.background=ng?'var(--p25)':''; if(ng) w.value=''; }   // ตามตกลง = disable (ไม่ซ่อน → ช่องไม่หาย)
 }
 function _editRenderDates(){ const c=document.getElementById('ej-dates-chips'); if(!c) return; c.innerHTML=_editDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_editRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
 function _editAddDate(inp){ var v=inp.value; if(v && _editDates.indexOf(v)<0){ _editDates.push(v); _editDates.sort(); _editRenderDates(); } inp.value=''; }
@@ -2671,7 +2672,7 @@ function mEdit(btn){
   _ejSetPay(pay); const wEl=document.getElementById('ej-wage'); if(wEl) wEl.value=wageVal;
   // วันทำงาน
   const wd=job.work_days||[];
-  [].forEach.call(document.querySelectorAll('#ej-days .chip'), function(c){ const idx=_EJ_DAYS.indexOf(c.textContent.trim()); c.classList.toggle('on', wd.indexOf(idx+1)>=0); });
+  [].forEach.call(document.querySelectorAll('#ej-days .chip'), function(c){ const idx=_EJ_DAYS.indexOf(c.textContent.trim()); c.classList.toggle('on', idx>=0 ? wd.indexOf(idx+1)>=0 : (wd.length===0)); });   // chip "ตามตกลง" (idx=-1) = on เมื่อไม่มีวันทำงาน
   // วันที่เจาะจง
   _editDates=(job.work_dates&&job.work_dates.length)?job.work_dates.slice().sort():[]; _editRenderDates();
   // เวลา + รายละเอียด
