@@ -4291,7 +4291,7 @@ async function dmLoadNoti(){
 /* ════════ realtime: กระดิ่งเด้งสด — subscribe invites/work_logs/add_line_events (ต่อยอด C4f) ════════
    แนวคิด: realtime = "trigger ให้ re-derive" → ฟัง event แล้วเรียก dmLoadNoti() เดิมซ้ำ (reuse logic·ทน event ตกหล่น)
    RLS (inv_sel/wl_sel/ale_sel) + filter worker_id/clinic_id คุมให้ได้เฉพาะของตัวเอง · ต้องรัน migration 0010 (publication) */
-let _dmNotiChannel = null, _dmNotiDebounce = null, _dmNotiReady = false;
+let _dmNotiChannel = null, _dmNotiDebounce = null, _dmNotiReady = false, _dmNotiAnyReal = false;
 function _dmNotiBump(){
   // feedback เฉพาะ event "สด" (หลัง subscribe เสร็จ) — ไม่เด้งตอน join ครั้งแรก
   if(!_dmNotiReady || !dmUser) return;
@@ -4299,10 +4299,13 @@ function _dmNotiBump(){
   if(bell){ bell.classList.remove('dm-bell-ring'); void bell.offsetWidth; bell.classList.add('dm-bell-ring'); }
   showToast('<i data-lucide="bell"></i> มีการแจ้งเตือนใหม่');
 }
-function _dmNotiOnChange(){
+function _dmNotiOnChange(payload){
+  // worker: no_show เป็นการบันทึกฝ่ายเดียว (ไม่ให้ยืนยัน) → ไม่ต้องเด้งกระดิ่ง/แจ้งเตือน · event อื่นเด้งปกติ
+  const _silent = !!(payload && payload.table==='work_logs' && payload.new && payload.new.clinic_outcome==='no_show' && dmUser && dmUser.role==='worker');
+  if(!_silent) _dmNotiAnyReal=true;
   clearTimeout(_dmNotiDebounce);
   _dmNotiDebounce=setTimeout(()=>{
-    dmLoadNoti(); _dmNotiBump();
+    dmLoadNoti(); if(_dmNotiAnyReal) _dmNotiBump(); _dmNotiAnyReal=false;
     // re-derive รายการที่เกี่ยวข้องด้วย (ไม่ใช่แค่กระดิ่ง) → การ์ดใหม่โผล่ทันที ไม่ต้อง reload
     if(dmUser && dmUser.role==='worker'){ dmLoadWorkerInbox(); dmLoadWorkerConfirm(); }
     else if(dmUser && dmUser.role==='clinic'){ dmLoadClinicInvites(); dmLoadManageBoard(); }
