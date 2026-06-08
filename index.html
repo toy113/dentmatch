@@ -1742,7 +1742,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <button class="chip-more" style="width:100%;text-align:center;border-radius:10px;padding:9px" onclick="openEditProvSheet()"><i data-lucide="search"></i> ค้นหาจังหวัดอื่น...</button>
       </div>
-      <div class="form-group"><label>แนะนำตัวสั้นๆ</label><textarea class="inp" id="edit-bio" rows="3">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</textarea></div>
+      <div class="form-group"><label>แนะนำตัวสั้นๆ</label><textarea class="inp" id="edit-bio" rows="3" placeholder="เช่น อายุ, งานที่ถนัด, พื้นที่รับงาน, อื่นๆ"></textarea></div>
       <div class="form-group"><label>วันที่สะดวก</label>
         <div class="avail-days-big" id="editDays"><div class="d-big" onclick="dayToggle(this)">จ</div><div class="d-big" onclick="dayToggle(this)">อ</div><div class="d-big" onclick="dayToggle(this)">พ</div><div class="d-big" onclick="dayToggle(this)">พฤ</div><div class="d-big" onclick="dayToggle(this)">ศ</div><div class="d-big on" onclick="dayToggle(this)">ส</div><div class="d-big on" onclick="dayToggle(this)">อา</div></div>
       </div>
@@ -3991,7 +3991,7 @@ function dmFillEditForm(w){
   const ps=document.getElementById('editProvSelected');
   if(ps){ const list=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);
     ps.innerHTML=list.map(p=>'<div class="sel-prov-tag">'+_dmEsc(p)+' <button onclick="removeEditProv(this,\''+_dmEsc(p)+'\')"><i data-lucide="x"></i></button></div>').join(''); }
-  const bio=document.getElementById('edit-bio'); if(bio) bio.value=w.bio||'';
+  const bio=document.getElementById('edit-bio'); if(bio){ bio.value=w.bio||''; bio.placeholder=BIO_PLACEHOLDER[w.position]||BIO_PLACEHOLDER.dentist; }   // placeholder ต่อตำแหน่ง (เหมือนตอนสมัคร)
   const ad=new Set(w.available_days||[]);
   document.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ d.classList.toggle('on', ad.has(i+1)); });
   refreshIcons();
@@ -4286,9 +4286,9 @@ function renderSkills(containerId,labelId,pos,multi){
 }
 function skillChip(el,multi){ chipMulti(el); }
 const BIO_PLACEHOLDER = {
-  dentist:   'เช่น อายุ, วุฒิ, จบที่ไหน, งานที่ถนัด, อื่นๆ',
-  assistant: 'ขยัน รับผิดชอบ ไม่เคยเทงาน',
-  counter:   'บุคลิกดี สื่อสารเก่ง รับนัดและจัดตารางได้ ใช้คอมพิวเตอร์คล่อง',
+  dentist:   'เช่น อายุ, วุฒิ, จบที่ไหน, งานที่ถนัด, พื้นที่รับงาน, อื่นๆ',
+  assistant: 'เช่น อายุ, งานที่ถนัด, ไม่มีประวัติเทงาน, พื้นที่รับงาน',
+  counter:   'เช่น อายุ, บุคลิกดี, สื่อสารเก่ง, รับนัดและจัดตารางได้, ใช้โปรแกรม...ได้, พื้นที่รับงาน',
 };
 function regWorkerSkills(pos){
   const licW=document.getElementById('rw-license-wrap');   // กล่องยืนยันใบประกอบ: โชว์เฉพาะทันตแพทย์ (เฉพาะ checkbox · ไม่มีช่องเลข)
