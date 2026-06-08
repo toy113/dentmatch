@@ -857,7 +857,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
 
   /* ── จัดการ & คำเชิญ (clinic) → 2-col dashboard grid (top-aligned) ── */
   #cc-manage.on,#cc-invites.on{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    display:grid;grid-template-columns:min(760px,100%);justify-content:center;
     gap:16px 18px;align-items:start;padding:6px 34px 44px;
   }
   #cc-manage > .stat4,#cc-manage > .ftabs,#cc-invites > .sinv-stat{grid-column:1 / -1}
@@ -962,7 +962,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
   :root{--dt-rail:208px}
   .dt-stats{grid-template-columns:repeat(2,1fr)}
   .cards{grid-template-columns:repeat(auto-fill,minmax(278px,1fr))}
-  #cc-manage.on,#cc-invites.on,#wt-inbox .inbox-pane.on{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  #wt-inbox .inbox-pane.on{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
   .dt-toolbar,.sec-hdr,.filter-wrap,.dt-stats,.cards,.gbanner,.onboard-card,.ftabs,.inline-tabs,.stat4,.sinv-stat{padding-left:22px;padding-right:22px}
   .gbanner,.onboard-card{margin-left:22px;margin-right:22px}
 }
