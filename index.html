@@ -4310,7 +4310,7 @@ function outCard(el,outcome){
   selectedOutcome=outcome;
 }
 function logStep2(){
-  if(selectedOutcome==='finding'){openSheet('s-log-success');return}
+  if(selectedOutcome==='finding'){ closeSheet('s-log'); _logWorkerIds=[]; _logWorkDate=null; showToast('<i data-lucide="info" style="color:var(--p600)"></i> รับทราบ — ยังหาคนอยู่ (โพสต์ยังเปิดรับสมัคร)'); return; }   // ยังหาคนอยู่ = ไม่บันทึก worker/ไม่ +Completed
   _logWorkerIds=[];
   _logShowStep('step2');
   const sub=document.getElementById('log-step2-sub');
