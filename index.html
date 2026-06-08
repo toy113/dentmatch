@@ -1081,8 +1081,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="tab-content" id="tc-workers">
       <!-- teaser CTA -->
       <div class="wk-teaser">
-        <div class="wk-teaser-head" id="wk-teaser-head"><i data-lucide="users"></i> <b>94</b> บุคลากรกำลังหาคลินิก</div>
-        <div class="wk-teaser-sub" id="wk-teaser-sub"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg> ทันตแพทย์ 40 · <i data-lucide="handshake"></i> ผู้ช่วยฯ 35 · <i data-lucide="monitor"></i> เคาน์เตอร์ 19<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้</div>
+        <div class="wk-teaser-head" id="wk-teaser-head"><i data-lucide="sparkles"></i> <b>Soft Opening</b> · เชิญทดลองใช้</div>
+        <div class="wk-teaser-sub" id="wk-teaser-sub">ช่วงเปิดตัว — สมัครฟรีเพื่อสร้างโปรไฟล์ ดูบุคลากร และส่งคำเชิญได้</div>
         <button class="wk-teaser-cta" onclick="openSheet('s-login')"><i data-lucide="key"></i> สมัคร / เข้าสู่ระบบเพื่อดูบุคลากรทั้งหมด</button>
       </div>
       <!-- blurred sample (locked) -->
@@ -3338,8 +3338,8 @@ function dmApplyWorkerTeaser(){
   var total=wc.total||0;
   if(total < WK_TEASER_MIN){
     // ช่วง launch (คนยังน้อย) → ข้อความทั่วไป ไม่โชว์ตัวเลข (สอดคล้อง LAUNCH_MODE ของ stats band)
-    head.innerHTML='<i data-lucide="users"></i> บุคลากรกำลังหาคลินิก';
-    sub.innerHTML='สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้';
+    head.innerHTML='<i data-lucide="sparkles"></i> <b>Soft Opening</b> · เชิญทดลองใช้';
+    sub.innerHTML='ช่วงเปิดตัว — สมัครฟรีเพื่อสร้างโปรไฟล์ ดูบุคลากร และส่งคำเชิญได้';
   } else {
     head.innerHTML='<i data-lucide="users"></i> <b>'+total+'</b> บุคลากรกำลังหาคลินิก';
     sub.innerHTML=DM_TOOTH_SVG+' ทันตแพทย์ '+(wc.dentist||0)+' · <i data-lucide="handshake"></i> ผู้ช่วยฯ '+(wc.assistant||0)+' · <i data-lucide="monitor"></i> เคาน์เตอร์ '+(wc.counter||0)+'<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้';
