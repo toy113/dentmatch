@@ -3617,8 +3617,12 @@ function dmManageCard(job){
   if(st==='filled'){
     cardStyle+=';border-color:rgba(59,130,246,.3);background:linear-gradient(to bottom,#fff,var(--blue-bg))';
     badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>';
-    const canLog = _dmPastDates(job).length>0 || _dts.length===0;
-    const logBtn = canLog ? `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>` : `<button class="btn-sm" style="flex:1;opacity:.55;cursor:default"><i data-lucide="clock"></i> บันทึกผลได้หลังวันงาน</button>`;
+    // ปุ่มบันทึก: โชว์เฉพาะเมื่อมีวันที่ผ่านแล้ว+ยังไม่บันทึก (เหมือน open state) · มีแต่วันอนาคต = ปุ่มจาง · บันทึกครบ = ไม่มีปุ่ม
+    let logBtn;
+    if(_unlogPast>0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน (${_unlogPast} วันที่ผ่านแล้ว)</button>`; }
+    else if(_dts.length===0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> ลงบันทึกงาน</button>`; }   // วันตามตกลง: ไม่มีวันให้รอ → บันทึกได้เลย
+    else if(_dmPastDates(job).length===0){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.55;cursor:default"><i data-lucide="clock"></i> บันทึกผลได้หลังวันงาน</button>`; }   // มีแต่วันอนาคต
+    else { logBtn = ''; }   // วันที่ผ่านแล้วบันทึกครบ
     body=`<div class="closed-banner" style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:12px;color:var(--blue);font-weight:600"><i data-lucide="check"></i> ได้บุคลากรแล้ว — ปิดจาก job board แล้ว</div>
       <div class="act-row">${logBtn}<button class="btn-sm" onclick="event.stopPropagation();dmReopenJob('${job.id}',this)"><i data-lucide="rotate-ccw"></i> เปิดรับใหม่</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   } else if(st==='past'){
