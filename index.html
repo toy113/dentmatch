@@ -353,6 +353,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .mcard-title{font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
 .mcard-meta{font-size:11.5px;color:var(--ink4);display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
 .mcard-meta>span{white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.mcard-meta>.mm-date{white-space:normal;flex-basis:100%}
 .mstatus{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dot-p{background:var(--p600)}.dot-g{background:var(--green)}.dot-r{background:var(--red)}
@@ -3543,7 +3544,7 @@ function dmManageCard(job){
   const dateStr = (_dts.length>1) ? _dmEsc(_dmSched(job)) : (job.work_date ? _dmThaiDate(job.work_date) : _dmEsc(_dmSched(job)));
   const _lgd=_dmJobLogged[job.id]||[]; const _lgN=_dts.filter(function(d){ return _lgd.indexOf(String(d).slice(0,10))>=0; }).length;
   const progStr = (_dts.length>1) ? `<span style="color:var(--p600);font-weight:600"><i data-lucide="notebook-pen"></i> บันทึก ${_lgN}/${_dts.length} วัน</span>` : '';
-  const meta = `<span><i data-lucide="calendar-days"></i> ${dateStr}</span>${progStr}<span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0} ยอดวิว</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
+  const meta = `<span class="mm-date"><i data-lucide="calendar-days"></i> ${dateStr}</span>${progStr}<span><i data-lucide="eye"></i> ${_dmJobViews[job.id]||0}</span><span style="color:var(--ink5)">ลง${_dmEsc(_dmAgo(job.created_at))}</span>`;
   const attrs = `data-jobid="${job.id}" data-workdate="${_dmEsc(job.work_date||'')}" data-title="${title}"`;
   let cardStyle='cursor:pointer', mf='mf-open', badge, body;
   if(st==='filled'){
