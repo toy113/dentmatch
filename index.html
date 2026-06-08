@@ -1268,7 +1268,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="form-group"><label id="postSkillLabel">สาขา / ทักษะ</label>
           <div class="chip-row" style="flex-wrap:wrap" id="postSkillChips"></div>
         </div>
-        <div class="form-group"><label>วันทำงานที่ต้องการ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน)</span></label>
+        <div class="form-group"><label>วันทำงานที่ต้องการ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน · ไม่บังคับ)</span></label>
           <div class="chip-row" id="postDays" style="flex-wrap:wrap">
             <div class="chip" onclick="chipMulti(this)">จันทร์</div>
             <div class="chip" onclick="chipMulti(this)">อังคาร</div>
@@ -4475,17 +4475,12 @@ function setPayType(type) {
   if(negoBtn) negoBtn.style.cssText += ';' + (type==='nego'?on:off);
   if(wrap) wrap.style.display = type==='nego' ? 'none' : 'block';
 }
-/* validate ฟอร์มลงงาน: ต้องเลือกวันทำงาน ≥1 + ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") */
+/* validate ฟอร์มลงงาน: ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") · วันทำงานไม่บังคับ */
 function validatePost(){
   dmLog('[postjob] validatePost เรียกแล้ว · role=', (dmUser&&dmUser.role), '· sb=', (typeof dmSb==='function'&&!!dmSb()));
-  const days=document.getElementById('postDays');
   const wage=document.getElementById('wage-input');
   const err=document.getElementById('post-err');
   let ok=true, msgs=[];
-  if(days && !days.querySelector('.chip.on')){
-    days.style.outline='2px solid var(--red)'; days.style.borderRadius='8px';
-    setTimeout(()=>days.style.outline='',2500); ok=false; msgs.push('เลือกวันทำงาน');
-  }
   if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
     showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
   }
