@@ -4834,8 +4834,7 @@ function applyProvince() {
 
 window.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); } }, 8000);   // failsafe: กัน splash ค้างถ้า supabase module โหลด/บูตไม่สำเร็จ
-  const wd=document.getElementById('workdate');
-  if(wd){ wd.value=new Date().toISOString().split('T')[0]; showThaiDate(wd); }
+  // workdate: ไม่ prefill วันนี้แล้ว — ปล่อยว่าง (ผู้ใช้เลือกเอง)
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
   renderSkills('editSkillChips','editSkillLabel','dentist',true);
   buildWorkerBoards();
