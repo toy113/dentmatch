@@ -2162,6 +2162,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="sheet-handle"></div>
     <div class="sheet-title"><i data-lucide="send"></i> ส่งคำเชิญ</div>
     <div class="sheet-sub">เลือกสิ่งที่ต้องการแนบไปกับคำเชิญ</div>
+    <div style="font-size:11.5px;color:var(--ink4);background:var(--p25);border-radius:8px;padding:7px 10px;margin:2px 0 12px;display:flex;gap:6px;align-items:flex-start;line-height:1.5"><i data-lucide="info" style="width:13px;height:13px;color:var(--p400);flex-shrink:0;margin-top:1px"></i><span>คำเชิญจะไปแจ้งเตือนในแอปของบุคลากร — ถ้าสนใจ เขาจะทักคุณผ่าน LINE (ไม่ใช่แชทในแอป)</span></div>
     <div class="attach-cards">
       <div class="att-card on" onclick="attCard(this)"><div class="att-icon"><i data-lucide="clipboard-list"></i></div><div class="att-name">ประกาศงาน</div><div class="att-sub">แนบงานที่ต้องการ</div></div>
       <div class="att-card" onclick="attCard(this)"><div class="att-icon"><i data-lucide="hospital"></i></div><div class="att-name">โปรไฟล์คลินิก</div><div class="att-sub" id="inv-clinic-sub">คลินิกทันตกรรมสยาม, กรุงเทพฯ</div></div>
@@ -2303,7 +2304,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="rocket"></i></div><div class="success-title">ลงประกาศสำเร็จ!</div><div class="success-sub">ประกาศของคุณจะปรากฏใน job board ทันที คลินิกจะได้รับ notification เมื่อมีคน Add LINE</div><button class="btn-primary" onclick="closeSheet('s-post-success');clinicTab('manage',document.querySelector('#v-clinic .tb:nth-child(4)'))">ดูโพสของฉัน →</button></div></div>
 </div>
 <div class="overlay" id="s-invite-success" onclick="overlayClose(event,'s-invite-success')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="send"></i></div><div class="success-title">ส่งคำเชิญแล้ว!</div><button class="btn-primary" onclick="closeSheet('s-invite-success');closeSheet('s-invite')">เสร็จสิ้น</button></div></div>
+  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="send"></i></div><div class="success-title">ส่งคำเชิญแล้ว!</div><div class="success-sub">บุคลากรจะเห็นคำเชิญในแอป — ถ้าสนใจ จะทักหาคุณผ่าน <b>LINE</b> เอง<br><span style="font-size:12px;color:var(--ink4)">เปิด LINE ไว้ · ดูสถานะได้ที่แท็บ "คำเชิญที่ส่ง"</span></div><button class="btn-primary" onclick="closeSheet('s-invite-success');closeSheet('s-invite')">เสร็จสิ้น</button></div></div>
 </div>
 <div class="overlay" id="s-log-success" onclick="overlayClose(event,'s-log-success')">
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="success-title">บันทึกงานสำเร็จ!</div><div class="success-sub">Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น</div><button class="btn-primary" onclick="finishWorkLog()">เสร็จสิ้น</button></div></div>
