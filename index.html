@@ -1345,14 +1345,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
       </div>
 
-      <!-- ② ได้คนแล้ว -->
+      <!-- ② ได้บุคลากรแล้ว -->
       <div class="mcard mf-open" style="border-color:rgba(59,130,246,.25);background:linear-gradient(to bottom,#fff,var(--blue-bg))" onclick="goView('v-job-detail')" style="cursor:pointer">
         <div class="mcard-top" onclick="goView('v-job-detail')" style="cursor:pointer">
           <div>
             <div class="mcard-title" onclick="goView('v-job-detail')" style="cursor:pointer">ทันตแพทย์ Pediatric · อาทิตย์</div>
             <div class="mcard-meta" onclick="goView('v-job-detail')" style="cursor:pointer"><span><i data-lucide="calendar-days"></i> 2 มิ.ย. 68</span><span><i data-lucide="eye"></i> 9 ยอดวิว</span></div>
           </div>
-          <div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>
+          <div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้บุคลากรแล้ว</div>
         </div>
         <div style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
           <span><i data-lucide="circle-check-big" style="color:var(--green)"></i></span><span style="font-size:12px;color:var(--blue);font-weight:600">ได้ บุคลากร แล้ว — รอวันงาน 2 มิ.ย. 68</span>
@@ -1377,7 +1377,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="act-row">
           <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button>
-          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้คนแล้ว</button>
+          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้บุคลากรแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button>
         </div>
       </div>
@@ -1400,7 +1400,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="act-row">
           <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button>
-          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้คนแล้ว</button>
+          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้บุคลากรแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button>
         </div>
       </div>
@@ -1421,7 +1421,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="act-row">
           <button class="btn-sm" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button>
-          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้คนแล้ว</button>
+          <button class="btn-sm" style="background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();markGotStaff(this)"><i data-lucide="check"></i> ได้บุคลากรแล้ว</button>
           <button class="btn-sm del" onclick="event.stopPropagation();mDelete(this)"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button>
         </div>
       </div>
@@ -3627,7 +3627,7 @@ function dmManageCard(job){
   let cardStyle='cursor:pointer', mf='mf-open', badge, body;
   if(st==='filled'){
     cardStyle+=';border-color:rgba(59,130,246,.3);background:linear-gradient(to bottom,#fff,var(--blue-bg))';
-    badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว</div>';
+    badge='<div class="mstatus" style="color:var(--blue)"><div class="dot" style="background:var(--blue)"></div>ได้บุคลากรแล้ว</div>';
     // ปุ่มบันทึก: โชว์เฉพาะเมื่อมีวันที่ผ่านแล้ว+ยังไม่บันทึก (เหมือน open state) · มีแต่วันอนาคต = ปุ่มจาง · บันทึกครบ = ไม่มีปุ่ม
     // งานไม่มีวันเจาะจง (วันประจำ + วันตามตกลง) บันทึกได้ครั้งเดียว แล้วซ่อนปุ่ม
     const _noDateLoggedOnce = _dts.length===0 && (_dmJobLogged[job.id]||[]).length>0;
@@ -3656,10 +3656,10 @@ function dmManageCard(job){
       <div class="act-row"><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}')" style="width:100%;justify-content:center"><i data-lucide="trash-2" style="color:var(--red)"></i> ลบ</button></div>`;
   } else {
     badge = '<div class="mstatus" style="color:var(--green)"><div class="dot dot-g"></div>เปิดรับ</div>';   // หน้าจัดการไม่ใช้สถานะ "ด่วน" (ด่วนยังโชว์บน job board ที่ worker เห็น)
-    body=`${_logRow}<div class="act-row" style="margin-bottom:7px"><button class="btn-sm" style="flex:1;background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}')"><i data-lucide="user-check"></i> ได้คนแล้ว</button><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();dmPauseJob('${job.id}')"><i data-lucide="pause"></i> พักรับสมัคร</button></div>
+    body=`${_logRow}<div class="act-row" style="margin-bottom:7px"><button class="btn-sm" style="flex:1;background:var(--blue-bg);border-color:rgba(59,130,246,.4);color:var(--blue);font-weight:700" onclick="event.stopPropagation();dmGotStaff('${job.id}')"><i data-lucide="user-check"></i> ได้บุคลากรแล้ว</button><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();dmPauseJob('${job.id}')"><i data-lucide="pause"></i> พักรับสมัคร</button></div>
       <div class="act-row"><button class="btn-sm" style="flex:1" onclick="event.stopPropagation();mEdit(this)"><i data-lucide="square-pen"></i> แก้ไข</button><button class="btn-sm del" onclick="event.stopPropagation();dmDeleteJob('${job.id}',this)" style="flex:none"><i data-lucide="trash-2" style="color:var(--red)"></i></button></div>`;
   }
-  const toggle='';   // ตัดสวิตช์ออก — ใช้ปุ่ม "ได้คนแล้ว"/"พักรับสมัคร"/"เปิดรับอีกครั้ง" แทน (label ชัด ไม่งงกับ "ด่วน")
+  const toggle='';   // ตัดสวิตช์ออก — ใช้ปุ่ม "ได้บุคลากรแล้ว"/"พักรับสมัคร"/"เปิดรับอีกครั้ง" แทน (label ชัด ไม่งงกับ "ด่วน")
   return `<div class="mcard ${mf}" ${attrs} style="${cardStyle}" onclick="dmOpenJob('${job.id}')">
     <div class="mcard-top"><div><div class="mcard-title">${title}</div><div class="mcard-meta">${meta}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${badge}${toggle}</div></div>
     ${body}
@@ -3703,7 +3703,7 @@ async function _dmJobUpdate(id, patch, msg){
 function dmToggleJob(id, el){ const t=el&&el.querySelector?el.querySelector('.tog'):null; const open=t?!t.classList.contains('off'):(_dmJobs[id]?!!_dmJobs[id].is_open:true);   // ★ อ่านสถานะจริงจาก DOM toggle (cache อาจไม่มี is_open จาก board overwrite)
   _dmJobUpdate(id, { is_open: !open }, open?'ปิดรับสมัครแล้ว':'เปิดรับสมัครแล้ว'); }
 function dmPauseJob(id){ _dmJobUpdate(id, { is_open:false }, 'พักรับสมัครแล้ว — ซ่อนจาก job board'); }   // พักชั่วคราว (ยังหาคนอยู่) · เปิดใหม่ได้
-function dmGotStaff(id){ _dmJobUpdate(id, { filled:true, is_open:false }, 'บันทึกว่าได้คนแล้ว ✓'); }
+function dmGotStaff(id){ _dmJobUpdate(id, { filled:true, is_open:false }, 'บันทึกว่าได้บุคลากรแล้ว ✓'); }
 function dmReopenJob(id){ _dmJobUpdate(id, { is_open:true, filled:false }, 'เปิดรับใหม่แล้ว'); }
 async function dmDeleteJob(id){
   if(!confirm('ลบประกาศงานนี้? กู้คืนไม่ได้')) return;
@@ -4620,7 +4620,7 @@ function markGotStaff(btn) {
   const top = card.querySelector('.mcard-top');
   if(top) {
     const status = top.querySelector('.mstatus');
-    if(status) { status.style.color='var(--blue)'; status.innerHTML='<div class="dot" style="background:var(--blue)"></div>ได้คนแล้ว'; }
+    if(status) { status.style.color='var(--blue)'; status.innerHTML='<div class="dot" style="background:var(--blue)"></div>ได้บุคลากรแล้ว'; }
   }
   const tog = card.querySelector('.tog-row');
   if(tog) tog.remove();
