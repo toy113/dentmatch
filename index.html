@@ -2126,13 +2126,13 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="sheet-title">ยืนยัน OTP <i data-lucide="mail"></i></div>
         <div class="sheet-sub">กรอกรหัส 6 หลักที่ส่งไปยัง Email ของคุณ</div>
       </div>
-      <div class="otp-row" id="otpRow">
-        <input class="otp-box" maxlength="1" oninput="otpNext(this,0)">
-        <input class="otp-box" maxlength="1" oninput="otpNext(this,1)">
-        <input class="otp-box" maxlength="1" oninput="otpNext(this,2)">
-        <input class="otp-box" maxlength="1" oninput="otpNext(this,3)">
-        <input class="otp-box" maxlength="1" oninput="otpNext(this,4)">
-        <input class="otp-box" maxlength="1" oninput="otpDone(this)">
+      <div class="otp-row" id="otpRow" onpaste="otpPaste(event)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" autocomplete="one-time-code" onkeydown="otpKey(event,0)" oninput="otpNext(this,0)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,1)" oninput="otpNext(this,1)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,2)" oninput="otpNext(this,2)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,3)" oninput="otpNext(this,3)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,4)" oninput="otpNext(this,4)">
+        <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,5)" oninput="otpDone(this)">
       </div>
       <button class="btn-primary" onclick="emailOtpConfirm()"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ยืนยันและเข้าใช้งาน</button>
       <div class="sheet-link">ไม่ได้รับ OTP? <a href="#" id="otp-resend" onclick="dmResendOtp();return false">ส่งใหม่</a></div>
@@ -2946,6 +2946,18 @@ function nextRole(){
 }
 function otpNext(el,idx){
   if(el.value.length===1){const b=document.querySelectorAll('#otpRow .otp-box');if(b[idx+1])b[idx+1].focus()}
+}
+function otpKey(e,idx){   // backspace ในช่องว่าง → ถอยไปช่องก่อนหน้า (แก้ง่ายขึ้น)
+  if(e.key==='Backspace' && !e.target.value){ const b=document.querySelectorAll('#otpRow .otp-box'); if(b[idx-1]){ b[idx-1].focus(); } }
+}
+function otpPaste(e){   // วางรหัส 6 หลักทีเดียว → กระจายลงทุกช่อง + ยืนยันอัตโนมัติ
+  const cb=e.clipboardData||window.clipboardData; if(!cb) return;
+  const txt=(cb.getData('text')||'').replace(/\D/g,'').slice(0,6); if(!txt) return;
+  e.preventDefault();
+  const b=document.querySelectorAll('#otpRow .otp-box');
+  for(let i=0;i<b.length;i++){ b[i].value=txt[i]||''; }
+  const last=Math.min(txt.length,b.length)-1; if(b[last]) b[last].focus();
+  if(txt.length>=6 && typeof emailOtpConfirm==='function') emailOtpConfirm();
 }
 function otpDone(el){
   if(el.value.length!==1) return;
