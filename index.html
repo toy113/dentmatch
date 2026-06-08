@@ -767,9 +767,13 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
     display:block;position:absolute;left:0;right:0;top:100%;
     background:#fff;border-bottom:1px solid var(--border);
     box-shadow:0 14px 30px rgba(54,26,120,.16);
-    padding:14px 34px 16px;max-height:62vh;overflow-y:auto;z-index:60;
+    padding:12px 34px 14px;max-height:62vh;overflow-y:auto;z-index:60;
   }
   .filter-wrap.dt-collapsible.dt-open .chip-row{display:flex}
+  /* กระชับ chip ใน dropdown filter (เล็ก+แคบ) */
+  .dt-filter-panel .chip-row{gap:6px;margin-bottom:6px}
+  .dt-filter-panel .chip-row:last-child{margin-bottom:0}
+  .dt-filter-panel .chip{padding:5px 12px;font-size:12px}
   .chip{padding:7px 15px;font-size:13px;transition:.16s}
   .chip:hover:not(.on){border-color:var(--p400);color:var(--p700)}
   .chip.on:hover{transform:none}
