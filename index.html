@@ -1651,7 +1651,10 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <button id="search-wtj-clear" onclick="clearSearch('wtj')" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);width:38px;height:34px;align-items:center;justify-content:center;background:none;border:none;font-size:16px;color:var(--ink4);cursor:pointer;padding:0;display:none"><i data-lucide="x"></i></button>
         </div>
       </div>
-      <div style="padding:8px 16px 0"><button onclick="openInterestedJobs()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--p50);border:1.5px solid var(--p200);border-radius:12px;padding:11px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:700;color:var(--p700);cursor:pointer"><i data-lucide="heart"></i> งานที่ฉันสนใจ<span id="wtj-interested-cnt"></span></button></div>
+      <div style="display:flex;gap:8px;padding:8px 16px 0">
+        <button onclick="openInterestedJobs()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--p50);border:1.5px solid var(--p200);border-radius:12px;padding:11px 6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--p700);cursor:pointer"><i data-lucide="heart"></i> สนใจ<span id="wtj-interested-cnt"></span></button>
+        <button onclick="openSavedJobs()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1.5px solid var(--border2);border-radius:12px;padding:11px 6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--ink3);cursor:pointer"><i data-lucide="bookmark"></i> บันทึกไว้<span id="wtj-saved-cnt"></span></button>
+      </div>
       <div class="sec-hdr"><h2><i data-lucide="briefcase"></i> งานที่เปิดรับ</h2><span id="wtj-cnt" class="cnt-pill">248 งาน</span></div>
       <div class="cards" id="wtj-cards">
         <div class="jcard urg" data-clinic="คลินิกทันตกรรมสยาม" onclick="goView('v-job-detail')" style="cursor:pointer">
@@ -2300,6 +2303,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 </div>
 
 <!-- ════════ PROVINCE SEARCH SHEET ════════ -->
+<div class="overlay" id="s-saved" onclick="overlayClose(event,'s-saved')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><i data-lucide="bookmark"></i> งานที่บันทึกไว้</div>
+    <div class="sheet-sub">งานที่คุณกด 🔖 เก็บไว้ดูทีหลัง</div>
+    <div id="saved-list" style="display:flex;flex-direction:column;gap:10px;margin-top:14px"></div>
+  </div>
+</div>
 <div class="overlay" id="s-interested" onclick="overlayClose(event,'s-interested')">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -3198,12 +3209,14 @@ function dmJobCard(job){
   const skillBadges=(job.skills||[]).map(s=>`<span class="bdg bdg-br">${_dmEsc(s)}</span>`).join('');
   const isUrg=_dmIsUrgent(job);
   const badge2= (isUrg ? '<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>' : '') + skillBadges;   // ด่วน (auto ≤7 วัน) + ทุกทักษะ
+  const _canSave=(typeof dmUser==='undefined'||!dmUser||dmUser.role!=='clinic'); const _svOn=_canSave&&_dmSavedHas(job.id);
+  const saveBtn=_canSave?`<button onclick="event.stopPropagation();_dmToggleSave('${job.id}',this)" style="background:none;border:none;cursor:pointer;padding:1px 2px;color:${_svOn?'var(--p600)':'var(--ink5)'};flex-shrink:0" title="บันทึกงาน"><i data-lucide="bookmark"></i></button>`:'';
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=_dmEsc(_dmWage(job));
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>Add LINE</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=Add LINE · guest=login · clinic=ซ่อน
   return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
           <div class="badges"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-top:1px" title="ดูรายละเอียด"></i></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div>${saveBtn}<span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-top:1px" title="ดูรายละเอียด"></i></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname} · ${loc}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           ${(_dmJobViews[job.id]>0)?`<div class="meta"><span class="pill" style="background:var(--p25);color:var(--ink4)"><i data-lucide="eye"></i> ${_dmJobViews[job.id]} วิว</span></div>`:''}
@@ -3240,7 +3253,7 @@ async function _dmRefreshCurrent(){
   try{
     const r=(dmUser&&dmUser.role)||'guest';
     if(r==='clinic'){ await dmLoadJobsBoard(); await dmLoadWorkerBoard(); if(typeof dmLoadManageBoard==='function') await dmLoadManageBoard(); if(typeof dmLoadClinicInvites==='function') dmLoadClinicInvites(); }
-    else if(r==='worker'){ await dmLoadJobsBoard(); if(typeof dmLoadWorkerInbox==='function') dmLoadWorkerInbox(); if(typeof dmLoadWorkerConfirm==='function') dmLoadWorkerConfirm(); if(typeof dmUpdateInterestedCount==='function') dmUpdateInterestedCount(); }
+    else if(r==='worker'){ await dmLoadJobsBoard(); if(typeof dmLoadWorkerInbox==='function') dmLoadWorkerInbox(); if(typeof dmLoadWorkerConfirm==='function') dmLoadWorkerConfirm(); if(typeof dmUpdateInterestedCount==='function') dmUpdateInterestedCount(); if(typeof dmUpdateSavedCount==='function') dmUpdateSavedCount(); }
     else { await dmLoadJobsBoard(); if(typeof dmLoadStats==='function') dmLoadStats(); }
   }catch(e){ console.warn('refresh', e); }
 }
@@ -4438,6 +4451,40 @@ async function dmRecordAddLine(){
   }catch(e){ console.error('[addline] exception', e); }
 }
 function openInterestedJobs(){ openSheet('s-interested'); dmLoadInterestedJobs(); }
+/* ── บันทึกงาน (bookmark) เก็บดูทีหลัง · localStorage ── */
+function _dmSavedGet(){ try{ return JSON.parse(localStorage.getItem('dm_saved_jobs')||'[]'); }catch(e){ return []; } }
+function _dmSavedHas(id){ return _dmSavedGet().indexOf(id)>=0; }
+function _dmSavedToggle(id){ let a=_dmSavedGet(); const i=a.indexOf(id); if(i>=0) a.splice(i,1); else a.unshift(id); try{ localStorage.setItem('dm_saved_jobs', JSON.stringify(a)); }catch(e){} return i<0; }   // คืน true = บันทึกแล้ว
+function _dmToggleSave(id, btn){ if(!dmUser||!dmUser.id){ openSheet('s-login'); return; } const on=_dmSavedToggle(id); if(btn) btn.style.color=on?'var(--p600)':'var(--ink5)'; dmUpdateSavedCount(); showToast(on?'<i data-lucide="bookmark" style="color:var(--p600)"></i> บันทึกงานแล้ว':'เอาออกจากที่บันทึกแล้ว'); }
+function dmUpdateSavedCount(){ const el=document.getElementById('wtj-saved-cnt'); if(el){ const n=_dmSavedGet().length; el.textContent=n?(' ('+n+')'):''; } }
+function openSavedJobs(){ openSheet('s-saved'); dmLoadSavedJobs(); }
+function _dmUnsaveFromList(id, btn){ _dmSavedToggle(id); dmUpdateSavedCount(); const row=btn&&btn.parentElement; if(row) row.remove(); if(!_dmSavedGet().length) dmLoadSavedJobs(); }
+async function dmLoadSavedJobs(){
+  const list=document.getElementById('saved-list'); if(!list) return;
+  const ids=_dmSavedGet();
+  if(!ids.length){ list.innerHTML='<div style="text-align:center;padding:30px 18px;color:var(--ink4);font-size:13.5px;line-height:1.8"><i data-lucide="bookmark" style="color:var(--ink5)"></i><br>ยังไม่มีงานที่บันทึกไว้<br><span style="font-size:12px;color:var(--ink5)">กด 🔖 ที่การ์ดงานเพื่อเก็บไว้ดูทีหลัง</span></div>'; refreshIcons(); return; }
+  if(!dmSb()) return;
+  list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';
+  try{
+    const { data } = await dmSb().from('jobs').select('id, title, position, province, district, wage_text, is_open, clinics(name)').in('id', ids);
+    const byId={}; (data||[]).forEach(function(j){ byId[j.id]=j; });
+    const rows=ids.map(function(id){ return byId[id]; }).filter(Boolean);
+    if(!rows.length){ list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">งานที่บันทึกไว้ถูกลบไปแล้ว</div>'; return; }
+    list.innerHTML = rows.map(function(j){
+      const c=j.clinics||{}; const pos=DM_POS_LABEL[j.position]||_dmEsc(j.position);
+      const loc=_dmEsc(j.province||'')+(j.district?' ('+_dmEsc(j.district)+')':''); const closed=!j.is_open;
+      return `<div style="border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;${closed?'opacity:.65':''}">
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="closeSheet('s-saved');dmOpenJob('${j.id}')">
+          <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:3px">${pos}${closed?' <span style="font-size:11px;color:var(--red);font-weight:600">· ปิดรับแล้ว</span>':''}</div>
+          <div style="font-size:12px;color:var(--ink4);margin-bottom:4px"><i data-lucide="hospital"></i> ${_dmEsc(c.name||'คลินิก')} · ${loc}</div>
+          <div style="font-size:11.5px;color:var(--ink5)">${_dmEsc(_dmWage(j))}</div>
+        </div>
+        <button onclick="_dmUnsaveFromList('${j.id}',this)" style="background:none;border:none;cursor:pointer;padding:6px;color:var(--p600);flex-shrink:0" title="เอาออก"><i data-lucide="x"></i></button>
+      </div>`;
+    }).join('');
+    refreshIcons();
+  }catch(e){ console.error('[saved]', e); list.innerHTML='<div style="text-align:center;padding:24px;color:var(--red);font-size:13px">โหลดไม่สำเร็จ</div>'; }
+}
 async function dmUpdateInterestedCount(){
   const el=document.getElementById('wtj-interested-cnt'); if(!el) return;
   if(!dmSb()||!dmUser||dmUser.role!=='worker'){ el.textContent=''; return; }
