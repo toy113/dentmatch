@@ -3252,7 +3252,7 @@ function dmJobDetailHTML(job){
   // บล็อกสถิติ — โชว์เฉพาะ cell ที่มีข้อมูล/สิทธิ์ (ADD LINE = เจ้าของงานเท่านั้น ตาม RLS ale_sel)
   let cells='';
   if(job.patients_per_day!=null) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">จำนวนคนไข้</div><div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">${_dmEsc(job.patients_per_day)} คน/วัน</div></div>`;
-  if(isOwner) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">ADD LINE แล้ว</div><div id="jd-addline" style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">…</div></div>`;
+  if(isOwner) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">ยอดวิว</div><div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">${_dmJobViews[job.id]||0} ครั้ง</div></div>`;
   const grid=cells?`<hr class="divline"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">${cells}</div>`:'';
   const descPara=job.description?`<div style="font-size:13.5px;color:var(--ink3);line-height:1.7">${_dmEsc(job.description)}</div>`:'';
   const descCard=(descPara||grid)?`<div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
@@ -3319,11 +3319,9 @@ async function dmOpenJob(id){
   _dmRealJobOpen=true;
   goView('v-job-detail');
   refreshIcons();
-  // ยอด ADD LINE จริง (เฉพาะเจ้าของงาน — RLS ale_sel) เติม async
-  if(dmUser && job.clinic_id===dmUser.id){
-    dmJobAddLineCount(job.id).then(n=>{ const el=document.getElementById('jd-addline'); if(el) el.textContent=n+' คน'; });
-  } else if(dmUser && dmUser.id && job.clinic_id){
-    dmSb().from('job_views').insert({ job_id: job.id, viewer_id: dmUser.id }).then(()=>{}, ()=>{});   // log วิว (dedup unique · RLS กันเจ้าของดูเอง)
+  // log วิว (เฉพาะ non-owner · dedup unique · RLS กันเจ้าของดูเอง) · ยอดวิวโชว์จาก _dmJobViews ที่บอร์ดโหลดไว้
+  if(dmUser && dmUser.id && job.clinic_id && job.clinic_id!==dmUser.id){
+    dmSb().from('job_views').insert({ job_id: job.id, viewer_id: dmUser.id }).then(()=>{}, ()=>{});
   }
 }
 /* ════════ C3a — คลินิกโพสต์งานจริง (INSERT jobs · title auto-compose · is_boosted default false) ════════ */
