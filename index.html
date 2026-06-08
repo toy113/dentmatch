@@ -3020,7 +3020,7 @@ function dmWorkerCard(w){
                 _vw>0?`<span class="tr"><i data-lucide="eye"></i> ${_vw} วิว</span>`:'' ].join('');
   const trustRow=trust?`<div class="trust">${trust}</div>`:'';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
-          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div></div>
+          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-left:auto;align-self:center" title="ดูโปรไฟล์"></i></div>
           <div class="skills">${skills}</div>
           ${quote}
           ${trustRow}
