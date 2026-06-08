@@ -3647,7 +3647,7 @@ function dmManageCard(job){
   const _noDateLoggedOnce = _dts.length===0 && (_dmJobLogged[job.id]||[]).length>0;
   let logBtn;
   if(_unlogPast>0){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> บันทึกงาน (${_unlogPast} วันที่ผ่านแล้ว)</button>`; }
-  else if(_dts.length>0 && _dmPastDates(job).length===0){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.5;cursor:default" title="บันทึกได้หลังวันงาน"><i data-lucide="clock"></i> บันทึกได้หลังวันงาน</button>`; }   // มีแต่วันอนาคต → กดไม่ได้
+  else if(_dts.length > _dmPastDates(job).length){ logBtn = `<button class="btn-sm" style="flex:1;opacity:.5;cursor:default" title="บันทึกได้หลังวันงาน"><i data-lucide="clock"></i> บันทึกได้หลังวันงาน</button>`; }   // ยังมีวันที่ยังไม่ถึง (รอบันทึก) → กดไม่ได้
   else if(_dts.length===0 && !_noDateLoggedOnce){ logBtn = `<button class="btn-sm log" style="flex:1" onclick="event.stopPropagation();openLogFromCard(this)"><i data-lucide="notebook-pen"></i> บันทึกงาน</button>`; }   // วันประจำ/ตามตกลง
   else { logBtn = `<button class="btn-sm" style="flex:1;opacity:.5;cursor:default"><i data-lucide="circle-check-big" style="color:var(--green)"></i> บันทึกครบแล้ว</button>`; }   // บันทึกครบ/บันทึกแล้ว
 
