@@ -4347,15 +4347,15 @@ const FILTER_SKILLS = {
   'เคาน์เตอร์':['Front desk','ภาษาอังกฤษ','ช่วย GP'],
 };
 function filterPos(filterId, el, pos) {
+  const wasOn = el.classList.contains('on');
   el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
   const row = document.getElementById(filterId+'-skills');
-  if(!row) return;
-  const skills = FILTER_SKILLS[pos] || FILTER_SKILLS['ทั้งหมด'];
-  // multi-select: ใช้ chipToggle ทุกตัว
-  row.innerHTML = skills.map(s=>
-    `<div class="chip" onclick="chipMulti(this)">${s}</div>`
-  ).join('');
+  if(wasOn){ if(row) row.innerHTML=''; applyActiveBoard(); return; }   // กดซ้ำ = ยกเลิกตำแหน่ง → ล้างทักษะกลับว่าง
+  el.classList.add('on');
+  if(row){
+    const skills = FILTER_SKILLS[pos] || FILTER_SKILLS['ทั้งหมด'];
+    row.innerHTML = skills.map(s=>`<div class="chip" onclick="chipMulti(this)">${s}</div>`).join('');   // ทักษะตามตำแหน่ง (multi-select)
+  }
   applyActiveBoard();
 }
 
@@ -5080,11 +5080,11 @@ const PROVINCES = {
 let selectedProvs = new Set();
 
 function provChip(el) {
-  // shortcut chips: single-select แต่ sync กับ selectedProvs
+  // shortcut chips: single-select · กดซ้ำ = ยกเลิก · sync กับ selectedProvs
+  const wasOn = el.classList.contains('on');
   el.closest('.province-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
   selectedProvs.clear();
-  selectedProvs.add(el.textContent.trim());
+  if(!wasOn){ el.classList.add('on'); selectedProvs.add(el.textContent.trim()); }
   applyActiveBoard();
 }
 
