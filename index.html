@@ -3132,8 +3132,8 @@ async function dmLoadProfile(){
       if(data){
         dmUser.worker=data;   // C4a: เก็บไว้ render body + prefill edit form
         if(data.anon_id && typeof currentWorkerId!=='undefined') currentWorkerId=data.anon_id;   // sync รหัสจริงให้ข้อความ Add LINE
-        document.querySelectorAll('#v-worker .av-lbl').forEach(e=>e.textContent=data.anon_id);
-        document.querySelectorAll('#v-worker .av').forEach(e=>e.style.background=_dmAvPos(data.position));   // สี avatar ตัวเองตามตำแหน่ง
+        const _myLbl=document.querySelector('#v-worker .wkr-pill .av-lbl'); if(_myLbl) _myLbl.textContent=data.anon_id;   // เฉพาะ avatar header ของเรา (ไม่ใช่ทุกการ์ดบุคลากร)
+        const _myAv=document.querySelector('#v-worker .wkr-pill .profile-av-lg'); if(_myAv) _myAv.style.background=_dmAvPos(data.position);   // สี avatar ตัวเองตามตำแหน่ง
         dmFillWorkerProfile(data);
         dmApplyAvailUI(data.available!==false);
         try{ const { count } = await dmSb().from('invites').select('id',{count:'exact',head:true}).eq('worker_id',dmUser.id);
@@ -3213,7 +3213,9 @@ async function dmLoadWorkerBoard(){
     const cards=document.querySelector('#cc-workers .cards');
     if(!data || !data.length){   // ว่าง → empty state (ไม่คง mock)
       if(cards) cards.innerHTML=_dmEmptyBoard('ยังไม่มีบุคลากรในระบบตอนนี้','users');
-      _dmSetCount('#cc-workers',0,'คน'); _dmSetCount('#wt-workers',0,'คน'); refreshIcons(); return;
+      _dmSetCount('#cc-workers',0,'คน'); _dmSetCount('#wt-workers',0,'คน');
+      if(typeof buildWorkerBoards==='function') buildWorkerBoards();   // mirror empty → wtw-cards/preview (กัน mock ค้างจาก init)
+      refreshIcons(); return;
     }
     if(!cards) return;
     data.forEach(w=>{ _dmWorkers[w.id]=w; });   // cache → dmOpenWorker เติม detail ทันที
