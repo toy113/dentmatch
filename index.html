@@ -2485,6 +2485,8 @@ const _notiCount = { worker: 2, clinic: 2 };
 
 function openNoti(role) {
   openSheet(role === 'clinic' ? 's-noti-clinic' : 's-noti');
+  try{ localStorage.setItem('dm_noti_read_'+role, String(Date.now())); }catch(e){}   // เปิดกระดิ่ง = อ่านแล้ว → เคลียร์เลข
+  if(typeof dmSetNotiBadge==='function') dmSetNotiBadge(role, 0);
 }
 
 function readNotiItem(el, role) {
@@ -4298,7 +4300,7 @@ async function dmLoadNoti(){
       items.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
       const list=document.getElementById('noti-list-worker');
       if(list) list.innerHTML = items.length?items.map(dmNotiItem).join(''):'<div style="text-align:center;padding:30px;color:var(--ink4);font-size:13px">ยังไม่มีการแจ้งเตือน</div>';
-      dmSetNotiBadge('worker', items.length);
+      const _nrW=+(localStorage.getItem('dm_noti_read_worker')||0); dmSetNotiBadge('worker', items.filter(i=>new Date(i.ts).getTime()>_nrW).length);   // นับเฉพาะใหม่กว่าครั้งเปิดกระดิ่งล่าสุด
     } else if(dmUser.role==='clinic'){
       const al = await dmSb().from('add_line_events').select('id, created_at, job_id, jobs(title)')
         .eq('clinic_id',dmUser.id).order('created_at',{ascending:false}).limit(40);
@@ -4312,7 +4314,7 @@ async function dmLoadNoti(){
       items.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
       const list=document.getElementById('noti-list-clinic');
       if(list) list.innerHTML = items.length?items.map(dmNotiItem).join(''):'<div style="text-align:center;padding:30px;color:var(--ink4);font-size:13px">ยังไม่มีการแจ้งเตือน</div>';
-      dmSetNotiBadge('clinic', items.length);
+      const _nrC=+(localStorage.getItem('dm_noti_read_clinic')||0); dmSetNotiBadge('clinic', items.filter(i=>new Date(i.ts).getTime()>_nrC).length);   // นับเฉพาะใหม่กว่าครั้งเปิดกระดิ่งล่าสุด
     }
     refreshIcons();
     dmLog('[noti]', dmUser.role, items.length);
