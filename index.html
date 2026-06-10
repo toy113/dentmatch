@@ -3808,7 +3808,10 @@ async function dmInitSession(){
   if(!dmSb()) return;
   const { data } = await dmSb().auth.getSession();
   if(!data || !data.session) return;
-  const uid=data.session.user.id;
+  // ตรวจกับ server ว่า user ยังมีจริง (กัน session ค้างของ user ที่ถูกลบ เช่นหลังรีเซ็ตข้อมูล → ไม่งั้น auth.uid ชี้ผีทำ insert พัง RLS)
+  const { data:u, error:uerr } = await dmSb().auth.getUser();
+  if(uerr || !u || !u.user){ try{ await dmSb().auth.signOut(); }catch(_e){} dmUser=null; return; }   // session เสีย → ล้างทิ้ง เริ่มใหม่สะอาด
+  const uid=u.user.id;
   const { data:prof } = await dmSb().from('profiles').select('role').eq('id',uid).single();
   if(!prof) return;
   dmUser={ id:uid, role:prof.role }; currentRole=prof.role; selectedLoginRole=prof.role;
