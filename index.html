@@ -2334,7 +2334,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   </div>
 </div>
 <div class="overlay" id="s-log-success" onclick="overlayClose(event,'s-log-success')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="success-title">บันทึกงานสำเร็จ!</div><div class="success-sub">Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น</div><button class="btn-primary" onclick="finishWorkLog()">เสร็จสิ้น</button></div></div>
+  <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon" id="log-success-icon"><i data-lucide="circle-check-big" style="color:var(--green)"></i></div><div class="success-title" id="log-success-title">บันทึกงานสำเร็จ!</div><div class="success-sub" id="log-success-sub">Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น</div><button class="btn-primary" onclick="finishWorkLog()">เสร็จสิ้น</button></div></div>
 </div>
 <div class="overlay" id="s-save-success" onclick="overlayClose(event,'s-save-success')">
   <div class="sheet"><div class="sheet-handle"></div><div class="success-screen"><div class="success-icon"><i data-lucide="save"></i></div><div class="success-title">บันทึกโปรไฟล์แล้ว!</div><div class="success-sub">โปรไฟล์ของคุณอัปเดตแล้ว คลินิกจะเห็นข้อมูลใหม่ใน worker board</div><button class="btn-primary" onclick="closeSheet('s-save-success');goBack()">กลับหน้าโปรไฟล์</button></div></div>
@@ -3750,6 +3750,19 @@ async function dmLoadLogWorkers(){
     refreshIcons();
   }catch(e){ dmLog('[worklog] load workers', e); }
 }
+function _dmSetLogSuccess(outcome){
+  const ic=document.getElementById('log-success-icon'), t=document.getElementById('log-success-title'), s=document.getElementById('log-success-sub');
+  if(outcome==='no_show'){
+    if(ic) ic.innerHTML='<i data-lucide="user-x" style="color:var(--red)"></i>';
+    if(t) t.textContent='บันทึก No-show แล้ว';
+    if(s) s.textContent='บันทึกว่าบุคลากรไม่มาทำงานเรียบร้อย — ไม่นับ Completed';
+  } else {
+    if(ic) ic.innerHTML='<i data-lucide="circle-check-big" style="color:var(--green)"></i>';
+    if(t) t.textContent='บันทึกงานสำเร็จ!';
+    if(s) s.textContent='Worker ได้รับ +1 Completed ผ่าน DentMatch แล้ว Trust score จะเพิ่มขึ้น';
+  }
+  if(typeof refreshIcons==='function') refreshIcons();
+}
 async function dmSaveWorkLog(){
   if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ openSheet('s-log-success'); return; }   // demo = mock
   if(!_logJobId){ showToast('ไม่พบงาน'); return; }
@@ -3767,7 +3780,8 @@ async function dmSaveWorkLog(){
     _logWorkerIds=[];
     await dmLoadManageBoard();
     const job=_dmJobs[_logJobId]||{};
-    if(_dmPastDates(job).length>1){ showToast('บันทึกวันนี้แล้ว ✓ — เลือกวันอื่นต่อได้'); _logBuildDateList(job); _logShowStep('step0'); }   // หลายวัน → กลับไปเลือกวันอื่น
+    _dmSetLogSuccess(outcome);   // ข้อความสำเร็จตาม outcome (came=+1 Completed · no_show=ไม่นับ)
+    if(_dmPastDates(job).length>1){ showToast(outcome==='no_show'?'บันทึก No-show วันนี้แล้ว — เลือกวันอื่นต่อได้':'บันทึกวันนี้แล้ว ✓ — เลือกวันอื่นต่อได้'); _logBuildDateList(job); _logShowStep('step0'); }   // หลายวัน → กลับไปเลือกวันอื่น
     else { openSheet('s-log-success'); }
   }catch(e){ console.error('[worklog] exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
