@@ -2978,7 +2978,7 @@ function nextRole(){
   // login = ผู้ใช้เดิม → เข้าหน้า dashboard ตาม role ที่เลือกเลย (ไม่ต้องกรอกฟอร์มสมัคร)
   if(_loginMode==='login'){ loginSuccess(); return; }
   goLoginStep(selectedLoginRole==='clinic'?'ls-reg-clinic':'ls-reg-worker');
-  if(_lineSignup && _lineSignup.name){ if(selectedLoginRole==='clinic'){ const _n=document.getElementById('rc-name'); if(_n && !_n.value) _n.value=_lineSignup.name; } else { const _fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]'); if(_fn && !_fn.value) _fn.value=_lineSignup.name; } }   // prefill ชื่อจาก LINE
+  // ไม่ prefill ชื่อจาก LINE — ให้ผู้ใช้กรอกชื่อจริงเอง (ชื่อ LINE มักไม่ใช่ชื่อจริง/ชื่อคลินิก)
 }
 function otpNext(el,idx){
   if(el.value.length===1){const b=document.querySelectorAll('#otpRow .otp-box');if(b[idx+1])b[idx+1].focus()}
