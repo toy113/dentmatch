@@ -5150,7 +5150,10 @@ function applyProvince() {
 
 
 window.addEventListener('DOMContentLoaded',()=>{
-  setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); } }, 8000);   // failsafe: กัน splash ค้างถ้า supabase module โหลด/บูตไม่สำเร็จ
+  setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
+    // ถ้าบอร์ดยังไม่โหลด (supabase module ช้า/พัง) → ใส่ skeleton แทน mock กันโชว์ข้อมูลปลอมทั้งหน้า
+    if(typeof _dmJobsSkelDone!=='undefined' && !_dmJobsSkelDone){ try{ ['#tcj-cards','#ccf-cards','#wtj-cards'].forEach(function(sel){ var c=document.querySelector(sel); if(c) c.innerHTML=_dmSkelJobs(4); }); ['tcj-cnt','ccf-cnt','wtj-cnt'].forEach(function(id){ var p=document.getElementById(id); if(p) p.textContent=''; }); _dmJobsSkelDone=true; refreshIcons(); }catch(_e){} }
+  }, 8000);   // failsafe: กัน splash ค้างถ้า supabase module โหลด/บูตไม่สำเร็จ
   // workdate: ไม่ prefill วันนี้แล้ว — ปล่อยว่าง (ผู้ใช้เลือกเอง)
   renderSkills('postSkillChips','postSkillLabel','dentist',false);
   renderSkills('editSkillChips','editSkillLabel','dentist',true);
