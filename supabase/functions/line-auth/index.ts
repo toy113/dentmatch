@@ -8,7 +8,7 @@
 //
 // ★ ลงทะเบียนใน LINE Console (Callback URL): <SUPABASE_URL>/functions/v1/line-auth/callback
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
+import { createClient } from 'npm:@supabase/supabase-js@2.47.10';   // npm: = Supabase edge best practice · cache ดีกว่า esm.sh → cold start เร็วขึ้น
 
 const LINE_CHANNEL_ID     = '2010259716';                                   // public
 const LINE_CHANNEL_SECRET = Deno.env.get('LINE_CHANNEL_SECRET')!;           // secret (env เท่านั้น)
