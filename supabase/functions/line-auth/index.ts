@@ -19,9 +19,9 @@ const CALLBACK_URL        = `${SUPABASE_URL}/functions/v1/line-auth/callback`;
 // allowlist กัน open-redirect (เพิ่ม origin ของแอปที่อนุญาตให้ส่ง session กลับ)
 const ALLOWED_ORIGINS = [
   'http://localhost:8000',
-  'https://dentmatch-vpb2.vercel.app',
+  'https://dentmatch.vercel.app',
 ];
-const DEFAULT_RETURN = 'https://dentmatch-vpb2.vercel.app/';
+const DEFAULT_RETURN = 'https://dentmatch.vercel.app/';
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { autoRefreshToken: false, persistSession: false } });
 
