@@ -4330,8 +4330,13 @@ function _dmNotiBump(){
   showToast('<i data-lucide="bell"></i> มีการแจ้งเตือนใหม่');
 }
 function _dmNotiOnChange(payload){
-  // worker: เงียบเมื่อ (ก) no_show = บันทึกฝ่ายเดียว · (ข) worker_outcome ถูกตั้งแล้ว = worker เพิ่งกดยืนยันเอง (ไม่เด้งกระดิ่งตัวเอง) · event อื่นเด้งปกติ
-  const _silent = !!(payload && payload.table==='work_logs' && dmUser && dmUser.role==='worker' && payload.new && (payload.new.clinic_outcome==='no_show' || payload.new.worker_outcome));
+  // เงียบเมื่อ:
+  //  (ก) work_logs no_show / worker ยืนยันเอง (เฉพาะ worker — กระดิ่งตัวเอง)
+  //  (ข) invites ที่ไม่ใช่ INSERT = การอ่าน/อัปเดตคำเชิญ (read_at/status) → ไม่เด้งทั้ง worker(อ่านเอง) และ clinic(ถูกอ่าน) · เด้งเฉพาะคำเชิญใหม่ (INSERT)
+  const _silent = !!(payload && (
+    (payload.table==='work_logs' && dmUser && dmUser.role==='worker' && payload.new && (payload.new.clinic_outcome==='no_show' || payload.new.worker_outcome))
+    || (payload.table==='invites' && payload.eventType!=='INSERT')
+  ));
   if(!_silent) _dmNotiAnyReal=true;
   clearTimeout(_dmNotiDebounce);
   _dmNotiDebounce=setTimeout(()=>{
