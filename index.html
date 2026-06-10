@@ -3084,25 +3084,26 @@ async function emailOtpConfirm(){
   if(code.length!==6){ showToast('กรอกรหัส 6 หลักให้ครบ'); return; }
   if(!_otpEmail){ setTimeout(loginSuccess,150); return; }   // mock fallback (ไม่มี email path)
   _otpVerifying=true;
-  const { data, error } = await dmSb().auth.verifyOtp({ email:_otpEmail, token:code, type:'email' });
-  if(error){ _otpVerifying=false; showToast('รหัสไม่ถูกต้อง/หมดอายุ: '+error.message); return; }
-  const uid = data.user.id;
-  let role;
   try{
+    const { data, error } = await dmSb().auth.verifyOtp({ email:_otpEmail, token:code, type:'email' });
+    if(error){ _otpVerifying=false; showToast('รหัสไม่ถูกต้อง/หมดอายุ: '+error.message); return; }   // ผิด/หมดอายุ → ปลดล็อกให้กรอกใหม่
+    const uid = data.user.id;
+    let role;
     if(_otpMode==='register' && pendingSignup){
       const { data:exist } = await dmSb().from('profiles').select('role').eq('id',uid).maybeSingle();
       if(exist){ role=exist.role; _loginMode='login'; showToast('มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทน'); }   // อีเมลนี้สมัครไว้แล้ว → login แทน
       else { role = pendingSignup.role; await dmCreateRecords(uid, pendingSignup); }
     } else {
       const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
-      if(e || !prof){ showToast('ยังไม่มีโปรไฟล์ — กรุณาสมัครก่อน'); return; }
+      if(e || !prof){ _otpVerifying=false; showToast('ยังไม่มีโปรไฟล์ — กรุณาสมัครก่อน'); return; }   // ปลดล็อก
       role = prof.role;
     }
-  }catch(ex){ showToast('สร้าง/ดึงโปรไฟล์ไม่สำเร็จ: '+(ex.message||ex)); return; }
-  dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role;
-  pendingSignup=null;
-  await dmLoadProfile();
-  loginSuccess();
+    dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role;
+    pendingSignup=null;
+    await dmLoadProfile();
+    loginSuccess();
+    // สำเร็จ: คง _otpVerifying=true ไว้ กัน timer/ปุ่มที่ค้าง verify token เดิมซ้ำ → กัน "รหัสไม่ถูกต้อง" หลอกหลัง login (reset เมื่อขอ OTP ใหม่)
+  }catch(ex){ _otpVerifying=false; showToast('ยืนยันไม่สำเร็จ: '+(ex&&ex.message||ex)); }   // network/exception → ปลดล็อกกัน "ค้าง"
 }
 // สร้าง record ตอนสมัคร (RLS: id=auth.uid())
 async function dmCreateRecords(uid, s){
