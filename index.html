@@ -3274,6 +3274,23 @@ function dmWorkerCard(w){
           <button class="btn-invite" onclick="dmOpenInvite('${w.id}','${w.anon_id}')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>`;
 }
+async function dmLoadWorkerTeaser(){   // guest (anon) — โหลดบอร์ดบุคลากรจริง ใส่ wk-preview-cards
+  if(!dmSb() || dmUser) return;   // ถ้า login แล้ว dmLoadWorkerBoard จัดการแทน
+  const el = document.getElementById('wk-preview-cards');
+  if(!el) return;
+  try{
+    const { data, error } = await dmSb().from('worker_profiles')
+      .select('id, anon_id, position, skills, province, provinces, district, experience_years, available_days, trust_score, member_since, available, bio, license_verified')
+      .eq('available', true)
+      .order('trust_score', { ascending:false }).limit(20);
+    if(error){ console.warn('dmLoadWorkerTeaser', error); return; }
+    if(!data || !data.length) return;
+    data.forEach(w=>{ _dmWorkers[w.id]=w; });
+    el.innerHTML = data.map(dmWorkerCard).join('');
+    el.querySelectorAll('.btn-invite').forEach(b=>b.remove());
+    refreshIcons();
+  }catch(e){ console.warn('dmLoadWorkerTeaser', e); }
+}
 async function dmLoadWorkerBoard(){
   if(!dmSb() || !dmUser) return;   // ต้อง authenticated (RLS) ; guest = คง mock
   if(!_dmWorkersSkelDone){ const _wsk=document.querySelector('#cc-workers .cards'); if(_wsk){ _wsk.innerHTML=_dmSkelWorkers(4); _dmWorkersSkelDone=true; } }   // skeleton โหลดครั้งแรก
@@ -5539,6 +5556,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     if (!handled && typeof dmInitSession === 'function') await dmInitSession();                // ไม่ใช่ → restore session เดิม
     if (typeof dmLoadStats === 'function') dmLoadStats();             // สถิติจริง (public · guest ด้วย)
     if (typeof dmLoadJobsBoard === 'function') dmLoadJobsBoard();     // บอร์ดงาน public (guest เห็นงานจริง · authed ก็ refresh ซ้ำได้)
+    if (typeof dmLoadWorkerTeaser === 'function') dmLoadWorkerTeaser();   // บอร์ดบุคลากร guest (anon · ไม่มี invite)
     if (typeof _dmInitPullRefresh === 'function') _dmInitPullRefresh();   // pull-to-refresh (มือถือ)
   } catch(e){ console.warn('auth init', e); }
   finally { const _sp=document.getElementById('dm-splash'); if(_sp){ _sp.classList.add('hide'); setTimeout(()=>{ try{_sp.remove();}catch(_e){} }, 400); } }   // restore เสร็จ (login→routed / guest) → เปิด splash
