@@ -1553,7 +1553,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="skills-wrap" id="pf-skills"><span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="message-circle"></i> แนะนำตัวเอง</div>
-          <div class="intro-box"><div class="intro-txt" id="pf-bio">ยังไม่ได้แนะนำตัว</div></div>
+          <div class="intro-box"><div class="intro-txt" id="pf-bio">–</div></div>
         </div>
         <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
           <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big">ส</div><div class="d-big">อา</div></div></div>
@@ -3998,7 +3998,7 @@ function dmFillWorkerProfile(w){
   const sEl=document.getElementById('pf-since'); if(sEl) sEl.textContent=_dmSince(w.member_since);
   const sk=document.getElementById('pf-skills');
   if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
-  const bio=document.getElementById('pf-bio'); if(bio) bio.textContent=w.bio||'ยังไม่ได้แนะนำตัว';
+  const bio=document.getElementById('pf-bio'); if(bio) bio.textContent=w.bio||'–';
   const dwrap=document.getElementById('pf-days');
   if(dwrap){ const ad=w.available_days||[]; dwrap.innerHTML=DM_DAYS.map((lbl,i)=>`<div class="d-big${ad.includes(i+1)?' on':''}">${lbl}</div>`).join(''); }
   refreshIcons();
@@ -4020,7 +4020,7 @@ function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข
   const bd=document.getElementById('wd-badges'); if(bd) bd.innerHTML='<span class="bdg bdg-role">'+_dmEsc(pos)+'</span>';
   const sk=document.getElementById('wd-skills');
   if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
-  const q=document.getElementById('wd-quote'); if(q) q.textContent=w.bio||'ยังไม่ได้แนะนำตัว';
+  const q=document.getElementById('wd-quote'); if(q) q.textContent=w.bio||'–';
   const dd=document.getElementById('wd-days');
   if(dd){ const ad=w.available_days||[]; dd.innerHTML=DM_DAYS.map((lbl,i)=>`<div class="d-big${ad.includes(i+1)?' on':''}">${lbl}</div>`).join(''); }
   const dot=document.getElementById('wd-dot'); if(dot) dot.style.display=(w.available!==false)?'':'none';
