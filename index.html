@@ -2006,6 +2006,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── LOGIN ── -->
       <div id="login-panel">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
+        <div class="line-inapp-hint" style="display:none;font-size:11px;color:var(--orange2);background:var(--orange-bg);border:1px solid rgba(245,129,31,.25);border-radius:8px;padding:6px 10px;margin-top:4px;margin-bottom:2px;line-height:1.5"><i data-lucide="external-link" style="width:11px;height:11px;vertical-align:-1px"></i> จะเปิด browser ภายนอก — กลับมา LINE แล้วเปิด DentMatch ใหม่ได้เลย</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
@@ -2017,6 +2018,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── REGISTER ── -->
       <div id="register-panel" style="display:none">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
+        <div class="line-inapp-hint" style="display:none;font-size:11px;color:var(--orange2);background:var(--orange-bg);border:1px solid rgba(245,129,31,.25);border-radius:8px;padding:6px 10px;margin-top:4px;margin-bottom:2px;line-height:1.5"><i data-lucide="external-link" style="width:11px;height:11px;vertical-align:-1px"></i> จะเปิด browser ภายนอก — กลับมา LINE แล้วเปิด DentMatch ใหม่ได้เลย</div>
         <div style="font-size:11px;color:var(--ink4);text-align:center;margin:6px 2px 2px;line-height:1.45"><i data-lucide="info" style="width:11px;height:11px;vertical-align:-1px"></i> เลือก "Log-in with LINE app" เพื่อเข้าเร็วขึ้น (ไม่ต้องพิมพ์รหัส)</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
@@ -2161,6 +2163,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <input class="otp-box" maxlength="1" inputmode="numeric" onkeydown="otpKey(event,5)" oninput="otpDone(this)">
       </div>
       <button class="btn-primary" onclick="emailOtpConfirm()"><i data-lucide="circle-check-big" style="color:var(--green)"></i> ยืนยันและเข้าใช้งาน</button>
+      <div id="otp-err-msg" style="display:none;font-size:12.5px;color:var(--red);background:#fff1f1;border:1px solid rgba(220,38,38,.2);border-radius:9px;padding:8px 11px;margin-top:8px;line-height:1.5"><i data-lucide="triangle-alert" style="width:13px;height:13px;vertical-align:-1px"></i> <span id="otp-err-txt"></span></div>
       <div class="sheet-link">ไม่ได้รับ OTP? <a href="#" id="otp-resend" onclick="dmResendOtp();return false">ส่งใหม่</a></div>
     </div>
     <div id="ls-success" style="display:none">
@@ -2168,6 +2171,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="success-icon"><i data-lucide="party-popper"></i></div>
         <div class="success-title" id="success-title-txt">เข้าสู่ระบบสำเร็จ!</div>
         <div class="success-sub" id="success-sub-txt">ยินดีต้อนรับกลับสู่ DentMatch<br>เริ่มใช้งานได้เลย</div>
+        <div id="worker-days-hint" style="display:none;background:var(--p25);border:1px solid var(--p100);border-radius:10px;padding:9px 12px;margin:8px 0 0;font-size:12px;color:var(--ink3);line-height:1.55;text-align:left"><i data-lucide="lightbulb" style="width:13px;height:13px;color:var(--p500);vertical-align:-1px"></i> อย่าลืมตั้งค่า <strong>วันที่รับงาน</strong> ได้ในหน้า <strong>โปรไฟล์</strong> ของคุณ</div>
         <div id="dup-account-note" style="display:none;background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:4px 0 0;font-size:12px;color:var(--orange2);line-height:1.55;gap:6px;align-items:flex-start"><i data-lucide="info" style="width:13px;height:13px;flex-shrink:0;margin-top:1px"></i><span>อีเมลนี้มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทนนะ</span></div>
         <button class="btn-primary" onclick="finishLogin()">เริ่มใช้งาน →</button>
       </div>
@@ -2987,6 +2991,7 @@ async function nextAfterRegWorker() {
     goLoginStep('ls-otp');
   }
 }
+function _otpShowErr(msg){ const e=document.getElementById('otp-err-msg'),t=document.getElementById('otp-err-txt'); if(e&&t){t.textContent=msg;e.style.display='block';} }
 function goBackFromOtp(){
   const target=pendingSignup&&pendingSignup.role==='clinic'?'ls-reg-clinic':pendingSignup&&pendingSignup.role==='worker'?'ls-reg-worker':'ls-role';
   goLoginStep(target);
@@ -2994,6 +2999,8 @@ function goBackFromOtp(){
 function goLoginStep(stepId){
   ['ls-login','ls-role','ls-reg-clinic','ls-reg-worker','ls-otp','ls-success'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
   const _dn=document.getElementById('dup-account-note'); if(_dn) _dn.style.display='none';
+  const _oe=document.getElementById('otp-err-msg'); if(_oe) _oe.style.display='none';
+  const _wh=document.getElementById('worker-days-hint'); if(_wh) _wh.style.display='none';
   if(stepId==='ls-otp') document.querySelectorAll('#otpRow .otp-box').forEach(function(b){b.value='';});   // ล้างเลขเก่าทุกครั้งที่เปิดหน้า OTP
   const e=document.getElementById(stepId); if(e){ e.style.display='block'; if(stepId==='ls-otp'){ const f=e.querySelector('.otp-box'); if(f) setTimeout(function(){f.focus();},80); } }
 }
@@ -3050,6 +3057,8 @@ function loginSuccess(){
     if(title)title.innerHTML='สมัครสมาชิกสำเร็จ! <i data-lucide="party-popper"></i>';
     if(sub)sub.textContent='ยินดีต้อนรับสู่ DentMatch\nเริ่มใช้งานได้เลย';
   }
+  const _wh=document.getElementById('worker-days-hint');
+  if(_wh) _wh.style.display=(_loginMode!=='login'&&selectedLoginRole==='worker')?'block':'none';
   goLoginStep('ls-success');
 }
 function finishLogin(){
@@ -3129,7 +3138,7 @@ async function emailOtpConfirm(){
   _otpVerifying=true; _otpBtnBusy(true);   // โชว์ "กำลังยืนยัน..." กันดูเหมือนปุ่มตาย
   try{
     const { data, error } = await dmSb().auth.verifyOtp({ email:_otpEmail, token:code, type:'email' });
-    if(error){ _otpVerifying=false; _otpBtnBusy(false); showToast('รหัสไม่ถูกต้อง/หมดอายุ: '+error.message); return; }   // ผิด/หมดอายุ → ปลดล็อกให้กรอกใหม่
+    if(error){ _otpVerifying=false; _otpBtnBusy(false); _otpShowErr('รหัส OTP ไม่ถูกต้องหรือหมดอายุ — ขอรหัสใหม่ได้เลย'); return; }   // ผิด/หมดอายุ → ปลดล็อกให้กรอกใหม่
     const uid = data.user.id;
     let role;
     if(_otpMode==='register' && pendingSignup){
@@ -3138,7 +3147,7 @@ async function emailOtpConfirm(){
       else { role = pendingSignup.role; await dmCreateRecords(uid, pendingSignup); }
     } else {
       const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
-      if(e || !prof){ _otpVerifying=false; _otpBtnBusy(false); showToast('ยังไม่มีโปรไฟล์ — กรุณาสมัครก่อน'); return; }   // ปลดล็อก
+      if(e || !prof){ _otpVerifying=false; _otpBtnBusy(false); _otpShowErr('ไม่พบบัญชีอีเมลนี้ — กรุณาสมัครสมาชิกก่อน'); return; }   // ปลดล็อก
       role = prof.role;
     }
     dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role;
@@ -5338,6 +5347,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   initFilters();
   if(window.innerWidth>=768) initDesktop();
   window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); dmApplyStats(); });
+  if(_dmIsLineApp()) document.querySelectorAll('.line-inapp-hint').forEach(function(e){e.style.display='block';});
   refreshIcons();
 });
 
