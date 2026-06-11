@@ -4104,6 +4104,16 @@ function dmFillEditForm(w){
   refreshIcons();
 }
 async function dmOpenEditProfile(){
+  if(dmUser && dmUser.role==='worker' && !dmUser.worker && dmSb()){
+    // dmLoadProfile ยังไม่เสร็จ (background) → fetch เฉพาะ worker_profiles ก่อนเปิดฟอร์ม
+    // (กันฟอร์ม chip ว่าง → save → skills หาย)
+    try{
+      const { data } = await dmSb().from('worker_profiles')
+        .select('anon_id, position, province, provinces, district, skills, bio, available, available_days, experience_years, trust_score, member_since')
+        .eq('id', dmUser.id).single();
+      if(data) dmUser.worker = data;
+    }catch(e){ console.warn('edit prefetch', e); }
+  }
   if(dmUser && dmUser.role==='worker' && dmUser.worker) dmFillEditForm(dmUser.worker);
   goView('v-edit-profile');
   if(dmUser && dmUser.role==='worker' && dmSb()){   // prefill ชื่อ/เบอร์ จาก worker_private (เจ้าของอ่านของตัวเองได้ · ไม่โชว์คลินิก)
