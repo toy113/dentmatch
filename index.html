@@ -465,6 +465,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .sdot{width:8px;height:8px;border-radius:50%;background:var(--p200);transition:.3s}
 .sdot.done{background:var(--p600);width:22px;border-radius:4px}
 .btn-soc{width:100%;border-radius:var(--rb);padding:13px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:.2s;margin-bottom:9px}
+.reg-desktop-hint{display:none;font-size:12.5px;color:var(--p700);background:var(--p50);border:1.5px solid var(--p200);border-radius:10px;padding:9px 12px;margin:4px 0 8px;line-height:1.5;text-align:center}
+@media(min-width:768px){.reg-desktop-hint{display:block}}
 .btn-line-login{background:var(--green);color:#fff;border:none;box-shadow:0 4px 16px rgba(6,199,85,.3)}
 .btn-google{background:#fff;color:#3C4043;border:1.5px solid #DADCE0}
 .divider{display:flex;align-items:center;gap:10px;margin:13px 0}
@@ -2017,6 +2019,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div id="register-panel" style="display:none">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
         <div style="font-size:11px;color:var(--ink4);text-align:center;margin:6px 2px 2px;line-height:1.45"><i data-lucide="info" style="width:11px;height:11px;vertical-align:-1px"></i> เลือก "Log-in with LINE app" เพื่อเข้าเร็วขึ้น (ไม่ต้องพิมพ์รหัส)</div>
+        <div class="reg-desktop-hint"><i data-lucide="monitor" style="width:14px;height:14px;vertical-align:-2px"></i> ใช้ Tablet / PC อยู่ใช่ไหม? — แนะนำ <b>สมัครด้วย Email</b> ด้านล่างแทน LINE</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="reg-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
