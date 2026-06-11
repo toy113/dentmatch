@@ -5070,8 +5070,11 @@ function _cardMatches(card,f){
       if(!f.days.some(d=>on.includes(abbr[d]))) return false;
     } else {
       const dd=card.getAttribute('data-days');
-      const cardDays = dd!=null ? (dd?dd.split('|'):[]) : [((card.querySelector('.sched-txt')||{}).textContent||'')];   // data-days = ชื่อวันเต็ม · fallback sched text
-      if(!f.days.some(d=>cardDays.some(cd=>cd.includes(d)))) return false;
+      if(dd===''||dd==='วันตามตกลง') { /* วันตามตกลง = สะดวกทุกวัน → pass ทุก day filter */ }
+      else {
+        const cardDays = dd!=null ? dd.split('|') : [((card.querySelector('.sched-txt')||{}).textContent||'')];
+        if(!f.days.some(d=>cardDays.some(cd=>cd.includes(d)))) return false;
+      }
     }
   }
   // search (clinic name only)
