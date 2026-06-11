@@ -1021,21 +1021,19 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   <div class="scroll">
     <!-- JOBS -->
     <div class="tab-content on" id="tc-jobs">
-      <div class="onboard-card" id="guestOnboard">
-        <button class="onboard-x" onclick="document.getElementById('guestOnboard').remove()" aria-label="ปิด"><i data-lucide="x"></i></button>
-        <div class="onboard-head"><i data-lucide="hand"></i> เริ่มต้นใช้งาน DentMatch</div>
-        <div class="onboard-sub">จับคู่คลินิก ↔ ทันตบุคลากร แล้วคุยต่อผ่าน LINE</div>
-        <div class="onboard-paths">
-          <div class="onboard-path">
-            <div class="op-label"><i data-lucide="search"></i> หางานเอง</div>
-            <div class="op-steps">ค้นหางาน → <i data-lucide="heart" style="color:var(--green)"></i> ข้อมูลติดต่อ → <i data-lucide="message-circle"></i> คุยกับคลินิกใน LINE</div>
+      <div id="guestOnboard" style="margin:12px 16px 0;background:linear-gradient(135deg,#3b1f8c,#6b3fcb);border-radius:16px;padding:18px 18px 14px;box-shadow:0 4px 24px rgba(60,30,130,.32)">
+        <div style="text-align:center;margin-bottom:13px">
+          <div style="font-family:'Prompt',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:5px">
+            <span style="color:#f5c842">✦ Soft Opening</span> · เชิญทดลองใช้
           </div>
-          <div class="onboard-path">
-            <div class="op-label"><i data-lucide="send"></i> ให้คลินิกหาคุณ</div>
-            <div class="op-steps">เปิดโปรไฟล์ให้คลินิกเจอ → รับคำเชิญ → <i data-lucide="message-circle"></i> คุยใน LINE</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.82);line-height:1.6">
+            คลินิกดูโปรไฟล์และส่งคำเชิญ<br>
+            ทันตแพทย์/พนักงานสร้างโปรไฟล์ (ไม่ระบุชื่อ) รอรับคำเชิญได้
           </div>
         </div>
-        <button class="onboard-cta" onclick="openSheet('s-login')"><i data-lucide="key"></i> สมัคร / เข้าสู่ระบบ — ฟรี</button>
+        <button onclick="openSheet('s-login')" style="width:100%;background:#fff;border:none;border-radius:12px;padding:12px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;color:#4c2db5;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+          <i data-lucide="user-round-plus" style="width:16px;height:16px;color:#4c2db5"></i> สมัคร / เข้าสู่ระบบเพื่อดูบุคลากรทั้งหมด
+        </button>
       </div>
 
       <div class="filter-wrap">
