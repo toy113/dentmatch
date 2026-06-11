@@ -2076,7 +2076,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 </optgroup>
 </select>
       <input id="rc-line" class="inp" placeholder="LINE ID หรือ @LINE OA *" style="margin-bottom:9px">
-      <input id="rc-phone" class="inp" type="tel" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" style="margin-bottom:6px" oninput="fmtPhone(this)">
+      <input id="rc-phone" class="inp" type="tel" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" style="margin-bottom:9px" oninput="fmtPhone(this)">
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">รายละเอียดคลินิก <span style="font-size:10px;font-weight:400;color:var(--ink4)">(optional)</span></label>
+      <textarea id="rc-bio" class="inp" rows="3" placeholder="เช่น คลินิกเปิดมา 10 ปี มีทันตแพทย์ 3 ท่าน รับประกันสังคม บรรยากาศทำงานดี..." style="resize:none;line-height:1.6;font-family:'Sarabun',sans-serif;margin-bottom:6px"></textarea>
       <div id="rc-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"><i data-lucide="triangle-alert"></i> กรุณากรอกข้อมูลให้ครบ และเบอร์โทรให้ครบ 10 หลัก</div>
       <button class="btn-primary" onclick="validateRegClinic(this)">ถัดไป →</button>
     </div>
@@ -2927,7 +2929,8 @@ async function nextAfterRegClinic() {
     name:(document.getElementById('rc-name').value||'').trim(),
     province:document.getElementById('rc-province').value||'',
     line_id:(document.getElementById('rc-line').value||'').trim(),
-    phone:(document.getElementById('rc-phone').value||'').trim() };
+    phone:(document.getElementById('rc-phone').value||'').trim(),
+    bio:(document.getElementById('rc-bio').value||'').trim()||null };
   _otpEmail=email; _otpMode='register';
   if(await dmSendEmailOtp(email,true)){
     const d=document.getElementById('otp-phone-display'); if(d)d.textContent=email;
@@ -3118,7 +3121,7 @@ async function dmCreateRecords(uid, s){
     if(error && !/duplicate|already exists/i.test(error.message)) throw error; };
   await ins('profiles', { id:uid, role:s.role });
   if(s.role==='clinic'){
-    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null });
+    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null, about:s.bio||null });
   } else {
     // worker (รวม dentist self-attestation: license_verified=false เสมอ · trigger 0011 บังคับ)
     await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
@@ -3913,9 +3916,11 @@ async function dmHandleLineCallback(){
 async function dmFinishLineSignup(role){
   const uid=_lineSignup.uid; let s;
   if(role==='clinic'){
+    const _rcBio=document.getElementById('rc-bio');
     s={ role, name:(document.getElementById('rc-name').value||'').trim(),
         province:document.getElementById('rc-province').value||'',
-        line_id:(document.getElementById('rc-line').value||'').trim() };
+        line_id:(document.getElementById('rc-line').value||'').trim(),
+        bio:(_rcBio&&_rcBio.value.trim())||null };
   } else {
     const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
     const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
