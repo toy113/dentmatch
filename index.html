@@ -2968,11 +2968,13 @@ async function nextAfterRegWorker() {
   const bio=document.getElementById('rw-bio');
   const _pos=document.getElementById('regWorkerPos').value||'assistant';
   const _lic=((document.getElementById('rw-license')||{}).value||'').trim();
+  const _regSkills=[].map.call(document.querySelectorAll('#regWorkerSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
   pendingSignup={ role:'worker', email,
     first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
     phone:(document.getElementById('rw-phone').value||'').trim(),
     position:_pos,
     province:[...regProvs][0]||'', provinces:[...regProvs],   // province=ตัวหลัก · provinces=ครบ
+    skills:_regSkills,
     bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value),
     license_no:(_pos==='dentist'&&_lic)?_lic:null };
   _otpEmail=email; _otpMode='register';
@@ -3132,8 +3134,8 @@ async function emailOtpConfirm(){
     }
     dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role;
     pendingSignup=null;
-    loginSuccess();            // ★ ไปหน้าสำเร็จทันที (ไม่ await dmLoadProfile กัน "ค้าง" ถ้า query ช้า/แขวน)
-    dmLoadProfile();           // โหลดโปรไฟล์เบื้องหลัง (ไม่บล็อก navigation)
+    await dmLoadProfile();     // โหลดโปรไฟล์ให้เสร็จก่อน (กัน race: user กด "เริ่มใช้งาน" ก่อนข้อมูลพร้อม → เห็นโปรไฟล์ว่าง)
+    loginSuccess();
     // สำเร็จ: คง _otpVerifying=true ไว้ กัน timer/ปุ่มที่ค้าง verify token เดิมซ้ำ → กัน "รหัสไม่ถูกต้อง" หลอกหลัง login (reset เมื่อขอ OTP ใหม่)
   }catch(ex){ _otpVerifying=false; _otpBtnBusy(false); showToast('ยืนยันไม่สำเร็จ: '+(ex&&ex.message||ex)); }   // network/exception → ปลดล็อกกัน "ค้าง"
 }
@@ -3146,7 +3148,7 @@ async function dmCreateRecords(uid, s){
     await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null, about:s.bio||null });
   } else {
     // worker (รวม dentist self-attestation: license_verified=false เสมอ · trigger 0011 บังคับ)
-    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
+    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), skills:(s.skills&&s.skills.length?s.skills:null), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
     await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
     if(s.position==='dentist' && s.license_no){   // เก็บเลขใบประกอบ (audit trail · ไม่ verify · ไม่มี badge)
       await ins('worker_license', { worker_id:uid, license_no:s.license_no });
@@ -3985,10 +3987,11 @@ async function dmFinishLineSignup(role){
     const fn=document.querySelector('#ls-reg-worker input[placeholder="ชื่อจริง *"]');
     const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
     const bio=document.getElementById('rw-bio');
+    const _lsSkills=[].map.call(document.querySelectorAll('#regWorkerSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
     s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
         phone:(document.getElementById('rw-phone').value||'').trim(),
         position:document.getElementById('regWorkerPos').value||'assistant',
-        province:[...regProvs][0]||'', provinces:[...regProvs], bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid, license_no:((document.getElementById('regWorkerPos').value==='dentist')?(((document.getElementById('rw-license')||{}).value||'').trim()||null):null) };
+        province:[...regProvs][0]||'', provinces:[...regProvs], skills:_lsSkills, bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid, license_no:((document.getElementById('regWorkerPos').value==='dentist')?(((document.getElementById('rw-license')||{}).value||'').trim()||null):null) };
   }
   try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
   dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
