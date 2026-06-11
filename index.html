@@ -3879,6 +3879,13 @@ function startLineLogin(){
 // จัดการ callback ตอนโหลดหน้า (#line=1&email&otp&new&name&lid)
 async function dmHandleLineCallback(){
   const hash = location.hash || '';
+  if(hash.indexOf('line_error=')<0 && hash.indexOf('line=1')<0) return false;
+  // ถ้า callback โหลดอยู่ใน LINE in-app browser → เปิดใหม่ใน external browser (Safari/Chrome) ก่อน process
+  // LINE WebView จะเปิด URL ใน external browser เมื่อเห็น ?openExternalBrowser=1
+  if(_dmIsLineApp() && !new URLSearchParams(location.search).has('openExternalBrowser')){
+    const u=new URL(location.href); u.searchParams.set('openExternalBrowser','1');
+    location.replace(u.toString()); return true;   // หยุด — external browser จะโหลดหน้านี้ใหม่และ process ต่อ
+  }
   if(hash.indexOf('line_error=')>=0){ history.replaceState(null,'',location.pathname); showToast('เข้าสู่ระบบ LINE ไม่สำเร็จ'); return false; }
   if(hash.indexOf('line=1')<0) return false;
   const h=new URLSearchParams(hash.slice(1));
