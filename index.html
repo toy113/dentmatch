@@ -3431,7 +3431,7 @@ function dmApplyWorkerTeaser(){
   if(total < WK_TEASER_MIN){
     // ช่วง launch (คนยังน้อย) → ข้อความทั่วไป ไม่โชว์ตัวเลข (สอดคล้อง LAUNCH_MODE ของ stats band)
     head.innerHTML='<i data-lucide="sparkles"></i> <b>Soft Opening</b> · เชิญทดลองใช้';
-    sub.innerHTML='คลินิกดูโปรไฟล์และส่งคำเชิญ<br>ทันตแพทย์/พนักงานสร้างโปรไฟล์ (ไม่ระบุชื่อ) รอรับคำเชิญได้';
+    sub.innerHTML='ทันตแพทย์/พนักงาน ค้นหางานหรือสร้างโปรไฟล์ (ไม่ระบุชื่อ) เพื่อรอรับคำเชิญได้';
   } else {
     head.innerHTML='<i data-lucide="users"></i> <b>'+total+'</b> บุคลากรกำลังหาคลินิก';
     sub.innerHTML=DM_TOOTH_SVG+' ทันตแพทย์ '+(wc.dentist||0)+' · <i data-lucide="handshake"></i> ผู้ช่วยฯ '+(wc.assistant||0)+' · <i data-lucide="monitor"></i> เคาน์เตอร์ '+(wc.counter||0)+'<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้';
