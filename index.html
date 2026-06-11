@@ -3187,7 +3187,7 @@ async function dmLoadProfile(){
   await dmLoadWorkerBoard();   // C2a: บอร์ดบุคลากรจากของจริง
   await dmLoadJobsBoard();     // C2b: บอร์ดงานจากของจริง
   if(dmUser.role==='clinic'){ await dmLoadManageBoard(); dmLoadClinicInvites(); }   // C3d-1 จัดการ + C4b คำเชิญที่ส่ง
-  if(dmUser.role==='worker'){ dmLoadWorkerInbox(); dmLoadWorkerConfirm(); if(typeof dmUpdateInterestedCount==='function') dmUpdateInterestedCount(); if(typeof dmUpdateSavedCount==='function') dmUpdateSavedCount(); }           // C4b inbox + C4c งานรอยืนยัน + จำนวน สนใจ/บันทึกไว้
+  if(dmUser.role==='worker'){ await dmLoadWorkerInbox(); dmLoadWorkerConfirm(); if(typeof dmUpdateInterestedCount==='function') dmUpdateInterestedCount(); if(typeof dmUpdateSavedCount==='function') dmUpdateSavedCount(); }           // C4b inbox + C4c งานรอยืนยัน + จำนวน สนใจ/บันทึกไว้
   dmLoadNoti();                                                                       // C4f: แจ้งเตือนจริง (bell)
   dmSubscribeNoti();                                                                  // realtime: กระดิ่งเด้งสด (subscribe)
 }
