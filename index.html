@@ -1948,7 +1948,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="sheet-title"><i data-lucide="message-circle"></i> ติดต่อเรา</div>
     <div class="sheet-sub">ทีมงาน DentMatch พร้อมช่วยเหลือ</div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-      <div onclick="window.open('https://line.me/R/ti/p/@661kqfot','_blank')" style="background:var(--green-bg);border:1.5px solid var(--green);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
+      <div onclick="window.open('https://line.me/R/ti/p/@1dentmatch','_blank')" style="background:var(--green-bg);border:1.5px solid var(--green);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
         <div style="width:38px;height:38px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0"><i data-lucide="message-circle"></i></div>
         <div><div style="font-size:13.5px;font-weight:700;color:#1a5c2a">LINE Official</div><div style="font-size:12px;color:#2d7a3a;margin-top:2px">@661kqfot</div></div>
         <div style="margin-left:auto;color:var(--green);font-size:18px">›</div>
@@ -4194,6 +4194,7 @@ async function dmMarkSaved(id){
     dmLog('[inbox] บันทึก ✓', id);
     showToast('<i data-lucide="bookmark"></i> บันทึกคำเชิญแล้ว');
     await dmLoadWorkerInbox();
+    const savedTab=document.querySelector('#wt-inbox .it:nth-child(2)'); if(savedTab) inboxTab('saved',savedTab);
   }catch(e){ console.error('[inbox] บันทึก exception', e); }
 }
 function dmSinvCard(inv){   // ฝั่ง clinic (คำเชิญที่ส่ง)
