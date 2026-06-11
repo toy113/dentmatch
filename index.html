@@ -3177,6 +3177,13 @@ function _dmSkelWorkers(n){ const c='<div class="wcard"><div style="display:flex
 let DM_DEBUG = false;
 function dmLog(){ if(DM_DEBUG){ try{ console.log.apply(console, arguments); }catch(e){} } }
 const DM_DAYS = ['จ','อ','พ','พฤ','ศ','ส','อา'];   // index+1 = day number (1=จ..7=อา)
+const DM_DAYNAMES = ['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];   // ชื่อเต็ม (ตรงกับ filter chips) · index+1 = day number
+function _dmJobDayNames(job){   // ชื่อวันเต็มที่งานครอบคลุม (จาก work_days + วันของ work_dates) สำหรับ filter วัน
+  const s=new Set();
+  ((job&&job.work_days)||[]).forEach(n=>{ if(n>=1&&n<=7) s.add(DM_DAYNAMES[n-1]); });
+  _dmJobDates(job).forEach(function(d){ const dt=new Date(d); if(!isNaN(dt.getTime())){ let wd=dt.getDay(); wd=wd===0?7:wd; s.add(DM_DAYNAMES[wd-1]); } });   // getDay 0=อา → map เป็น 7
+  return [...s];
+}
 function _dmEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
 function _dmAvPos(p){ const m={dentist:'var(--p700),var(--p500)',assistant:'#2f6fe0,#1e4fa8',counter:'#0ea371,#0a7a52'}; return 'linear-gradient(135deg,'+(m[p]||m.dentist)+')'; }   // สี avatar ตามตำแหน่ง (ม่วง/ฟ้า/เขียว)
@@ -3281,7 +3288,7 @@ function dmJobCard(job){
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=_dmEsc(_dmWage(job));
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>ติดต่อคลินิก</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=ติดต่อคลินิก · guest=login · clinic=ซ่อน
-  return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
+  return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" data-days="${_dmJobDayNames(job).join('|')}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
           <div class="badges"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-top:1px" title="ดูรายละเอียด"></i></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname} · ${loc}</div>
@@ -5009,8 +5016,9 @@ function _cardMatches(card,f){
       const on=[...card.querySelectorAll('.days .d.on')].map(d=>d.textContent.trim());
       if(!f.days.some(d=>on.includes(abbr[d]))) return false;
     } else {
-      const sched=(card.querySelector('.sched-txt')||{}).textContent||'';
-      if(!f.days.some(d=>sched.includes(d))) return false;
+      const dd=card.getAttribute('data-days');
+      const cardDays = dd!=null ? (dd?dd.split('|'):[]) : [((card.querySelector('.sched-txt')||{}).textContent||'')];   // data-days = ชื่อวันเต็ม · fallback sched text
+      if(!f.days.some(d=>cardDays.some(cd=>cd.includes(d)))) return false;
     }
   }
   // search (AND, full text)
