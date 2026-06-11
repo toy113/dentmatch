@@ -2959,7 +2959,8 @@ async function nextAfterRegWorker() {
 }
 function goLoginStep(stepId){
   ['ls-login','ls-role','ls-reg-clinic','ls-reg-worker','ls-otp','ls-success'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
-  const e=document.getElementById(stepId); if(e)e.style.display='block';
+  if(stepId==='ls-otp') document.querySelectorAll('#otpRow .otp-box').forEach(function(b){b.value='';});   // ล้างเลขเก่าทุกครั้งที่เปิดหน้า OTP
+  const e=document.getElementById(stepId); if(e){ e.style.display='block'; if(stepId==='ls-otp'){ const f=e.querySelector('.otp-box'); if(f) setTimeout(function(){f.focus();},80); } }
 }
 function selectRole(el,role){
   document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('on'));
