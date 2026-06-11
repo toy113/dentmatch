@@ -3565,11 +3565,12 @@ async function dmPostJob(){
 /* ════════ C3c — คลินิกส่งคำเชิญ (INSERT invites · worker_id opaque · dedup unique(clinic,worker,job)) ════════ */
 let _inviteWorkerId=null;   // worker_profiles.id (uuid opaque — ไม่ใช่ PII ; PII อยู่ worker_private) ของคนที่จะเชิญ
 let _inviteAnon=null;
+let _inviteWorkerPos=null;   // position ของคนที่ถูกเชิญ — ใช้กรอง dropdown โพสต์
 async function dmOpenWorker(id, anon){   // เก็บ context ตอนคลิกการ์ด + ดึงข้อมูลจริงมา render หน้า detail (เดิม static mock)
-  _inviteWorkerId=id||null; _inviteAnon=anon||null;
+  _inviteWorkerId=id||null; _inviteAnon=anon||null; _inviteWorkerPos=null;
   goView('v-worker-detail');
   const _wc=id&&_dmWorkers[id];
-  if(_wc) dmFillWorkerDetail(_wc); else _dmResetWorkerDetail(anon);   // มี cache → เติมทันที (ไม่รอ network) · ไม่มี → สะอาดรอ fetch
+  if(_wc){ dmFillWorkerDetail(_wc); _inviteWorkerPos=_wc.position||null; } else _dmResetWorkerDetail(anon);   // มี cache → เติมทันที (ไม่รอ network) · ไม่มี → สะอาดรอ fetch
   if(!id || !dmSb()) return;
   try{
     const { data, error } = await dmSb().from('worker_profiles')
@@ -3578,6 +3579,7 @@ async function dmOpenWorker(id, anon){   // เก็บ context ตอนคล
     if(error){ console.error('dmOpenWorker', error); return; }
     if(!data){ if(!_wc){ const t=document.getElementById('wd-title'); if(t) t.textContent='ไม่พบข้อมูล — ลองเข้าสู่ระบบใหม่'; } console.warn('dmOpenWorker: 0 rows', id); return; }
     dmFillWorkerDetail(data);
+    _inviteWorkerPos=data.position||null;
     if(dmUser && dmUser.id && dmUser.id!==id){   // log view (1 viewer=1 · dedup ผ่าน unique) · ไม่นับ self-view
       const { error: pvErr } = await dmSb().from('profile_views').insert({ worker_id:id, viewer_id:dmUser.id });   // insert ธรรมดา — upsert ต้องการสิทธิ์ UPDATE → 403 (มีแค่ INSERT/SELECT)
       if(pvErr && !/duplicate|unique|23505/i.test((pvErr.message||'')+(pvErr.code||''))) console.error('profile_views log', pvErr);   // ดูซ้ำ = unique violation → ข้าม
@@ -3601,15 +3603,18 @@ async function dmOpenInvite(workerId, anon){
   const _cs=document.getElementById('inv-clinic-sub'); if(_cs && dmUser && dmUser.clinic){ _cs.textContent=(dmUser.clinic.name||'คลินิก')+(dmUser.clinic.province?(', '+dmUser.clinic.province):''); }   // ชื่อคลินิกจริง
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;   // guest/demo = คง dropdown mock
   try{
-    const { data } = await dmSb().from('jobs').select('id, title')
+    const { data } = await dmSb().from('jobs').select('id, title, position')
       .eq('clinic_id', dmUser.id).eq('is_open', true).order('created_at',{ascending:false}).limit(50);
     const sel=document.getElementById('invite-job-select');
     const hasJobs=document.getElementById('invite-has-jobs'), noJobs=document.getElementById('invite-no-jobs'), sendBtn=document.querySelector('#s-invite .btn-primary');
     const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
-    if(data && data.length){
-      if(sel) sel.innerHTML=data.map(j=>`<option value="${j.id}">${_dmEsc(j.title)}</option>`).join('');
+    const filtered=(_inviteWorkerPos && data) ? data.filter(j=>j.position===_inviteWorkerPos) : (data||[]);
+    if(filtered.length){
+      if(sel) sel.innerHTML=filtered.map(j=>`<option value="${j.id}">${_dmEsc(j.title)}</option>`).join('');
       if(hasJobs) hasJobs.style.display='block'; if(noJobs) noJobs.style.display='none'; if(sendBtn) sendBtn.style.display='flex';
-    } else if(attJob){   // ไม่มีงานเปิด + แนบประกาศงาน → empty state
+    } else if(attJob){   // ไม่มีงาน (หรือไม่ตรง position) + แนบประกาศงาน → empty state
+      const _njSub=document.querySelector('#invite-no-jobs div:nth-child(3)');
+      if(_njSub) _njSub.textContent=(_inviteWorkerPos && data && data.length) ? 'ไม่มีประกาศงานที่ตรงกับตำแหน่งนี้' : 'สร้างประกาศก่อนเพื่อส่งคำเชิญ';
       if(sel) sel.innerHTML=''; if(hasJobs) hasJobs.style.display='none'; if(noJobs) noJobs.style.display='block'; if(sendBtn) sendBtn.style.display='none';
     }
   }catch(e){ dmLog('[invite] load jobs', e); }
