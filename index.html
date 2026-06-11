@@ -299,7 +299,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 
 .wi{flex:1}
 .wr-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.bdg-wr{font-size:11px;font-weight:600;background:var(--p100);color:var(--p700);padding:3px 8px;border-radius:6px}
+.bdg-wr{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:7px;border:1.5px solid transparent}
 .w-exp{font-size:12px;color:var(--ink4)}
 .w-loc{font-size:13px;font-weight:500;color:var(--ink)}
 .skills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
@@ -3193,6 +3193,7 @@ function _dmExpYears(s){ if(!s) return null; if(/จบใหม่|เริ่
 function dmWorkerCard(w){
   const dot = w.available ? '<div class="av-dot"></div>' : '';
   const pos = DM_POS_LABEL[w.position] || _dmEsc(w.position);
+  const pc = _DM_POS_COLOR[w.position] || _DM_POS_COLOR.dentist;
   const exp = (w.experience_years==null) ? '' : `<span class="w-exp">${w.experience_years>1 ? w.experience_years+' ปี' : (w.experience_years===1 ? '6 เดือน-1 ปี' : 'เริ่มต้นทำงาน')}</span>`;
   const provs = (w.provinces&&w.provinces.length) ? w.provinces : (w.province?[w.province]:[]);
   const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
@@ -3206,7 +3207,7 @@ function dmWorkerCard(w){
                 _vw>0?`<span class="tr"><i data-lucide="eye"></i> ${_vw} วิว</span>`:'' ].join('');
   const trustRow=trust?`<div class="trust">${trust}</div>`:'';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}">
-          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-left:auto;align-self:center" title="ดูโปรไฟล์"></i></div>
+          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:${pc.bg};color:${pc.fg};border-color:${pc.bar}">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-left:auto;align-self:center" title="ดูโปรไฟล์"></i></div>
           <div class="skills">${skills}</div>
           ${quote}
           ${trustRow}
