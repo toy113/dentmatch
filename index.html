@@ -3257,7 +3257,7 @@ function _dmDateShort(d){ const p=String(d).split('-'); if(p.length!==3) return 
 function _dmSched(job){
   const time=(job.time_start&&job.time_end)?(job.time_start+'–'+job.time_end+' น.'):'';
   if(job.work_dates && job.work_dates.length){ return [job.work_dates.map(_dmDateShort).join(', '),time].filter(Boolean).join(' · '); }   // วันที่เจาะจง (หลายวัน)
-  const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
+  const days=(job.work_days||[]).map(n=>DM_DAYNAMES[n-1]).filter(Boolean).join(' ');
   return [days||'วันตามตกลง', time].filter(Boolean).join(' · ');   // ส่วนวันแสดงเสมอ (ไม่มีวัน = "วันตามตกลง")
 }
 let _postDates=[];
@@ -3436,7 +3436,7 @@ function dmJobDetailHTML(job){
   const _du=_dmIsUrgent(job);
   const urg=_du?'<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>':'';
   const accent=_du?'linear-gradient(180deg,var(--orange),#FFB26B)':'linear-gradient(180deg,var(--p400),var(--p200))';
-  const days=(job.work_days||[]).map(n=>DM_DAYS[n-1]).filter(Boolean).join(' ');
+  const days=(job.work_days||[]).map(n=>DM_DAYNAMES[n-1]).filter(Boolean).join(' ');
   const time=(job.time_start&&job.time_end)?(_dmEsc(job.time_start)+' – '+_dmEsc(job.time_end)+' น.'):'';
   const wage=_dmEsc(_dmWage(job));
   const jobAddr=_dmAddr(job.province, job.district);
