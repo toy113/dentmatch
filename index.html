@@ -2789,7 +2789,13 @@ async function dmSaveJobEdit(){
   const time_start=(((document.getElementById('ej-t1')||{}).value)||'').trim()||null;
   const time_end=(((document.getElementById('ej-t2')||{}).value)||'').trim()||null;
   const description=(((document.getElementById('editjob-desc')||{}).value)||'').trim()||null;
-  const row={ wage_text, work_days, work_dates, work_date, time_start, time_end, description };
+  // rebuild title ให้ตรงกับวันที่แก้ใหม่ (เหมือน auto-compose ตอน post)
+  const _ej=_dmJobs[_editJobId];
+  const _ejPosLabel=DM_POS_LABEL[_ej&&_ej.position]||(_ej&&_ej.position)||'';
+  const _ejSkill0=((_ej&&_ej.skills)||[])[0]||'';
+  const _ejDayPhrase=work_days.map(n=>DM_DAYNAMES[n-1]).filter(Boolean).join('-');
+  const title=[_ejPosLabel,_ejSkill0,_ejDayPhrase].filter(Boolean).join(' ').trim()||(_ej&&_ej.title)||'';
+  const row={ title, wage_text, work_days, work_dates, work_date, time_start, time_end, description };
   try{
     const { data, error } = await dmSb().from('jobs').update(row).eq('id',_editJobId).select('id');   // RLS j_cud: clinic_id=auth.uid
     if(error){ console.error('[editjob] update ล้มเหลว:', error.message, '| code:', error.code, error); showToast('บันทึกไม่สำเร็จ: '+error.message); return; }
