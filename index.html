@@ -470,10 +470,12 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .reg-email-lbl{display:none;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:6px}
 .login-or-lbl{display:none}
 .login-email-lbl{display:none;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.line-btn-hint{display:none;font-size:11px;color:var(--ink4);text-align:center;margin-top:4px}
 @media(min-width:768px){
   #register-panel{display:flex;flex-direction:column}
   #register-panel .reg-email-section{order:1}
   #register-panel .reg-divider{order:2}
+  .line-btn-hint{display:block;order:4}
   #register-panel .btn-line-login{order:3;background:#fff!important;border:1.5px solid var(--green)!important;color:#00a651!important;box-shadow:none!important;margin-top:4px}
   #register-panel .btn-line-login i{color:var(--green)!important}
   #register-panel .reg-line-hint{display:none!important}
@@ -2029,6 +2031,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── REGISTER ── -->
       <div id="register-panel" style="display:none">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
+        <div class="line-btn-hint">เลือก "Log-in with LINE app"</div>
         <div class="reg-line-hint" style="font-size:11px;color:#c0392b;text-align:center;margin:6px 2px 2px;line-height:1.45;border:1.5px solid #e74c3c;border-radius:8px;padding:6px 10px;background:#fff5f5"><i data-lucide="info" style="width:11px;height:11px;vertical-align:-1px"></i> เลือก "Log-in with LINE app" ด้านล่าง (ไม่ต้องพิมพ์รหัส)</div>
         <div class="reg-desktop-hint"><i data-lucide="monitor" style="width:14px;height:14px;vertical-align:-2px"></i> ใช้ Tablet / PC อยู่ใช่ไหม? — แนะนำ <b>สมัครด้วย Email</b> ด้านล่างแทน LINE</div>
         <div class="divider reg-divider"><div class="div-line"></div><div class="div-txt reg-or-lbl">หรือสมัครด้วย LINE</div><div class="div-line"></div></div>
