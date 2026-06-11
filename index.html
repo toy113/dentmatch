@@ -2081,6 +2081,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <textarea id="rc-bio" class="inp" rows="3" placeholder="เช่น คลินิกเปิดมา 10 ปี มีทันตแพทย์ 3 ท่าน รับประกันสังคม บรรยากาศทำงานดี..." style="resize:none;line-height:1.6;font-family:'Sarabun',sans-serif;margin-bottom:6px"></textarea>
       <div id="rc-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"><i data-lucide="triangle-alert"></i> กรุณากรอกข้อมูลให้ครบ และเบอร์โทรให้ครบ 10 หลัก</div>
       <button class="btn-primary" onclick="validateRegClinic(this)">ถัดไป →</button>
+      <button onclick="goLoginStep('ls-role')" style="width:100%;margin-top:8px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:12px;color:var(--ink3);font-size:14px;cursor:pointer">← ย้อนกลับ</button>
     </div>
     <div id="ls-reg-worker" style="display:none">
       <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot"></div></div>
@@ -2134,6 +2135,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       </div>
       <div id="rw-err" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none"><i data-lucide="triangle-alert"></i> กรุณากรอกข้อมูลให้ครบ และเบอร์โทรให้ครบ 10 หลัก</div>
       <button class="btn-primary" onclick="validateRegWorker(this)">ถัดไป →</button>
+      <button onclick="goLoginStep('ls-role')" style="width:100%;margin-top:8px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:12px;color:var(--ink3);font-size:14px;cursor:pointer">← ย้อนกลับ</button>
     </div>
     <div id="ls-otp" style="display:none">
       <!-- login OTP: no step dots (direct flow), register OTP: show dots -->
@@ -2148,6 +2150,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div></div>
         <div class="sheet-title">ยืนยัน OTP <i data-lucide="mail"></i></div>
         <div class="sheet-sub">กรอกรหัส 6 หลักที่ส่งไปยัง Email ของคุณ</div>
+        <button onclick="goBackFromOtp()" style="margin-bottom:12px;padding:7px 14px;background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--ink3);font-size:13px;cursor:pointer">← ย้อนกลับแก้ข้อมูล</button>
       </div>
       <div class="otp-row" id="otpRow" onpaste="otpPaste(event)">
         <input class="otp-box" maxlength="1" inputmode="numeric" autocomplete="one-time-code" onkeydown="otpKey(event,0)" oninput="otpNext(this,0)">
@@ -2165,6 +2168,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="success-icon"><i data-lucide="party-popper"></i></div>
         <div class="success-title" id="success-title-txt">เข้าสู่ระบบสำเร็จ!</div>
         <div class="success-sub" id="success-sub-txt">ยินดีต้อนรับกลับสู่ DentMatch<br>เริ่มใช้งานได้เลย</div>
+        <div id="dup-account-note" style="display:none;background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:4px 0 0;font-size:12px;color:var(--orange2);line-height:1.55;gap:6px;align-items:flex-start"><i data-lucide="info" style="width:13px;height:13px;flex-shrink:0;margin-top:1px"></i><span>อีเมลนี้มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทนนะ</span></div>
         <button class="btn-primary" onclick="finishLogin()">เริ่มใช้งาน →</button>
       </div>
     </div>
@@ -2983,8 +2987,13 @@ async function nextAfterRegWorker() {
     goLoginStep('ls-otp');
   }
 }
+function goBackFromOtp(){
+  const target=pendingSignup&&pendingSignup.role==='clinic'?'ls-reg-clinic':pendingSignup&&pendingSignup.role==='worker'?'ls-reg-worker':'ls-role';
+  goLoginStep(target);
+}
 function goLoginStep(stepId){
   ['ls-login','ls-role','ls-reg-clinic','ls-reg-worker','ls-otp','ls-success'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
+  const _dn=document.getElementById('dup-account-note'); if(_dn) _dn.style.display='none';
   if(stepId==='ls-otp') document.querySelectorAll('#otpRow .otp-box').forEach(function(b){b.value='';});   // ล้างเลขเก่าทุกครั้งที่เปิดหน้า OTP
   const e=document.getElementById(stepId); if(e){ e.style.display='block'; if(stepId==='ls-otp'){ const f=e.querySelector('.otp-box'); if(f) setTimeout(function(){f.focus();},80); } }
 }
@@ -3125,7 +3134,7 @@ async function emailOtpConfirm(){
     let role;
     if(_otpMode==='register' && pendingSignup){
       const { data:exist } = await dmSb().from('profiles').select('role').eq('id',uid).maybeSingle();
-      if(exist){ role=exist.role; _loginMode='login'; showToast('มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทน'); }   // อีเมลนี้สมัครไว้แล้ว → login แทน
+      if(exist){ role=exist.role; _loginMode='login'; const _dn=document.getElementById('dup-account-note'); if(_dn) _dn.style.display='flex'; }   // อีเมลนี้สมัครไว้แล้ว → login แทน
       else { role = pendingSignup.role; await dmCreateRecords(uid, pendingSignup); }
     } else {
       const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
