@@ -3824,10 +3824,19 @@ async function dmInitSession(){
   if(!dmSb()) return;
   const { data } = await dmSb().auth.getSession();
   if(!data || !data.session) return;
-  // ตรวจกับ server ว่า user ยังมีจริง (กัน session ค้างของ user ที่ถูกลบ เช่นหลังรีเซ็ตข้อมูล → ไม่งั้น auth.uid ชี้ผีทำ insert พัง RLS)
-  const { data:u, error:uerr } = await dmSb().auth.getUser();
-  if(uerr || !u || !u.user){ try{ await dmSb().auth.signOut(); }catch(_e){} dmUser=null; return; }   // session เสีย → ล้างทิ้ง เริ่มใหม่สะอาด
-  const uid=u.user.id;
+  let uid = data.session.user && data.session.user.id;   // uid จาก JWT cache (ไม่ต้องใช้เน็ต)
+  // ตรวจกับ server ว่า user ยังมีจริง (กัน session ค้างของ user ที่ถูกลบ)
+  // ★ แยก auth error (user ถูกลบ/token เสีย) ออกจาก network error (เน็ตช้า/มือถือเพิ่งกลับ)
+  try{
+    const { data:u, error:uerr } = await dmSb().auth.getUser();
+    if(uerr){
+      const isAuthErr = uerr.status===400 || uerr.status===401 || uerr.status===403;
+      if(isAuthErr){ try{ await dmSb().auth.signOut(); }catch(_e){} dmUser=null; return; }
+      // network error → ใช้ uid จาก JWT ต่อไป (session ยังดี แค่เน็ตชั่วคราวหลุด)
+    } else if(u && u.user){ uid=u.user.id; }
+    else { try{ await dmSb().auth.signOut(); }catch(_e){} dmUser=null; return; }
+  }catch(_e){}   // exception = network error → ใช้ uid จาก cache
+  if(!uid){ try{ await dmSb().auth.signOut(); }catch(_e){} dmUser=null; return; }
   const { data:prof } = await dmSb().from('profiles').select('role').eq('id',uid).single();
   if(!prof) return;
   dmUser={ id:uid, role:prof.role }; currentRole=prof.role; selectedLoginRole=prof.role;
@@ -3836,10 +3845,16 @@ async function dmInitSession(){
 }
 // logout จริง (เรียกจาก logoutClinic/logoutWorker)
 async function dmSignOut(){ dmUnsubscribeNoti(); try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
-// re-validate session ตอนกลับมาที่แอป (มือถือ background นาน → token/UI อาจหลุด · supabase refresh เอง + กู้ dmUser ถ้าหาย)
+// re-validate session ตอนกลับมาที่แอป (มือถือ background นาน → token/UI อาจหลุด)
 document.addEventListener('visibilitychange', function(){
   if(document.visibilityState!=='visible' || !dmSb()) return;
-  dmSb().auth.getSession().then(function(r){ var s=r&&r.data&&r.data.session; if(s && !dmUser && typeof dmInitSession==='function') dmInitSession(); }).catch(function(){});
+  if(dmUser){
+    // ยังล็อกอินอยู่ → reconnect Realtime WebSocket ถ้าหลุด (iOS/Android kill connection ตอน background)
+    if(typeof dmSubscribeNoti==='function') dmSubscribeNoti();
+  } else {
+    // dmUser หาย (tab ถูก reload) → กู้ session จาก localStorage
+    dmSb().auth.getSession().then(function(r){ var s=r&&r.data&&r.data.session; if(s && typeof dmInitSession==='function') dmInitSession(); }).catch(function(){});
+  }
 });
 
 /* ════════ LINE Login (Batch 3 · ผ่าน Edge Function line-auth) ════════ */
