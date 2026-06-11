@@ -2199,6 +2199,22 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">ข้อความ (ไม่บังคับ)</div>
     <textarea class="inp" id="invite-msg" rows="3" placeholder="เช่น สวัสดีครับ สนใจโปรไฟล์ของคุณ..."></textarea>
 
+    <!-- invite preview -->
+    <div id="invite-preview" style="margin-top:14px;display:none">
+      <div style="font-size:11.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px;display:flex;align-items:center;gap:5px"><i data-lucide="eye" style="width:13px;height:13px"></i> ตัวอย่างที่ผู้รับเห็น</div>
+      <div style="border:1.5px solid var(--p200);border-radius:14px;padding:13px;background:var(--p25)">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+          <div class="clinic-av av-g0" style="width:38px;height:38px;flex-shrink:0"><div class="av-content"><span style="font-size:16px"><i data-lucide="hospital"></i></span></div></div>
+          <div style="flex:1;min-width:0">
+            <div id="pv-name" style="font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3">—</div>
+            <div id="pv-loc" style="font-size:11.5px;color:var(--ink4);margin-top:1px"></div>
+          </div>
+        </div>
+        <div id="pv-job" style="display:none;font-size:12px;font-weight:600;color:var(--p700);background:#fff;border:1px solid var(--p200);border-radius:8px;padding:5px 10px;margin-bottom:8px;display:flex;align-items:center;gap:5px"><i data-lucide="clipboard-list" style="width:12px;height:12px;flex-shrink:0"></i><span id="pv-job-txt"></span></div>
+        <div id="pv-about" style="display:none;font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:8px;padding:7px 9px;background:#fff;border-radius:8px;border:1px solid var(--border2)"></div>
+        <div id="pv-msg" style="display:none;font-size:12.5px;color:var(--ink);font-style:italic;line-height:1.6;padding:7px 9px;background:#fff;border-radius:8px;border:1px solid var(--border2)"></div>
+      </div>
+    </div>
     <div style="margin-top:12px;background:var(--p25);border:1px solid var(--border2);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--ink4);line-height:1.55;display:flex;gap:7px;align-items:flex-start"><i data-lucide="shield-alert" style="width:14px;height:14px;flex-shrink:0;margin-top:1px"></i><span>DentMatch เป็นเพียงสื่อกลาง ไม่ได้ตรวจสอบใบประกอบ/ตัวตน — โปรดตรวจสอบเอกสารยืนยันตัวตนของบุคลากรด้วยตนเองก่อนตกลงงาน</span></div>
     <button class="btn-primary" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="dmSendInvite()">ส่งคำเชิญ <i data-lucide="send"></i></button>
   </div>
@@ -3154,7 +3170,7 @@ async function dmLoadProfile(){
     } else if(dmUser.role==='clinic'){
       const { data } = await dmSb().from('clinics').select('name, province, district, line_id, phone, about').eq('id',dmUser.id).single();
       if(data){
-        dmUser.clinic={ name:data.name, province:data.province, district:data.district, line_id:data.line_id, phone:data.phone };   // C3a โพสต์งาน + C4d แก้โปรไฟล์
+        dmUser.clinic={ name:data.name, province:data.province, district:data.district, line_id:data.line_id, phone:data.phone, about:data.about||null };   // C3a โพสต์งาน + C4d แก้โปรไฟล์
         document.querySelectorAll('#v-clinic .rp-full').forEach(e=>e.textContent=data.name);
         const t=document.querySelector('#v-clinic .hdr-title'); if(t)t.textContent=data.name;
       }
@@ -3596,16 +3612,48 @@ function _dmResetWorkerDetail(anon){   // คืนหน้า detail เป็
   const trow=document.getElementById('wd-trust-row'); if(trow) trow.style.display='none';
   refreshIcons();
 }
+function _updateInvitePreview(){
+  const pv=document.getElementById('invite-preview'); if(!pv) return;
+  const c=dmUser && dmUser.clinic;
+  const name=c ? (c.name||'') : 'คลินิก';
+  const loc=c ? [c.province, c.district].filter(Boolean).join(' ') : '';
+  const about=c ? (c.about||'') : '';
+  const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
+  const sel=document.getElementById('invite-job-select');
+  const jobTitle=attJob && sel && sel.selectedIndex>=0 ? (sel.options[sel.selectedIndex]||{}).text||'' : '';
+  const msgEl=document.getElementById('invite-msg');
+  const msg=msgEl ? msgEl.value.trim() : '';
+
+  const el=(id)=>document.getElementById(id);
+  if(el('pv-name')) el('pv-name').textContent=name||'—';
+  if(el('pv-loc'))  el('pv-loc').textContent=loc;
+
+  const pvJob=el('pv-job');
+  if(pvJob){ pvJob.style.display=jobTitle?'flex':'none'; const t=el('pv-job-txt'); if(t) t.textContent=jobTitle; }
+
+  const pvAbout=el('pv-about');
+  if(pvAbout){ pvAbout.style.display=about?'block':'none'; pvAbout.textContent=about; }
+
+  const pvMsg=el('pv-msg');
+  if(pvMsg){ pvMsg.style.display=msg?'block':'none'; pvMsg.textContent='“'+msg+'”'; }
+
+  pv.style.display='block';
+  refreshIcons();
+}
 async function dmOpenInvite(workerId, anon){
   if(workerId){ _inviteWorkerId=workerId; _inviteAnon=anon||_inviteAnon; }
   const msg=document.getElementById('invite-msg'); if(msg) msg.value='';
   openSheet('s-invite');   // เปิด sheet ทันที แล้วค่อย populate งาน
   const _cs=document.getElementById('inv-clinic-sub'); if(_cs && dmUser && dmUser.clinic){ _cs.textContent=(dmUser.clinic.name||'คลินิก')+(dmUser.clinic.province?(', '+dmUser.clinic.province):''); }   // ชื่อคลินิกจริง
+  // hook real-time preview
+  const sel=document.getElementById('invite-job-select');
+  if(sel) sel.onchange=_updateInvitePreview;
+  if(msg) msg.oninput=_updateInvitePreview;
+  _updateInvitePreview();
   if(!dmSb() || !dmUser || dmUser.role!=='clinic') return;   // guest/demo = คง dropdown mock
   try{
     const { data } = await dmSb().from('jobs').select('id, title, position')
       .eq('clinic_id', dmUser.id).eq('is_open', true).order('created_at',{ascending:false}).limit(50);
-    const sel=document.getElementById('invite-job-select');
     const hasJobs=document.getElementById('invite-has-jobs'), noJobs=document.getElementById('invite-no-jobs'), sendBtn=document.querySelector('#s-invite .btn-primary');
     const attJob=((document.querySelector('#s-invite .att-card.on .att-name')||{}).textContent)==='ประกาศงาน';
     const filtered=(_inviteWorkerPos && data) ? data.filter(j=>j.position===_inviteWorkerPos) : (data||[]);
@@ -3617,6 +3665,7 @@ async function dmOpenInvite(workerId, anon){
       if(_njSub) _njSub.textContent=(_inviteWorkerPos && data && data.length) ? 'ไม่มีประกาศงานที่ตรงกับตำแหน่งนี้' : 'สร้างประกาศก่อนเพื่อส่งคำเชิญ';
       if(sel) sel.innerHTML=''; if(hasJobs) hasJobs.style.display='none'; if(noJobs) noJobs.style.display='block'; if(sendBtn) sendBtn.style.display='none';
     }
+    _updateInvitePreview();   // อัปเดตอีกรอบหลัง dropdown พร้อม
   }catch(e){ dmLog('[invite] load jobs', e); }
 }
 async function dmSendInvite(){
