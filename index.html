@@ -5044,7 +5044,8 @@ function _cardMatches(card,f){
     : [...card.querySelectorAll('.bdg-br,.pill-b')].map(s=>s.textContent).join(' ');
   const provEl=card.querySelector(isW?'.w-loc':'.pill-p');
   const prov=provEl?provEl.textContent:'';
-  const full=card.textContent.toLowerCase();
+  const _ca=card.getAttribute('data-clinic'); const _ce=card.querySelector('.jcard-clinic');
+  const clinicName=(_ca||(_ce?_ce.textContent:'')).toLowerCase();
   // position (single)
   if(f.pos){
     if(f.pos.includes('ผู้ช่วย')){ if(!role.includes('ผู้ช่วย')) return false; }
@@ -5073,8 +5074,8 @@ function _cardMatches(card,f){
       if(!f.days.some(d=>cardDays.some(cd=>cd.includes(d)))) return false;
     }
   }
-  // search (AND, full text)
-  if(f.q && !full.includes(f.q)) return false;
+  // search (clinic name only)
+  if(f.q && !clinicName.includes(f.q)) return false;
   return true;
 }
 function applyFilters(fw){
