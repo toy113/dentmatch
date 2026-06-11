@@ -2004,7 +2004,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── LOGIN ── -->
       <div id="login-panel">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> เข้าสู่ระบบด้วย LINE</button>
-        <div class="line-inapp-hint" style="display:none;font-size:11px;color:var(--orange2);background:var(--orange-bg);border:1px solid rgba(245,129,31,.25);border-radius:8px;padding:6px 10px;margin-top:4px;margin-bottom:2px;line-height:1.5"><i data-lucide="external-link" style="width:11px;height:11px;vertical-align:-1px"></i> จะเปิด browser ภายนอก — กลับมา LINE แล้วเปิด DentMatch ใหม่ได้เลย</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
           <input class="inp" type="email" id="login-email" placeholder="your@email.com" autocomplete="off" style="padding-right:90px">
@@ -2016,7 +2015,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- ── REGISTER ── -->
       <div id="register-panel" style="display:none">
         <button class="btn-soc btn-line-login" onclick="startLineLogin()"><i data-lucide="heart" style="color:var(--green)"></i> สมัครด้วย LINE</button>
-        <div class="line-inapp-hint" style="display:none;font-size:11px;color:var(--orange2);background:var(--orange-bg);border:1px solid rgba(245,129,31,.25);border-radius:8px;padding:6px 10px;margin-top:4px;margin-bottom:2px;line-height:1.5"><i data-lucide="external-link" style="width:11px;height:11px;vertical-align:-1px"></i> จะเปิด browser ภายนอก — กลับมา LINE แล้วเปิด DentMatch ใหม่ได้เลย</div>
         <div style="font-size:11px;color:var(--ink4);text-align:center;margin:6px 2px 2px;line-height:1.45"><i data-lucide="info" style="width:11px;height:11px;vertical-align:-1px"></i> เลือก "Log-in with LINE app" เพื่อเข้าเร็วขึ้น (ไม่ต้องพิมพ์รหัส)</div>
         <div class="divider"><div class="div-line"></div><div class="div-txt">หรือใช้ Email</div><div class="div-line"></div></div>
         <div style="position:relative;margin-bottom:6px">
@@ -5360,7 +5358,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   initFilters();
   if(window.innerWidth>=768) initDesktop();
   window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); dmApplyStats(); });
-  if(_dmIsLineApp()) document.querySelectorAll('.line-inapp-hint').forEach(function(e){e.style.display='block';});
   refreshIcons();
 });
 
