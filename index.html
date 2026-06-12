@@ -1955,6 +1955,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-contact" onclick="overlayClose(event,'s-contact')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-contact')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="message-circle"></i> ติดต่อเรา</div>
     <div class="sheet-sub">ทีมงาน DentMatch พร้อมช่วยเหลือ</div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
@@ -2261,6 +2262,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-log" onclick="overlayClose(event,'s-log')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-log')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div id="log-step0" style="display:none">
       <div class="sheet-title"><i data-lucide="calendar-days"></i> เลือกวันที่จะบันทึก</div>
       <div class="sheet-sub">งานนี้มีหลายวัน — เลือกวันที่ต้องการบันทึกผล</div>
@@ -2294,6 +2296,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-edit-clinic" onclick="overlayClose(event,'s-edit-clinic')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-edit-clinic')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์คลินิก</div>
     <div class="sheet-sub">แก้ไขข้อมูลติดต่อได้ตลอดเวลา</div>
     <!-- ล็อค -->
@@ -2324,6 +2327,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-edit-job" onclick="overlayClose(event,'s-edit-job')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-edit-job')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="square-pen"></i> แก้ไขประกาศงาน</div>
     <div class="sheet-sub" id="editjob-title">ประกาศงาน</div>
     <div style="background:var(--p50);border:1.5px solid var(--border2);border-radius:12px;padding:11px 14px;margin:10px 0 16px">
@@ -2378,6 +2382,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-clinic-info" onclick="overlayClose(event,'s-clinic-info')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-clinic-info')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="hospital"></i> <span id="ci-name">คลินิก</span></div>
     <div class="sheet-sub" id="ci-loc"><i data-lucide="map-pin"></i> —</div>
     <div id="ci-about-wrap" style="margin-top:12px">
@@ -2398,6 +2403,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-saved" onclick="overlayClose(event,'s-saved')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-saved')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="bookmark"></i> งานที่บันทึกไว้</div>
     <div class="sheet-sub">งานที่คุณกด 🔖 เก็บไว้ดูทีหลัง</div>
     <div id="saved-list" style="display:flex;flex-direction:column;gap:10px;margin-top:14px"></div>
@@ -2406,6 +2412,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-interested" onclick="overlayClose(event,'s-interested')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-interested')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="heart"></i> งานที่ฉันสนใจ</div>
     <div class="sheet-sub">งานที่คุณดูข้อมูลติดต่อแล้ว</div>
     <div id="interested-list" style="display:flex;flex-direction:column;gap:10px;margin-top:14px"></div>
