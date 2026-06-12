@@ -4621,8 +4621,8 @@ function dmUnsubscribeNoti(){
 }
 /* ── filter: ตำแหน่ง → อัปเดตทักษะ ── */
 const FILTER_SKILLS = {
-  'ทั้งหมด':   ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Cosmetic','Oral Medicine','Ortho Assist','Implant Assist','4-Hand Assist','Sterilize','X-Ray','Impression','เตรียมห้อง','Stock','นัดหมาย','เก็บเงิน','ประกันสังคม','เคลมประกัน','เวชระเบียน','ภาษาอังกฤษ','Line OA','ช่วย GP','งานเคาน์เตอร์','โปรแกรมคลินิก','Social media'],
-  'ทันตแพทย์': ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Cosmetic','Oral Medicine'],
+  'ทั้งหมด':   ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine','Ortho Assist','Implant Assist','4-Hand Assist','Sterilize','X-Ray','Impression','เตรียมห้อง','Stock','นัดหมาย','เก็บเงิน','ประกันสังคม','เคลมประกัน','เวชระเบียน','ภาษาอังกฤษ','Line OA','ช่วย GP','งานเคาน์เตอร์','โปรแกรมคลินิก','Social media'],
+  'ทันตแพทย์': ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine'],
   'ผู้ช่วยฯ':  ['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์'],
   'เคาน์เตอร์':['งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media'],
 };
@@ -4640,7 +4640,7 @@ function filterPos(filterId, el, pos) {
 }
 
 const POS_SKILLS={
-  dentist:{label:'สาขา / ทักษะทางคลินิก',skills:['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Cosmetic','Oral Medicine']},
+  dentist:{label:'สาขา / ทักษะทางคลินิก',skills:['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine']},
   assistant:{label:'ทักษะผู้ช่วย',skills:['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์']},
   counter:{label:'ทักษะเคาน์เตอร์',skills:['งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media']}
 };
