@@ -829,6 +829,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .dt-toolbar .tt{display:flex;align-items:center;gap:11px}
   .dt-toolbar .tt h2{font-family:'Prompt',sans-serif;font-size:19px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
   .dt-toolbar .tt .pill{font-size:12px;color:var(--p700);background:var(--p100);padding:4px 11px;border-radius:11px;font-weight:600}
+  .dt-toolbar .tt .pill:empty{display:none}   /* ซ่อน pill ตอนยังไม่มีเลข (รอ count จริง) — กันกล่องเปล่า */
   .dt-toolbar .tr{display:flex;align-items:center;gap:11px}
   .dt-toolbar .tr label{font-size:12.5px;color:var(--ink4)}
   .dt-sort{
@@ -5478,7 +5479,7 @@ function initDesktop(){
     const tb=document.createElement('div');
     tb.className='dt-toolbar';
     tb.innerHTML=`
-      <div class="tt"><h2>${title}</h2>${count?`<span class="pill">${count}</span>`:''}</div>
+      <div class="tt"><h2>${title}</h2><span class="pill">${count}</span></div>
       <div class="tr">
         <div class="dt-vtw">
           <button class="dt-vt on" title="Grid"><i data-lucide="layout-grid"></i></button>
