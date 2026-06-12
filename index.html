@@ -3211,7 +3211,7 @@ async function emailOtpConfirm(){
     let role;
     if(_otpMode==='register' && pendingSignup){
       const { data:exist } = await dmSb().from('profiles').select('role').eq('id',uid).maybeSingle();
-      if(exist){ role=exist.role; _loginMode='login'; const _dn=document.getElementById('dup-account-note'); if(_dn) _dn.style.display='flex'; }   // อีเมลนี้สมัครไว้แล้ว → login แทน
+      if(exist){ role=exist.role; _loginMode='login'; showToast('<i data-lucide="info" style="color:var(--orange2)"></i> อีเมลนี้มีบัญชีอยู่แล้ว — เข้าสู่ระบบให้แทนนะ'); }   // อีเมลนี้สมัครไว้แล้ว → login แทน
       else { role = pendingSignup.role; await dmCreateRecords(uid, pendingSignup); }
     } else {
       const { data:prof, error:e } = await dmSb().from('profiles').select('role').eq('id',uid).single();
