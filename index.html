@@ -1294,6 +1294,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <div class="tab-content" id="cc-post">
       <div class="form-body">
         <div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:var(--ink);padding:4px 0 0"><i data-lucide="plus"></i> ลงประกาศงานใหม่</div>
+        <div class="form-group"><label>หัวข้อประกาศ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ · เว้นว่างจะตั้งให้อัตโนมัติ)</span></label><input type="text" class="inp" id="post-title" maxlength="80" placeholder="เช่น รับด่วน! ทันตแพทย์ GP ใจดี เสาร์-อาทิตย์"></div>
         <div class="form-group"><label>ตำแหน่งที่รับ</label>
           <div class="pos-grid">
             <div class="pos-card on" data-pos="dentist" onclick="posCard(this)"><div class="pos-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></div><div class="pos-name">ทันตแพทย์</div><div class="pos-sub">DDS / ทพ.</div></div>
@@ -2338,6 +2339,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="font-size:11px;font-weight:700;color:var(--ink5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="lock"></i> ตำแหน่ง + ทักษะ (แก้ไม่ได้)</div>
       <div id="editjob-locked" style="font-size:13px;color:var(--ink);font-weight:600"></div>
     </div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">หัวข้อประกาศ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เว้นว่างจะตั้งให้อัตโนมัติ)</span></label>
+    <input type="text" class="inp" id="ej-title" maxlength="80" placeholder="เช่น รับด่วน! ทันตแพทย์ GP ใจดี เสาร์-อาทิตย์" style="margin-bottom:16px">
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">ค่าตอบแทน</label>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <button type="button" id="ej-pay-day" onclick="_ejSetPay('day')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">รายวัน</button>
@@ -2803,6 +2806,7 @@ function mEdit(btn){
   if(!job){ showToast('ไม่พบข้อมูลงาน — ลองรีเฟรช'); return; }
   _editJobId=id;
   const ttl=document.getElementById('editjob-title'); if(ttl) ttl.textContent=job.title||'ประกาศงาน';
+  const tin=document.getElementById('ej-title'); if(tin) tin.value=job.title||'';
   const lk=document.getElementById('editjob-locked');
   if(lk) lk.innerHTML='<i data-lucide="briefcase"></i> '+_dmEsc(DM_POS_LABEL[job.position]||job.position||'-')+'  ·  <i data-lucide="sparkles"></i> '+_dmEsc((job.skills||[]).join(', ')||'—');
   // ค่าตอบแทน — แกะจาก wage_text
@@ -2837,12 +2841,13 @@ async function dmSaveJobEdit(){
   const time_start=(((document.getElementById('ej-t1')||{}).value)||'').trim()||null;
   const time_end=(((document.getElementById('ej-t2')||{}).value)||'').trim()||null;
   const description=(((document.getElementById('editjob-desc')||{}).value)||'').trim()||null;
-  // rebuild title ให้ตรงกับวันที่แก้ใหม่ (เหมือน auto-compose ตอน post)
+  // title: ใช้หัวข้อที่คลินิกกรอก · ถ้าเว้นว่าง → auto-compose ตำแหน่ง+ทักษะแรก+วันที่แก้ใหม่
   const _ej=_dmJobs[_editJobId];
+  const _ejCustom=(((document.getElementById('ej-title')||{}).value)||'').trim();
   const _ejPosLabel=DM_POS_LABEL[_ej&&_ej.position]||(_ej&&_ej.position)||'';
   const _ejSkill0=((_ej&&_ej.skills)||[])[0]||'';
   const _ejDayPhrase=work_days.map(n=>DM_DAYNAMES[n-1]).filter(Boolean).join('-');
-  const title=[_ejPosLabel,_ejSkill0,_ejDayPhrase].filter(Boolean).join(' ').trim()||(_ej&&_ej.title)||'';
+  const title=_ejCustom || [_ejPosLabel,_ejSkill0,_ejDayPhrase].filter(Boolean).join(' ').trim() || (_ej&&_ej.title) || '';
   const row={ title, wage_text, work_days, work_dates, work_date, time_start, time_end, description };
   try{
     const { data, error } = await dmSb().from('jobs').update(row).eq('id',_editJobId).select('id');   // RLS j_cud: clinic_id=auth.uid
@@ -3381,7 +3386,7 @@ function dmJobCard(job){
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>ข้อมูลติดต่อ</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=ข้อมูลติดต่อ · guest=login · clinic=ซ่อน
   return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" data-days="${_dmJobDayNames(job).join('|')}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
           <div class="badges"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-top:1px" title="ดูรายละเอียด"></i></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">${_dmEsc(job.title)||pos}</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-top:1px" title="ดูรายละเอียด"></i></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname} · ${loc}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           ${(_dmJobViews[job.id]>0)?`<div class="meta"><span class="pill" style="background:var(--p25);color:var(--ink4)"><i data-lucide="eye"></i> ${_dmJobViews[job.id]} วิว</span></div>`:''}
@@ -3547,7 +3552,7 @@ function dmJobDetailHTML(job){
       <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border);position:relative;overflow:hidden">
         <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${accent};border-radius:4px 0 0 4px"></div>
         <div class="badges" style="margin-bottom:12px"><span class="bdg bdg-role">${pos}</span>${skill0}${urg}</div>
-        <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">${pos}</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px">${_dmEsc(job.title)||pos}</div>
         <div style="font-size:13px;color:var(--ink4);display:flex;align-items:center;gap:5px;margin-bottom:14px"><i data-lucide="hospital"></i> ${cname}${jobAddr?' · '+jobAddr:''}</div>
         <div style="background:linear-gradient(135deg,var(--p50),var(--p100));border:1px solid var(--p200);border-radius:10px;padding:12px 14px">
           <div style="font-size:11px;font-weight:700;color:var(--p600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px"><i data-lucide="calendar-days"></i> ตารางงาน</div>
@@ -3635,8 +3640,9 @@ async function dmPostJob(){
       if(cl){ prov=cl.province; dist=cl.district; dmUser.clinic={name:cl.name,province:cl.province,district:cl.district}; } }catch(e){}
   }
   if(!prov){ showToast('ไม่พบจังหวัดคลินิก — ลองใหม่'); return; }
-  // title auto-compose: ตำแหน่ง + ทักษะแรก + วัน  (เช่น "ทันตแพทย์ GP เสาร์-อาทิตย์")
-  const title=[posLabel, skills[0]||'', dayPhrase].filter(Boolean).join(' ').trim();
+  // title: ใช้หัวข้อที่คลินิกกรอกเอง · ถ้าเว้นว่าง → auto-compose ตำแหน่ง+ทักษะแรก+วัน (เช่น "ทันตแพทย์ GP เสาร์-อาทิตย์")
+  const _ti=document.getElementById('post-title'); const _custom=(_ti&&_ti.value.trim())||'';
+  const title=_custom || [posLabel, skills[0]||'', dayPhrase].filter(Boolean).join(' ').trim();
   // ★ row = เฉพาะคอลัมน์ใน INSERT grant (ไม่มี id/is_boosted/created_at → is_boosted default false)
   const row={ clinic_id:dmUser.id, title, position:pos, province:prov, district:dist,
     wage_text, work_date, work_dates, urgent:false, is_open:true, skills, work_days, time_start, time_end, description };
@@ -3644,6 +3650,7 @@ async function dmPostJob(){
     const { data, error }=await dmSb().from('jobs').insert(row).select();
     if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
     dmLog('[postjob] insert สำเร็จ ✓', data); _postDates=[]; _postRenderDates();   // เคลียร์วันที่ที่เลือกหลังโพสต์
+    if(_ti) _ti.value='';   // เคลียร์หัวข้อ กันค้างไปงานถัดไป
     openSheet('s-post-success');
     await dmLoadJobsBoard();     // refresh บอร์ด → งานใหม่โผล่บนสุด
     await dmLoadManageBoard();   // refresh แท็บจัดการด้วย
@@ -5033,10 +5040,14 @@ function _dmRenderPreview(){
   const _cname=_dmEsc(_cl.name||'คลินิกของคุณ');
   const _pu=_postDates.length?_dmIsUrgent({work_dates:_postDates.slice()}):false;   // ด่วน auto ≤7 วัน (จากวันที่ที่เลือก)
   const _cloc=_dmEsc(_cl.province||'-')+(_cl.district?' ('+_dmEsc(_cl.district)+')':'');
+  // หัวข้อ: ใช้ที่กรอกเอง · ถ้าเว้นว่าง → auto-compose ตำแหน่ง+ทักษะแรก+วัน (ให้ตรงกับตอนโพสต์จริง)
+  const _ptv=(((document.getElementById('post-title')||{}).value)||'').trim();
+  const _dayPhrase=days.filter(function(d){return d!=='ตามตกลง';}).join('-');
+  const _ttl=_dmEsc(_ptv || [pos, skills[0]||'', _dayPhrase].filter(Boolean).join(' ').trim());
   box.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"><i data-lucide="clipboard-list"></i> ตัวอย่างที่จะแสดงใน job board</div>'
     +'<div class="jcard" style="cursor:default;animation:none;border-left:4px solid '+pc.bar+'">'
     +'<div class="badges"><span class="bdg bdg-role" style="background:'+pc.bg+';color:'+pc.fg+'">'+pos+'</span>'+(_pu?'<span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span>':'')+skills.map(function(s){return '<span class="bdg bdg-br">'+_dmEsc(s)+'</span>';}).join('')+'</div>'
-    +'<div class="jcard-title" style="margin-bottom:3px">'+pos+'</div>'
+    +'<div class="jcard-title" style="margin-bottom:3px">'+_ttl+'</div>'
     +'<div class="jcard-clinic"><i data-lucide="hospital"></i> '+_cname+' · '+_cloc+'</div>'
     +'<div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">'+sched+'</span></div>'
     +'<div class="card-ft"><div class="wage">'+payHtml+'</div></div>'
