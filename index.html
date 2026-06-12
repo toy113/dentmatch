@@ -2232,13 +2232,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-invite" onclick="overlayClose(event,'s-invite')">
   <div class="sheet">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-invite')" aria-label="ย้อนกลับ" style="position:absolute;top:12px;left:14px;width:32px;height:32px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="arrow-left" style="width:18px;height:18px"></i></button>
     <div class="sheet-title"><i data-lucide="send"></i> ส่งคำเชิญ</div>
     <div class="sheet-sub">เลือกประกาศงานที่ต้องการแนบไปกับคำเชิญ</div>
     <div id="invite-job-section">
       <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">เลือกประกาศงาน</div>
       <!-- มีโพส: แสดง dropdown -->
       <div id="invite-has-jobs">
-        <select class="job-select" id="invite-job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option>เจ้าหน้าที่เคาน์เตอร์ · 1 มิ.ย. 68</option></select>
+        <select class="job-select" id="invite-job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option>เจ้าหน้าที่เคาน์เตอร์ · 1 มิ.ย. 68</option><option value="">— ไม่แนบประกาศงาน —</option></select>
       </div>
       <!-- ไม่มีโพส: empty state -->
       <div id="invite-no-jobs" style="display:none;background:var(--p25);border:1.5px dashed var(--p200);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px">
@@ -3710,7 +3711,7 @@ function _updateInvitePreview(){
   const about=c ? (c.about||'') : '';
   const _att=document.querySelector('#s-invite .att-card.on .att-name'); const attJob=!_att || _att.textContent==='ประกาศงาน';   // ไม่มีกล่องเลือก = แนบงานเสมอ
   const sel=document.getElementById('invite-job-select');
-  const jobTitle=attJob && sel && sel.selectedIndex>=0 ? (sel.options[sel.selectedIndex]||{}).text||'' : '';
+  const jobTitle=attJob && sel && sel.value ? (sel.options[sel.selectedIndex]||{}).text||'' : '';   // value ว่าง = ไม่แนบ → ไม่โชว์ในพรีวิว
   const msgEl=document.getElementById('invite-msg');
   const msg=msgEl ? msgEl.value.trim() : '';
 
@@ -3748,7 +3749,7 @@ async function dmOpenInvite(workerId, anon){
     const _att=document.querySelector('#s-invite .att-card.on .att-name'); const attJob=!_att || _att.textContent==='ประกาศงาน';   // ไม่มีกล่องเลือก = แนบงานเสมอ
     const filtered=(_inviteWorkerPos && data) ? data.filter(j=>j.position===_inviteWorkerPos) : (data||[]);
     if(filtered.length){
-      if(sel) sel.innerHTML=filtered.map(j=>`<option value="${j.id}">${_dmEsc(j.title)}</option>`).join('');
+      if(sel) sel.innerHTML=filtered.map(j=>`<option value="${j.id}">${_dmEsc(j.title)}</option>`).join('')+'<option value="">— ไม่แนบประกาศงาน —</option>';
       if(hasJobs) hasJobs.style.display='block'; if(noJobs) noJobs.style.display='none'; if(sendBtn) sendBtn.style.display='flex';
     } else if(attJob){   // ไม่มีงาน (หรือไม่ตรง position) + แนบประกาศงาน → empty state
       const _njSub=document.querySelector('#invite-no-jobs div:nth-child(3)');
