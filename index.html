@@ -3307,7 +3307,7 @@ function dmWorkerCard(w){
   const ad = w.available_days||[];
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since), _vw=_dmWorkerViews[w.id]||0;   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
-  const statCells=[ _ts>0?`<div class="wstat"><i data-lucide="circle-check-big" style="color:var(--green)"></i> <b>${_ts}</b> สำเร็จ</div>`:'',
+  const statCells=[ _ts>0?`<div class="wstat"><i data-lucide="circle-check-big" style="color:var(--green)"></i> <b>${_ts}</b> งานสำเร็จ</div>`:'',
                     _mo>0?`<div class="wstat"><i data-lucide="calendar-days"></i> <b>${_mo}</b> เดือน</div>`:'' ].filter(Boolean);
   const statStrip=statCells.length?`<div class="wstats">${statCells.join('')}</div>`:'';
   const viewsTop = _vw>0 ? `<span class="w-views"><i data-lucide="eye"></i> ${_vw}</span>` : '';
