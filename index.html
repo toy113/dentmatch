@@ -328,8 +328,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .wdays{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:11px}
 .wdays-lbl{font-size:11px;color:var(--ink4);display:flex;align-items:center;gap:4px;font-weight:600}
 .wdays-lbl i{width:14px;height:14px}
-.w-avail{font-size:10px;font-weight:700;color:#1a7a3a;background:var(--green-bg);padding:2.5px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.w-avail .pd{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(4,155,66,.18)}
+.w-views{font-size:11px;color:var(--ink4);display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.w-views i{width:14px;height:14px}
 .btn-invite{width:100%;background:linear-gradient(135deg,var(--p700),var(--p500));color:#fff;border:none;border-radius:var(--rb);padding:11px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.18s;box-shadow:var(--sh-btn);display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-invite:active{transform:scale(.98)}
 
@@ -3312,12 +3312,11 @@ function dmWorkerCard(w){
   const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since), _vw=_dmWorkerViews[w.id]||0;   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
   const statCells=[ _ts>0?`<div class="wstat"><i data-lucide="circle-check-big" style="color:var(--green)"></i> <b>${_ts}</b> สำเร็จ</div>`:'',
-                    _mo>0?`<div class="wstat"><i data-lucide="calendar-days"></i> <b>${_mo}</b> เดือน</div>`:'',
-                    _vw>0?`<div class="wstat"><i data-lucide="eye"></i> <b>${_vw}</b></div>`:'' ].filter(Boolean);
+                    _mo>0?`<div class="wstat"><i data-lucide="calendar-days"></i> <b>${_mo}</b> เดือน</div>`:'' ].filter(Boolean);
   const statStrip=statCells.length?`<div class="wstats">${statCells.join('')}</div>`:'';
-  const availPill = w.available ? `<span class="w-avail"><span class="pd"></span>ว่างรับงาน</span>` : '';
+  const viewsTop = _vw>0 ? `<span class="w-views"><i data-lucide="eye"></i> ${_vw}</span>` : '';
   return `<div class="wcard" data-provinces="${_dmEsc(provs.join('|'))}" style="border-left:4px solid ${pc.bar}">
-          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:${pc.bg};color:${pc.fg};border-color:${pc.bar}">${pos}</span>${exp}${availPill}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div><i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px;flex-shrink:0;margin-left:auto;align-self:center" title="ดูโปรไฟล์"></i></div>
+          <div class="wcard-top" style="cursor:pointer" onclick="dmOpenWorker('${w.id}','${w.anon_id}')"><div class="av" style="background:${_dmAvPos(w.position)}"><div class="av-content"><span class="av-icon">${DM_TOOTH_SVG}</span><span class="av-lbl">${_dmEsc(w.anon_id)}</span></div>${dot}</div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:${pc.bg};color:${pc.fg};border-color:${pc.bar}">${pos}</span>${exp}</div><div class="w-loc"><i data-lucide="map-pin"></i> ${loc}</div></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0;align-self:flex-start;margin-left:auto">${viewsTop}<i data-lucide="chevron-right" style="color:var(--ink5);width:18px;height:18px" title="ดูโปรไฟล์"></i></div></div>
           <div class="skills">${skills}</div>
           ${quote}
           ${statStrip}
