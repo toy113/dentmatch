@@ -4067,7 +4067,18 @@ async function dmHandleLineCallback(){
 }
 // ผู้ใช้ LINE ใหม่ กรอกฟอร์มเสร็จ → สร้าง record ตรง ๆ (session มีแล้ว ไม่ต้อง OTP)
 async function dmFinishLineSignup(role){
-  const uid=_lineSignup.uid; let s;
+  let uid=_lineSignup.uid; let s;
+  // ★ มือถือ: ระหว่างกรอกฟอร์ม session อาจหลุด/ถูกทับ (สลับแอป/เบราว์เซอร์/แท็บ) → เช็คกับ server ก่อน insert
+  //   RLS ต้องการ id = auth.uid() — ถ้า insert ด้วย uid เก่าที่ไม่ตรง session ปัจจุบัน = "violates row-level security"
+  try{
+    const { data:u, error:uerr } = await dmSb().auth.getUser();
+    if(uerr || !u || !u.user){
+      console.error('[line-signup] session หาย ก่อน insert:', uerr&&uerr.message);
+      showToast('เซสชันหมดอายุ — กรุณาแตะปุ่ม LINE เข้าสู่ระบบอีกครั้ง (ข้อมูลที่กรอกยังอยู่)');
+      return;
+    }
+    if(u.user.id!==uid){ console.warn('[line-signup] uid mismatch', uid, '→ ใช้ auth.uid() จริง:', u.user.id); uid=u.user.id; _lineSignup.uid=uid; }
+  }catch(e){ console.warn('[line-signup] getUser exception (network?) — ใช้ uid เดิม', e); }
   if(role==='clinic'){
     const _rcBio=document.getElementById('rc-bio');
     s={ role, name:(document.getElementById('rc-name').value||'').trim(),
