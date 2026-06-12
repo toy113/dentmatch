@@ -5566,10 +5566,12 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
 </script>
 <script src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.min.js" onload="refreshIcons()"></script>
 <script>window.addEventListener('load',refreshIcons);</script>
-<!-- Supabase client (Email auth · Batch 2) — UMD ไฟล์เดียวจาก jsDelivr (เดิม esm.sh โหลดลูกโซ่ 10 ไฟล์ → ช้าบนมือถือ) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.10/dist/umd/supabase.min.js"></script>
+<!-- Supabase client (Email auth · Batch 2) — UMD ไฟล์เดียว (jsDelivr primary, unpkg fallback) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.10/dist/umd/supabase.min.js" onerror="var s=document.createElement('script');s.src='https://unpkg.com/@supabase/supabase-js@2.47.10/dist/umd/supabase.min.js';s.onerror=function(){window._sbLoadFailed=true;};document.head.appendChild(s);"></script>
 <script>
 (async ()=>{
+  if(!window.supabase){ console.warn('[dm] supabase CDN failed — retrying once'); await new Promise(r=>setTimeout(r,1500)); }
+  if(!window.supabase){ console.error('[dm] supabase unavailable'); return; }
   window.sb = window.supabase.createClient(window.DM_CFG.SUPABASE_URL, window.DM_CFG.SUPABASE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
   });
