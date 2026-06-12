@@ -4,20 +4,34 @@
 -- แต่ละบล็อกรันแยกได้ (ไฮไลต์แล้วกด Run) หรือบันทึกเป็น Saved Query ทีละอัน
 
 -- ============================================================
--- 1) สรุปรวมทั้งระบบ (one-shot dashboard) — รันอันนี้อันเดียวเห็นภาพรวม
+-- 1) สรุปรวมทั้งระบบ (one-shot dashboard) — ★ รันอันนี้อันเดียวเห็นภาพรวมครบในแถวเดียว
+--    (ไฮไลต์ตั้งแต่ select ถึง ; แล้วกด Run / Ctrl+Enter)
 -- ============================================================
 select
+  -- สมาชิก
   (select count(*) from profiles where role='worker')                       as workers,
   (select count(*) from profiles where role='clinic')                       as clinics,
   (select count(*) from worker_profiles where available)                    as workers_available,
+  (select count(*) from worker_profiles where license_verified)             as workers_verified,
+  -- งาน
   (select count(*) from jobs)                                               as jobs_total,
   (select count(*) from jobs where is_open)                                 as jobs_open,
+  -- คำเชิญ (funnel)
   (select count(*) from invites)                                            as invites_total,
   (select count(*) from invites where read_at is not null)                  as invites_read,
   (select count(*) from invites where status='accepted')                    as invites_accepted,
-  (select count(*) from add_line_events)                                    as contacts_exchanged,  -- ★ ตัวชี้วัดหลัก (เกิดการจับคู่จริง)
+  (select round(100.0*count(*) filter (where read_at is not null)
+        /nullif(count(*),0),1) from invites)                                as open_rate_pct,
+  (select round(100.0*count(*) filter (where status='accepted')
+        /nullif(count(*),0),1) from invites)                                as accept_rate_pct,
+  -- conversion จริง ★ ตัวชี้วัดหลัก (เกิดการจับคู่/แลกข้อมูลติดต่อ)
+  (select count(*) from add_line_events)                                    as contacts_exchanged,
+  -- งานที่บันทึก
   (select count(*) from work_logs where status='confirmed')                 as worklogs_confirmed,
-  (select count(*) from work_logs where status='disputed')                  as worklogs_disputed;
+  (select count(*) from work_logs where status='disputed')                  as worklogs_disputed,
+  -- คำขอค้างรออนุมัติ
+  (select count(*) from deletion_requests where status='requested')         as pending_deletions,
+  (select count(*) from role_change_requests where status='pending')        as pending_role_changes;
 
 -- ============================================================
 -- 2) สมาชิกใหม่ต่อวัน (30 วันล่าสุด) — ดูเทรนด์การเติบโต
