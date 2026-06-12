@@ -477,7 +477,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .login-or-lbl{display:none}
 .login-email-lbl{display:none;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:6px}
 .line-btn-hint{display:none;font-size:11px;color:var(--ink4);text-align:center;margin-top:4px}
-@media(min-width:768px){
+@media(min-width:768px) and (min-height:500px){
   #register-panel{display:flex;flex-direction:column}
   #register-panel .reg-email-section{order:1;border:1.5px solid var(--p200);border-radius:12px;padding:14px 16px 12px;background:var(--p50);margin-bottom:4px}
   #register-panel .reg-divider{order:2;margin:8px 0 4px}
@@ -579,7 +579,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
 /* ═══════════════════════════════════════════════════════════════
    DASHBOARD (≥768px) — desktop + tablet เต็มจอ
 ═══════════════════════════════════════════════════════════════ */
-@media(min-width:768px){
+@media(min-width:768px) and (min-height:500px){
 
   html,body{background:var(--dt-canvas);overflow:hidden}
 
@@ -1002,7 +1002,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 .hdr *:focus-visible,.mini-hdr *:focus-visible,.profile-hero *:focus-visible,.dt-gsearch input:focus-visible{outline-color:#E8C86A}
 
 /* ── Tablet portrait tuning (768–1023px): dashboard เต็มจอ แต่บีบให้พอดีจอแคบ ── */
-@media(min-width:768px) and (max-width:1023px){
+@media(min-width:768px) and (max-width:1023px) and (min-height:500px){
   :root{--dt-rail:208px}
   .dt-stats{grid-template-columns:repeat(2,1fr)}
   .cards{grid-template-columns:repeat(auto-fill,minmax(278px,1fr))}
@@ -1013,7 +1013,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px soli
 
 /* LINE ID ต่อท้ายชื่อคลินิกใน sheet ส่งข้อความ — เฉพาะ tablet/desktop (≥768px) */
 .addline-lineid{display:none}
-@media(min-width:768px){
+@media(min-width:768px) and (min-height:500px){
   .addline-lineid{display:inline;margin-left:8px;font-size:12px;font-weight:600;color:var(--green2);background:var(--green-bg);padding:2px 8px;border-radius:6px;white-space:nowrap}
 }
 /* a11y: เคารพการตั้งค่าลดการเคลื่อนไหว (กันเวียนหัว + ลดภาระ render) */
