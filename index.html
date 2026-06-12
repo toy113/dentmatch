@@ -3962,11 +3962,16 @@ async function dmSaveWorkLog(){
     const dd=String(work_date).slice(0,10); _dmJobLogged[_logJobId]=_dmJobLogged[_logJobId]||[]; if(_dmJobLogged[_logJobId].indexOf(dd)<0) _dmJobLogged[_logJobId].push(dd);
     try{ const _nh=_dmNoHire(_dmJobs[_logJobId]||{}); const _i=_nh.indexOf(dd); if(_i>=0){ _nh.splice(_i,1); await dmSb().from('jobs').update({ no_hire_dates:_nh }).eq('id',_logJobId); if(_dmJobs[_logJobId]) _dmJobs[_logJobId].no_hire_dates=_nh.slice(); } }catch(_e){ dmLog('[nohire] prune', _e); }   // เคยมาร์ค "ยังหาคนอยู่" วันนี้ → มีผลจริงแล้ว เอาออก
     _logWorkerIds=[];
-    await dmLoadManageBoard();
-    const job=_dmJobs[_logJobId]||{};
+    const job=_dmJobs[_logJobId]||{};   // work_dates อยู่ใน cache แล้ว — ตัดสินวันเดียว/หลายวันได้โดยไม่ต้องรอ reload
     _dmSetLogSuccess(outcome);   // ข้อความสำเร็จตาม outcome (came=+1 Completed · no_show=ไม่นับ)
-    if(_dmPastDates(job).length>1){ showToast(outcome==='no_show'?'บันทึก No-show วันนี้แล้ว — เลือกวันอื่นต่อได้':'บันทึกวันนี้แล้ว ✓ — เลือกวันอื่นต่อได้'); _logBuildDateList(job); _logShowStep('step0'); }   // หลายวัน → กลับไปเลือกวันอื่น
-    else { openSheet('s-log-success'); }
+    if(_dmPastDates(job).length>1){   // หลายวัน → ต้องรอ reload (อัปเดต _dmJobLogged ก่อนสร้าง date list ใหม่)
+      await dmLoadManageBoard();
+      showToast(outcome==='no_show'?'บันทึก No-show วันนี้แล้ว — เลือกวันอื่นต่อได้':'บันทึกวันนี้แล้ว ✓ — เลือกวันอื่นต่อได้');
+      _logBuildDateList(_dmJobs[_logJobId]||job); _logShowStep('step0');
+    } else {
+      openSheet('s-log-success');   // โชว์ success ก่อน — คลุมบอร์ดที่กำลัง re-render กันกระพริบ
+      dmLoadManageBoard();          // reload เบื้องหลัง ไม่ await → ไม่เห็นบอร์ดกระพริบ
+    }
   }catch(e){ console.error('[worklog] exception', e); showToast('บันทึกไม่สำเร็จ'); }
 }
 async function _dmMarkNoHire(){   // "ยังหาคนอยู่" สำหรับวันที่ผ่านแล้ว → เก็บวันลง jobs.no_hire_dates (นับเป็นบันทึกแล้ว · ไม่แตะ worker/trust)
