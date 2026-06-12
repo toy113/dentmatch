@@ -3388,12 +3388,15 @@ function dmJobCard(job){
   const wage=_dmEsc(_dmWage(job));
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>ข้อมูลติดต่อ</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=ข้อมูลติดต่อ · guest=login · clinic=ซ่อน
   return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" data-days="${_dmJobDayNames(job).join('|')}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
-          <div class="badges"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:9px">
+            <div class="badges" style="margin-bottom:0"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><span class="jcard-ts" style="margin-left:0"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span>${saveBtn}</div>
+          </div>
           <div class="jcard-title" style="overflow-wrap:anywhere">${_dmEsc(job.title)||pos}</div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> ${cname} · ${loc}</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">${_dmEsc(_dmSched(job))}</span></div>
           ${(_dmJobViews[job.id]>0)?`<div class="meta"><span class="pill" style="background:var(--p25);color:var(--ink4)"><i data-lucide="eye"></i> ${_dmJobViews[job.id]} วิว</span></div>`:''}
-          <div class="card-ft"><div class="wage">${wage}</div><div style="display:flex;align-items:center;gap:8px"><span class="jcard-ts" style="margin-left:0"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span>${saveBtn}${addBtn}</div></div>
+          <div class="card-ft"><div class="wage">${wage}</div><div style="display:flex;align-items:center;gap:8px">${addBtn}</div></div>
           <div class="jcard-more"><i data-lucide="search"></i> ดูรายละเอียดงาน <i data-lucide="chevron-right"></i></div>
         </div>`;
 }
