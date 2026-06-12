@@ -2092,7 +2092,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot"></div></div>
       <div class="sheet-title">ข้อมูลคลินิก <i data-lucide="hospital"></i></div>
       <div class="sheet-sub">กรอกข้อมูลเพื่อเริ่มใช้งาน</div>
-      <input id="rc-name" class="inp" placeholder="ชื่อคลินิก *" style="margin-bottom:9px">
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">ชื่อคลินิก *</label>
+      <input id="rc-name" class="inp" placeholder="เช่น คลินิกทันตกรรมยิ้มสวย" style="margin-bottom:9px">
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">จังหวัดที่ตั้งคลินิก *</label>
       <select id="rc-province" class="inp" style="margin-bottom:9px">
 <option value="">เลือกจังหวัด *</option>
 <optgroup label="กรุงเทพและปริมณฑล">
@@ -2114,7 +2116,9 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <option>ภูเก็ต</option><option>สุราษฎร์ธานี</option><option>นครศรีธรรมราช</option><option>กระบี่</option><option>พังงา</option><option>ระนอง</option><option>ชุมพร</option><option>สงขลา</option><option>สตูล</option><option>ตรัง</option><option>พัทลุง</option><option>ปัตตานี</option><option>ยะลา</option><option>นราธิวาส</option>
 </optgroup>
 </select>
-      <input id="rc-line" class="inp" placeholder="LINE ID หรือ @LINE OA *" style="margin-bottom:9px">
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">LINE ID หรือ @LINE OA *</label>
+      <input id="rc-line" class="inp" placeholder="เช่น @smileclinic" style="margin-bottom:9px">
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">เบอร์โทรศัพท์ *</label>
       <input id="rc-phone" class="inp" type="tel" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" style="margin-bottom:9px" oninput="fmtPhone(this)">
       <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">รายละเอียดคลินิก <span style="font-size:10px;font-weight:400;color:var(--ink4)">(optional)</span></label>
       <textarea id="rc-bio" class="inp" rows="3" placeholder="เช่น คลินิกเปิดมา 10 ปี มีทันตแพทย์ 3 ท่าน รับประกันสังคม บรรยากาศทำงานดี..." style="resize:none;line-height:1.6;font-family:'Sarabun',sans-serif;margin-bottom:6px"></textarea>
@@ -2131,6 +2135,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div style="font-size:11.5px;color:var(--ink3);line-height:1.55">ชื่อ-นามสกุลและเบอร์โทรใช้เพื่อยืนยันตัวตนภายในระบบเท่านั้น คลินิกจะไม่เห็นข้อมูลนี้ในแอป</div>
       </div>
       <!-- ชื่อ-นามสกุล (ไม่เผยแพร่) -->
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">ชื่อ-นามสกุล *</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px">
         <input class="inp" type="text" placeholder="ชื่อจริง *">
         <input class="inp" type="text" placeholder="นามสกุล *">
@@ -2139,6 +2144,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <input id="rw-phone" class="inp" type="tel" placeholder="0XX-XXX-XXXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12" style="margin-bottom:9px" oninput="fmtPhone(this)">
       <div style="height:1px;background:var(--border);margin:4px 0 12px"></div>
       <div style="font-size:11.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">ข้อมูลโปรไฟล์ (แสดงแบบไม่ระบุตัวตน)</div>
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">ตำแหน่ง *</label>
       <select class="inp" style="margin-bottom:9px" id="regWorkerPos" onchange="regWorkerSkills(this.value)"><option value="">เลือกตำแหน่ง...</option><option value="dentist">ทันตแพทย์</option><option value="assistant">ผู้ช่วยทันตแพทย์</option><option value="counter">เจ้าหน้าที่เคาน์เตอร์</option></select>
       <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:-2px 0 11px;font-size:11.5px;color:var(--orange2);line-height:1.55;display:flex;align-items:flex-start;gap:6px"><span><i data-lucide="triangle-alert"></i></span><span><strong>ทันตแพทย์</strong> = แก้ไขไม่ได้ · <strong>ผู้ช่วยฯ ↔ เคาน์เตอร์</strong> สลับกันได้ภายหลัง</span></div>
       <!-- ใบประกอบ (เฉพาะทันตแพทย์ · self-attestation: เก็บเลข ไม่ verify) -->
@@ -2154,6 +2160,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <label id="regSkillLabel" style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">ทักษะ / สาขา</label>
         <div class="chip-row" style="flex-wrap:wrap" id="regWorkerSkillChips"><span style="font-size:12px;color:var(--ink4)">เลือกตำแหน่งก่อน</span></div>
       </div>
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">ประสบการณ์ *</label>
       <select class="inp" style="margin-bottom:9px" id="rw-exp"><option value="">ประสบการณ์ *</option><option>เริ่มต้นทำงาน</option><option>6 เดือน-1 ปี</option><option>3 ปี</option><option>5 ปี</option><option>10+ ปี</option></select>
       <div class="form-group" style="margin-bottom:9px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">จังหวัดที่รับงาน <span style="font-size:10px;font-weight:400;color:var(--ink4)">(เลือกได้หลายจังหวัด)</span></label>
