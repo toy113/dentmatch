@@ -3771,7 +3771,6 @@ async function dmOpenInvite(workerId, anon){
       if(hasJobs) hasJobs.style.display='block'; if(noJobs) noJobs.style.display='none'; if(sendBtn) sendBtn.style.display='flex';
     } else if(attJob){   // ไม่มีงาน (หรือไม่ตรง position) + แนบประกาศงาน → empty state
       const _njSub=document.querySelector('#invite-no-jobs div:nth-child(3)');
-      const _njSub=document.querySelector('#invite-no-jobs div:nth-child(3)');
       if(_njSub) _njSub.textContent=(_inviteWorkerPos && data && data.length) ? 'ไม่มีประกาศงานที่ตรงกับตำแหน่งนี้' : 'สามารถส่งเพียงข้อความได้เลย';
       if(sel) sel.innerHTML=''; if(hasJobs) hasJobs.style.display='none'; if(noJobs) noJobs.style.display='block'; if(sendBtn) sendBtn.style.display='flex';   // ยังส่งได้ แม้ไม่มีงาน
     }
