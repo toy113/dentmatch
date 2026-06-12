@@ -1,0 +1,5 @@
+# Supabase project config
+# line-auth = LINE OAuth callback ถูกเรียกผ่าน browser redirect (GET, ไม่มี Authorization header)
+# → ต้องปิด JWT verification ไม่งั้นโดน UNAUTHORIZED_NO_AUTH_HEADER ก่อนถึงโค้ด
+[functions.line-auth]
+verify_jwt = false
