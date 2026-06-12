@@ -4186,7 +4186,8 @@ function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข
   set('wd-anon', w.anon_id||'—');
   const _wav=document.getElementById('wd-av'); if(_wav) _wav.style.background=_dmAvPos(w.position);   // สี avatar ตามตำแหน่ง
   set('wd-title', pos+(ex?' · '+ex:''));
-  const loc=(w.province||'')+(w.district?' ('+w.district+')':''); set('wd-loc', loc||'—');
+  const _wdProvs=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);   // โชว์ทุกจังหวัด ไม่ใช่แค่จังหวัดแรก
+  const loc=_wdProvs.join(', ')+(w.district?' ('+w.district+')':''); set('wd-loc', loc||'—');
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since);   // ซ่อน 0
   const trow=document.getElementById('wd-trust-row'); if(trow) trow.style.display=_ts>0?'':'none';
   set('wd-trust', 'ผ่านงาน DentMatch แล้ว '+_ts+' ครั้ง');
