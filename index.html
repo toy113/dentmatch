@@ -3175,7 +3175,17 @@ async function dmResendOtp(){
 async function dmSendEmailOtp(email, createUser){
   if(!dmSb()){ showToast('ระบบยังโหลดไม่เสร็จ ลองใหม่อีกครั้ง'); return false; }
   const { error } = await dmSb().auth.signInWithOtp({ email, options:{ shouldCreateUser: !!createUser } });
-  if(error){ showToast(createUser ? ('ส่ง OTP ไม่สำเร็จ: '+error.message) : 'ไม่พบบัญชีอีเมลนี้ — กรุณาสมัครก่อน (แท็บ "สมัคร") หรือตรวจอีเมลอีกครั้ง'); return false; }
+  if(error){
+    if(createUser){
+      const isFormat = /invalid.*format|validate.*email/i.test(error.message||'');
+      showToast(isFormat
+        ? 'ส่ง OTP ไม่สำเร็จ — ถ้าเคยสมัครแล้วให้ลองแท็บ "เข้าสู่ระบบ" แทน หรือตรวจสอบอีเมลอีกครั้ง'
+        : 'ส่ง OTP ไม่สำเร็จ: '+error.message);
+    } else {
+      showToast('ไม่พบบัญชีอีเมลนี้ — กรุณาสมัครก่อน (แท็บ "สมัคร") หรือตรวจอีเมลอีกครั้ง');
+    }
+    return false;
+  }
   _dmStartOtpCooldown(30);   // เริ่มนับถอยหลังกันกดส่งใหม่รัว
   _otpVerifying=false; if(typeof _otpBtnBusy==='function') _otpBtnBusy(false);   // รหัสใหม่ → อนุญาตยืนยันได้อีกครั้ง + คืนปุ่ม
   return true;
