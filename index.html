@@ -2915,7 +2915,10 @@ function closeSheet(id){
   // a11y: คืน focus ให้ปุ่มที่กดเปิด sheet
   if(_sheetReturnFocus && _sheetReturnFocus.focus){ try{_sheetReturnFocus.focus({preventScroll:true});}catch(e){} _sheetReturnFocus=null; }   // preventScroll: กันเลื่อนไปปุ่มเดิมจน header หาย
 }
-function overlayClose(e,id){if(e.target===document.getElementById(id))closeSheet(id)}
+function overlayClose(e,id){
+  if(window.innerWidth>=768)return;   // desktop/tablet: ปิดด้วย X เท่านั้น ไม่ปิดเมื่อคลิกนอก
+  if(e.target===document.getElementById(id))closeSheet(id);
+}
 
 let _loginMode = 'login';
 function loginTab(mode) {
