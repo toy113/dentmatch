@@ -3058,6 +3058,7 @@ function goBackFromOtp(){
 }
 function goLoginStep(stepId){
   ['ls-login','ls-role','ls-reg-clinic','ls-reg-worker','ls-otp','ls-success'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
+  const _sh=document.querySelector('#s-login .sheet'); if(_sh) _sh.scrollTop=0;   // รีเซ็ต scroll กันหัวข้อหน้าใหม่หลุดจอ (scroll ค้างจากขั้นก่อน)
   const _dn=document.getElementById('dup-account-note'); if(_dn) _dn.style.display='none';
   const _oe=document.getElementById('otp-err-msg'); if(_oe) _oe.style.display='none';
   const _wh=document.getElementById('worker-days-hint'); if(_wh) _wh.style.display='none';
