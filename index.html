@@ -3916,6 +3916,7 @@ async function dmLoadLogWorkers(){
   const list=document.getElementById('workerSelectList'); if(!list) return;
   _logWorkerId=null;
   if(!dmSb() || !dmUser || !_logJobId) return;   // ไม่มี job จริง = คง mock list
+  list.innerHTML='<div style="text-align:center;padding:24px;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';   // เคลียร์ mock/รายชื่องานก่อนหน้าก่อน query — กันเห็น worker คนอื่นแวบ
   try{
     // คนที่ ติดต่องานนี้ (ale_sel: clinic เจ้าของอ่านได้) + join worker_profiles (public-safe) · เลือกคนเดียว — ไม่กรองคนที่บันทึกแล้ว
     const { data } = await dmSb().from('add_line_events')
