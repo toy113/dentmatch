@@ -20,7 +20,6 @@ const CALLBACK_URL        = `${SUPABASE_URL}/functions/v1/line-auth/callback`;
 const ALLOWED_ORIGINS = [
   'http://localhost:8000',
   'https://dentmatch.app',
-  'https://dentmatch-vpb2.vercel.app',   // legacy — เผื่อ redirect เก่ายังวิ่งอยู่
 ];
 const DEFAULT_RETURN = 'https://dentmatch.app/';
 

@@ -3992,7 +3992,7 @@ let _lineSignupOpening = false;   // true ชั่วคราว = openSheet('
 function _b64url(o){ return btoa(JSON.stringify(o)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 function _dmIsLineApp(){ try{ return /\bLine\//i.test(navigator.userAgent||''); }catch(e){ return false; } }   // อยู่ใน LINE in-app browser
 function startLineLogin(){
-  const ret = location.origin + location.pathname;
+  const ret = (location.hostname==='localhost' ? location.origin : 'https://dentmatch.app') + location.pathname;
   const cb  = window.DM_CFG.SUPABASE_URL + '/functions/v1/line-auth/callback';
   const u = new URL('https://access.line.me/oauth2/v2.1/authorize');
   u.searchParams.set('response_type','code');
