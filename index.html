@@ -32,6 +32,9 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://zbaedgczudbamfkpeloo.supabase.co">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://unpkg.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -5553,10 +5556,11 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
 </script>
 <script src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.min.js" onload="refreshIcons()"></script>
 <script>window.addEventListener('load',refreshIcons);</script>
-<!-- Supabase client (Email auth · Batch 2) -->
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
-  window.sb = createClient(window.DM_CFG.SUPABASE_URL, window.DM_CFG.SUPABASE_KEY, {
+<!-- Supabase client (Email auth · Batch 2) — UMD ไฟล์เดียวจาก jsDelivr (เดิม esm.sh โหลดลูกโซ่ 10 ไฟล์ → ช้าบนมือถือ) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.10/dist/umd/supabase.min.js"></script>
+<script>
+(async ()=>{
+  window.sb = window.supabase.createClient(window.DM_CFG.SUPABASE_URL, window.DM_CFG.SUPABASE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
   });
   window.dmSbReady = true;
@@ -5569,6 +5573,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
     if (typeof _dmInitPullRefresh === 'function') _dmInitPullRefresh();   // pull-to-refresh (มือถือ)
   } catch(e){ console.warn('auth init', e); }
   finally { const _sp=document.getElementById('dm-splash'); if(_sp){ _sp.classList.add('hide'); setTimeout(()=>{ try{_sp.remove();}catch(_e){} }, 400); } }   // restore เสร็จ (login→routed / guest) → เปิด splash
+})();
 </script>
 </body>
 </html>
