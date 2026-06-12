@@ -4020,7 +4020,7 @@ function startLineLogin(){
   u.searchParams.set('client_id', window.DM_CFG.LINE_CHANNEL_ID);
   u.searchParams.set('redirect_uri', cb);
   u.searchParams.set('state', _b64url({ ret }));
-  u.searchParams.set('scope','openid profile email');   // email = ใช้เช็คบัญชีซ้ำฝั่ง edge (ต้องเปิด email permission ใน LINE Console)
+  u.searchParams.set('scope','openid profile');
   let target = u.toString();
   if(_dmIsLineApp()) target += '&openExternalBrowser=1';   // ใน LINE in-app browser → เปิด flow ใน browser หลัก ตั้งแต่ต้น กันเด้งข้าม browser กลางทาง
   window.location.href = target;
@@ -4028,7 +4028,7 @@ function startLineLogin(){
 // จัดการ callback ตอนโหลดหน้า (#line=1&email&otp&new&name&lid)
 async function dmHandleLineCallback(){
   const hash = location.hash || '';
-  if(hash.indexOf('line_error=')<0 && hash.indexOf('line=1')<0 && hash.indexOf('line_exists=1')<0) return false;
+  if(hash.indexOf('line_error=')<0 && hash.indexOf('line=1')<0) return false;
   // ถ้า callback โหลดอยู่ใน LINE in-app browser → เปิดใหม่ใน external browser (Safari/Chrome) ก่อน process
   // LINE WebView จะเปิด URL ใน external browser เมื่อเห็น ?openExternalBrowser=1
   if(_dmIsLineApp() && !new URLSearchParams(location.search).has('openExternalBrowser')){
@@ -4036,16 +4036,6 @@ async function dmHandleLineCallback(){
     location.replace(u.toString()); return true;   // หยุด — external browser จะโหลดหน้านี้ใหม่และ process ต่อ
   }
   if(hash.indexOf('line_error=')>=0){ history.replaceState(null,'',location.pathname); showToast('เข้าสู่ระบบ LINE ไม่สำเร็จ'); return false; }
-  // กันบัญชีซ้ำ: edge แจ้งว่า email นี้มีบัญชีอยู่แล้ว → เปิด login email ให้ + prefill อีเมล
-  if(hash.indexOf('line_exists=1')>=0){
-    const he=new URLSearchParams(hash.slice(1)); const ex=he.get('email')||'';
-    history.replaceState(null,'',location.pathname);
-    _lineSignup=null; _lineSignupOpening=true;
-    openSheet('s-login'); _loginMode='login'; loginTab('login');
-    const inp=document.getElementById('login-email'); if(inp&&ex){ inp.value=ex; }
-    showToast('มีบัญชีนี้แล้ว — เข้าสู่ระบบด้วยวิธีเดิม (Email OTP ด้านล่าง)');
-    return true;
-  }
   if(hash.indexOf('line=1')<0) return false;
   const h=new URLSearchParams(hash.slice(1));
   const email=h.get('email'), otp=h.get('otp'), isNew=h.get('new')==='1', name=h.get('name')||'', lid=h.get('lid')||null;
@@ -5415,7 +5405,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   try{
     const _h=location.hash||'';
     const _key='sb-'+new URL(window.DM_CFG.SUPABASE_URL).host.split('.')[0]+'-auth-token';
-    if(!localStorage.getItem(_key) && _h.indexOf('line=1')<0 && _h.indexOf('line_error=')<0 && _h.indexOf('line_exists=1')<0){
+    if(!localStorage.getItem(_key) && _h.indexOf('line=1')<0 && _h.indexOf('line_error=')<0){
       const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
       // เปิดหน้าก่อนข้อมูลจริงมา → สลับ mock card เป็น skeleton ทันที (กัน guest เห็นข้อมูลปลอม)
       if(typeof _dmJobsSkelDone!=='undefined' && !_dmJobsSkelDone){ ['#tcj-cards','#ccf-cards','#wtj-cards'].forEach(function(sel){ var c=document.querySelector(sel); if(c) c.innerHTML=_dmSkelJobs(4); }); ['tcj-cnt','ccf-cnt','wtj-cnt'].forEach(function(id){ var p=document.getElementById(id); if(p) p.textContent=''; }); _dmJobsSkelDone=true; }

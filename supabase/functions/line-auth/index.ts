@@ -26,7 +26,6 @@ const DEFAULT_RETURN = 'https://dentmatch.app/';
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { autoRefreshToken: false, persistSession: false } });
 
 function b64urlDecode(s: string){ try{ s=s.replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(atob(s)); }catch(_){ return {}; } }
-function jwtPayload(jwt: string){ try{ return b64urlDecode(String(jwt).split('.')[1]||''); }catch(_){ return {}; } }   // id_token (LINE) → { email?, ... } เมื่อ scope 'email' ผ่าน
 function safeReturn(ret: string){
   try{ const u=new URL(ret); if(ALLOWED_ORIGINS.includes(u.origin)) return u.origin+u.pathname; }catch(_){}
   return DEFAULT_RETURN;
@@ -66,24 +65,8 @@ Deno.serve(async (req) => {
     const displayName: string = prof.displayName || '';
     if (!lineUserId) return redirectBack(ret, 'line_error=no_userid');
 
-    // 2.5) email ที่ LINE ยืนยัน (ต้องเปิด 'email' permission ใน LINE Console + ผู้ใช้กดยอม) — ไม่มี = ข้ามเช็คซ้ำ
-    const lineEmail: string = String(jwtPayload(token.id_token || '').email || '').trim().toLowerCase();
-
     // 3) หา/สร้าง user (synthetic email จาก line_user_id = key คงที่ → user เก่า match ได้)
     const email = `line_${lineUserId}@line.dentmatch.local`;
-
-    // 3.0) กันบัญชีซ้ำ (ไปข้างหน้า): ผู้ใช้ LINE "ใหม่" + LINE คืน email ที่มีบัญชีอยู่แล้ว (สมัครด้วย email/วิธีอื่น)
-    //      → ไม่สร้าง user ใหม่ ; ส่งกลับให้เข้าสู่ระบบด้วยวิธีเดิม (Email OTP)
-    if (lineEmail) {
-      const { data: lineExisting } = await admin.rpc('find_auth_user_by_email', { p_email: email });
-      const lineKnown = Array.isArray(lineExisting) && lineExisting.length > 0;   // LINE id นี้เคยล็อกอินแล้ว → ไม่ใช่ผู้ใช้ใหม่ ข้ามเช็ค
-      if (!lineKnown) {
-        const { data: collide } = await admin.rpc('find_auth_user_by_email', { p_email: lineEmail });
-        if (Array.isArray(collide) && collide.length > 0)
-          return redirectBack(ret, `line_exists=1&email=${encodeURIComponent(lineEmail)}`);
-      }
-    }
-
     const created = await admin.auth.admin.createUser({
       email, email_confirm: true,
       user_metadata: { provider: 'line', line_user_id: lineUserId, name: displayName },
