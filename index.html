@@ -5376,6 +5376,14 @@ function applyProvince() {
 
 
 window.addEventListener('DOMContentLoaded',()=>{
+  // guest fast-path: ไม่มี session ใน localStorage + ไม่ใช่ LINE callback → เปิดหน้า guest ทันที ไม่ต้องรอ supabase-js โหลด
+  try{
+    const _h=location.hash||'';
+    const _key='sb-'+new URL(window.DM_CFG.SUPABASE_URL).host.split('.')[0]+'-auth-token';
+    if(!localStorage.getItem(_key) && _h.indexOf('line=1')<0 && _h.indexOf('line_error=')<0){
+      const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
+    }
+  }catch(_e){}
   setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
     // ถ้าบอร์ดยังไม่โหลด (supabase module ช้า/พัง) → ใส่ skeleton แทน mock กันโชว์ข้อมูลปลอมทั้งหน้า
     if(typeof _dmJobsSkelDone!=='undefined' && !_dmJobsSkelDone){ try{ ['#tcj-cards','#ccf-cards','#wtj-cards'].forEach(function(sel){ var c=document.querySelector(sel); if(c) c.innerHTML=_dmSkelJobs(4); }); ['tcj-cnt','ccf-cnt','wtj-cnt'].forEach(function(id){ var p=document.getElementById(id); if(p) p.textContent=''; }); _dmJobsSkelDone=true; refreshIcons(); }catch(_e){} }
