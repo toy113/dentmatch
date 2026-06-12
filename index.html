@@ -5382,6 +5382,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     const _key='sb-'+new URL(window.DM_CFG.SUPABASE_URL).host.split('.')[0]+'-auth-token';
     if(!localStorage.getItem(_key) && _h.indexOf('line=1')<0 && _h.indexOf('line_error=')<0){
       const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
+      // เปิดหน้าก่อนข้อมูลจริงมา → สลับ mock card เป็น skeleton ทันที (กัน guest เห็นข้อมูลปลอม)
+      if(typeof _dmJobsSkelDone!=='undefined' && !_dmJobsSkelDone){ ['#tcj-cards','#ccf-cards','#wtj-cards'].forEach(function(sel){ var c=document.querySelector(sel); if(c) c.innerHTML=_dmSkelJobs(4); }); ['tcj-cnt','ccf-cnt','wtj-cnt'].forEach(function(id){ var p=document.getElementById(id); if(p) p.textContent=''; }); _dmJobsSkelDone=true; }
     }
   }catch(_e){}
   setTimeout(()=>{ const s=document.getElementById('dm-splash'); if(s){ s.classList.add('hide'); setTimeout(()=>{ try{s.remove();}catch(_e){} }, 400); }
