@@ -1995,6 +1995,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-reg-province" onclick="overlayClose(event,'s-reg-province')">
   <div class="sheet" style="max-height:88%">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-reg-province')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="map-pin"></i> เลือกจังหวัดที่รับงาน</div>
     <div id="regProvSelTags" class="selected-provs"></div>
     <div class="prov-search-wrap">
@@ -2011,6 +2012,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-edit-province" onclick="overlayClose(event,'s-edit-province')">
   <div class="sheet" style="max-height:88%">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-edit-province')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="map-pin"></i> เลือกจังหวัดที่รับงาน</div>
     <div id="editProvSelTags" class="selected-provs"></div>
     <div class="prov-search-wrap">
@@ -2305,6 +2307,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     </div>
     <div id="log-step2" style="display:none">
       <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot"></div></div>
+      <button onclick="_logShowStep('step1')" style="margin-bottom:12px;padding:7px 14px;background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--ink3);font-size:13px;cursor:pointer">← ย้อนกลับ</button>
       <div class="sheet-title">เลือก Worker</div>
       <div class="sheet-sub" id="log-step2-sub">เลือก worker ที่มาทำงานจริงเพื่อ +1 completed</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px" id="workerSelectList">
@@ -2447,6 +2450,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <div class="overlay" id="s-province" onclick="overlayClose(event,'s-province')">
   <div class="sheet" style="max-height:88%">
     <div class="sheet-handle"></div>
+    <button onclick="closeSheet('s-province')" aria-label="ปิด" style="position:absolute;top:12px;right:14px;width:30px;height:30px;border:none;background:var(--p25);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);z-index:5"><i data-lucide="x" style="width:17px;height:17px"></i></button>
     <div class="sheet-title"><i data-lucide="map-pin"></i> เลือกจังหวัด</div>
     <div id="selProvTags" class="selected-provs"></div>
     <div class="prov-search-wrap">
