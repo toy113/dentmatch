@@ -3679,7 +3679,10 @@ async function dmPostJob(){
     wage_text, work_date, work_dates, urgent:false, is_open:true, skills, work_days, time_start, time_end, description };
   try{
     const { data, error }=await dmSb().from('jobs').insert(row).select();
-    if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error); showToast('ลงประกาศไม่สำเร็จ: '+error.message); return; }
+    if(error){ console.error('[postjob] INSERT ล้มเหลว:', error.message, '| code:', error.code, error);
+      if(/เปิดงานพร้อมกันได้สูงสุด/.test(error.message||'')){ showToast('<i data-lucide="info" style="color:var(--orange2)"></i> '+error.message+' (แท็บจัดการ)'); }
+      else showToast('ลงประกาศไม่สำเร็จ: '+error.message);
+      return; }
     dmLog('[postjob] insert สำเร็จ ✓', data); _postDates=[]; _postRenderDates();   // เคลียร์วันที่ที่เลือกหลังโพสต์
     if(_ti) _ti.value='';   // เคลียร์หัวข้อ กันค้างไปงานถัดไป
     openSheet('s-post-success');
