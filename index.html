@@ -2033,7 +2033,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <!-- tab toggle -->
       <div style="display:flex;background:var(--p50);border-radius:12px;padding:3px;margin-bottom:20px">
         <button id="tab-login" onclick="loginTab('login')" style="flex:1;padding:9px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:var(--p600);color:#fff;transition:.2s;box-shadow:0 2px 8px rgba(107,78,194,.3)">เข้าสู่ระบบ</button>
-        <button id="tab-register" onclick="loginTab('register')" style="flex:1;padding:9px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:var(--ink4);transition:.2s">สมัครสมาชิก</button>
+        <button id="tab-register" onclick="loginTab('register')" style="flex:1;padding:9px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:var(--ink4);transition:.2s">สมัครสมาชิก <span style="font-size:9px;font-weight:700;background:var(--gold);color:#3a2a00;border-radius:6px;padding:1px 5px;margin-left:2px;vertical-align:middle">แนะนำ</span></button>
       </div>
 
       <!-- ── LOGIN ── -->
@@ -2941,6 +2941,7 @@ function openSheet(id){
       var _le=document.getElementById('login-email'); if(_le)_le.value='';
       var _re=document.getElementById('reg-email');   if(_re)_re.value='';
       _otpEmail=null; _otpMode=null; _lineSignup=null;
+      if(typeof loginTab==='function') loginTab('register');   // soft opening: ชี้ไปสมัครสมาชิกก่อน (คนใหม่เป็นหลัก)
     }
   }
   setTimeout(()=>{ const f=el.querySelector(_SHEET_FOCUSABLE); (f||_sheet).focus&&(f||_sheet).focus({preventScroll:true}); }, 60);   // preventScroll: กันมือถือเลื่อน view ใต้ sheet จน header หาย
