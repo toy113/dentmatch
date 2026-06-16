@@ -1727,11 +1727,11 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="chip-row" id="wtj-skills"><div class="chip" onclick="chipToggle(this)">GP</div><div class="chip" onclick="chipToggle(this)">Orthodontic</div><div class="chip" onclick="chipToggle(this)">Endodontic</div><div class="chip" onclick="chipToggle(this)">Surgery</div><div class="chip" onclick="chipToggle(this)">Implant</div><div class="chip" onclick="chipToggle(this)">Prosthodontic</div><div class="chip" onclick="chipToggle(this)">Pediatric</div><div class="chip" onclick="chipToggle(this)">ผู้ช่วยจัดฟัน</div><div class="chip" onclick="chipToggle(this)">Sterilize</div><div class="chip" onclick="chipToggle(this)">Implant assist</div><div class="chip" onclick="chipToggle(this)">นัดหมาย</div><div class="chip" onclick="chipToggle(this)">ประกันสังคม</div></div>
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
-        <div class="wtj-date-wrap" style="padding-top:2px">
-          <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> วันที่ต้องการทำงาน</div>
-          <div id="wtj-date-chips" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px"></div>
-          <input type="date" class="inp" id="wtj-date-custom" placeholder="หรือเลือกวันอื่น" onchange="_wtjPickCustomDate(this)">
-        </div>
+      </div>
+      <div class="wtj-date-wrap" style="padding:10px 16px 0">
+        <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> วันที่ต้องการทำงาน</div>
+        <div id="wtj-date-chips" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px"></div>
+        <input type="date" class="inp" id="wtj-date-custom" placeholder="หรือเลือกวันอื่น" onchange="_wtjPickCustomDate(this)">
       </div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
@@ -5635,7 +5635,7 @@ function initFilterCollapse(){
     fw.insertBefore(bar,fw.firstChild);
     // ห่อ chip rows เป็น panel ลอย (dropdown) → ตอนเปิดไม่ดันเนื้อหา/ไม่ทำ sticky header สูง
     const panel=document.createElement('div'); panel.className='dt-filter-panel';
-    [...fw.querySelectorAll(':scope > .chip-row, :scope > .wtj-date-wrap')].forEach(r=>panel.appendChild(r));
+    [...fw.querySelectorAll(':scope > .chip-row')].forEach(r=>panel.appendChild(r));
     fw.appendChild(panel);
     const toggle=bar.querySelector('.dt-filter-toggle');
     const badge=bar.querySelector('.dt-filter-badge');
