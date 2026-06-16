@@ -1881,6 +1881,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="form-group"><label>หรือ Part-time วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(คั่นด้วยจุลภาค YYYY-MM-DD)</span></label><input class="inp" id="ad-dates" placeholder="2026-06-20,2026-06-22"></div>
         <div class="form-group"><label>เวลา</label><div class="inp-row"><input class="inp" id="ad-time-start" placeholder="เริ่ม เช่น 09:00"><input class="inp" id="ad-time-end" placeholder="เลิก เช่น 17:00"></div></div>
+        <div class="form-group"><label>LINE ติดต่อจริงของคลินิก <span style="font-size:11px;color:var(--ink4);font-weight:400">(งานนี้โพสต์ในนาม proxy — ต้องใส่ไว้ให้ worker เห็น)</span></label><input class="inp" id="ad-contactline" placeholder="เช่น @abcclinic"></div>
         <div class="form-group"><label>รายละเอียดเพิ่มเติม <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><textarea class="inp" id="ad-desc" rows="2"></textarea></div>
         <div style="display:flex;gap:8px;margin-top:6px">
           <button onclick="dmAdminClosePublish()" style="flex:1;padding:11px;border-radius:11px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-weight:700;cursor:pointer">ยกเลิก</button>
@@ -5536,17 +5537,36 @@ async function dmAdminLoadDrafts(){
   list.innerHTML=data.map(_dmAdminDraftCard).join('');
   refreshIcons();
 }
+function _dmAdminParsedPreview(d){
+  const p=d.parsed;
+  if(!p || Object.keys(p).length===0) return '';
+  if(p.is_job_post===false){
+    return '<div style="font-size:12px;color:var(--orange2);background:var(--orange-bg);border-radius:8px;padding:6px 9px;margin-bottom:10px">⚠ AI ว่าอาจไม่ใช่ประกาศงาน (ความมั่นใจ '+Math.round((p.confidence||0)*100)+'%)</div>';
+  }
+  const bits=[p.position?({dentist:'ทันตแพทย์',assistant:'ผู้ช่วยฯ',counter:'เคาน์เตอร์'}[p.position]||p.position):'',p.province,p.wage_text].filter(Boolean).join(' · ');
+  return '<div style="font-size:12px;color:var(--p700);background:var(--p50);border-radius:8px;padding:6px 9px;margin-bottom:10px">✓ AI ตรวจพบ: '+_dmEsc(p.title||bits||'ประกาศงาน')+(bits&&p.title?' ('+_dmEsc(bits)+')':'')+' · ความมั่นใจ '+Math.round((p.confidence||0)*100)+'%</div>';
+}
 function _dmAdminDraftCard(d){
   const sent=d.sent_at?new Date(d.sent_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
   const actions = d.status==='pending'
-    ? '<button onclick="dmAdminRejectDraft(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-size:12.5px;cursor:pointer">ปฏิเสธ</button>'
+    ? '<button onclick="dmAdminParseDraft(\''+d.id+'\',this)" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--p300);background:var(--p50);color:var(--p700);font-size:12.5px;font-weight:700;cursor:pointer">🪄 ดึงข้อมูลอัตโนมัติ</button>'
+      +'<button onclick="dmAdminRejectDraft(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-size:12.5px;cursor:pointer">ปฏิเสธ</button>'
       +'<button onclick="dmAdminOpenPublish(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:none;background:var(--p600);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer">โพสต์เป็นงาน</button>'
     : '<span style="font-size:12px;color:var(--ink4)">'+(d.status==='published'?'โพสต์แล้ว ✓':'ปฏิเสธแล้ว')+'</span>';
   return '<div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff">'
     +'<div style="font-size:11.5px;color:var(--ink4);margin-bottom:6px">'+_dmEsc(d.sender_name||'ไม่ระบุ')+(sent?' · '+sent:'')+'</div>'
     +'<div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;margin-bottom:10px">'+_dmEsc(d.raw_message)+'</div>'
+    +_dmAdminParsedPreview(d)
     +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+actions+'</div>'
     +'</div>';
+}
+function dmAdminParseDraft(id,btn){
+  if(btn){ btn.disabled=true; btn.textContent='กำลังประมวลผล...'; }
+  dmSb().functions.invoke('parse-job-draft',{ body:{ draftId:id } }).then(function(r){
+    if(r.error || (r.data&&r.data.error)){ showToast('ดึงข้อมูลไม่สำเร็จ: '+(r.error&&r.error.message || (r.data&&r.data.error) || '')); if(btn){ btn.disabled=false; btn.textContent='🪄 ดึงข้อมูลอัตโนมัติ'; } return; }
+    showToast('ดึงข้อมูลสำเร็จ ✓');
+    dmAdminLoadDrafts();
+  });
 }
 function dmAdminRejectDraft(id){
   if(!confirm('ปฏิเสธ draft นี้?')) return;
@@ -5565,10 +5585,12 @@ function dmAdminOpenPublish(id){
     document.getElementById('ad-province').value=p.province||'';
     document.getElementById('ad-district').value=p.district||'';
     document.getElementById('ad-wage').value=p.wage_text||'';
-    document.querySelectorAll('#ad-days .chip').forEach(c=>c.classList.remove('on'));
-    document.getElementById('ad-dates').value='';
+    const _adDayNames=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+    document.querySelectorAll('#ad-days .chip').forEach(c=>c.classList.toggle('on', (p.work_days||[]).includes(_adDayNames.indexOf(c.textContent.trim())+1)));
+    document.getElementById('ad-dates').value=(p.work_dates||[]).join(',');
     document.getElementById('ad-time-start').value=p.time_start||'';
     document.getElementById('ad-time-end').value=p.time_end||'';
+    document.getElementById('ad-contactline').value=p.contact_line_id||'';
     document.getElementById('ad-desc').value='';
     const panel=document.getElementById('ad-edit-panel'); panel.style.display='block'; panel.scrollIntoView({behavior:'smooth',block:'start'});
     refreshIcons();
@@ -5590,8 +5612,13 @@ async function dmAdminConfirmPublish(){
   const time_start=document.getElementById('ad-time-start').value.trim()||null;
   const time_end=document.getElementById('ad-time-end').value.trim()||null;
   const clinic_name_text=document.getElementById('ad-clinicname').value.trim()||null;
+  const contactLine=document.getElementById('ad-contactline').value.trim();
   const descManual=document.getElementById('ad-desc').value.trim();
-  const description=[clinic_name_text?('คลินิก: '+clinic_name_text):'',descManual].filter(Boolean).join('\n')||null;
+  const description=[
+    clinic_name_text?('คลินิก: '+clinic_name_text):'',
+    contactLine?('ติดต่อ LINE: '+contactLine):'',
+    descManual
+  ].filter(Boolean).join('\n')||null;
   try{
     const { data:pid, error:pidErr } = await dmSb().rpc('dm_proxy_clinic_id');
     if(pidErr || !pid){ showToast('หา proxy clinic ไม่สำเร็จ: '+(pidErr&&pidErr.message||'')); return; }
