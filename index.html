@@ -1321,14 +1321,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         </div>
         <div class="form-group"><label>วันทำงานประจำ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน · ไม่บังคับ)</span></label>
           <div class="chip-row" id="postDays" style="flex-wrap:wrap">
-            <div class="chip" onclick="chipMulti(this)">จันทร์</div>
-            <div class="chip" onclick="chipMulti(this)">อังคาร</div>
-            <div class="chip" onclick="chipMulti(this)">พุธ</div>
-            <div class="chip" onclick="chipMulti(this)">พฤหัส</div>
-            <div class="chip" onclick="chipMulti(this)">ศุกร์</div>
-            <div class="chip" onclick="chipMulti(this)">เสาร์</div>
-            <div class="chip" onclick="chipMulti(this)">อาทิตย์</div>
-            <div class="chip" onclick="chipMulti(this)">ตามตกลง</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">จันทร์</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">อังคาร</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">พุธ</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">พฤหัส</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">ศุกร์</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">เสาร์</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">อาทิตย์</div>
+            <div class="chip" onclick="chipMulti(this);_postExclSync()">ตามตกลง</div>
           </div>
         </div>
         <div class="form-group"><label>Part-time วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input type="date" class="inp" id="workdate" placeholder="เลือกวันแล้วเพิ่มอัตโนมัติ" onchange="_postAddDate(this)"><div id="postDatesChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div></div>
@@ -2375,14 +2375,14 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     </div>
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">วันทำงานประจำ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label>
     <div class="chip-row" id="ej-days" style="flex-wrap:wrap;margin-bottom:16px">
-      <div class="chip" onclick="chipMulti(this)">จันทร์</div>
-      <div class="chip" onclick="chipMulti(this)">อังคาร</div>
-      <div class="chip" onclick="chipMulti(this)">พุธ</div>
-      <div class="chip" onclick="chipMulti(this)">พฤหัส</div>
-      <div class="chip" onclick="chipMulti(this)">ศุกร์</div>
-      <div class="chip" onclick="chipMulti(this)">เสาร์</div>
-      <div class="chip" onclick="chipMulti(this)">อาทิตย์</div>
-      <div class="chip" onclick="chipMulti(this)">ตามตกลง</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">จันทร์</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">อังคาร</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">พุธ</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">พฤหัส</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">ศุกร์</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">เสาร์</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">อาทิตย์</div>
+      <div class="chip" onclick="chipMulti(this);_editExclSync()">ตามตกลง</div>
     </div>
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">Part-time วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน · ไม่บังคับ)</span></label>
     <input type="date" class="inp" id="ej-date" onchange="_editAddDate(this)" style="margin-bottom:8px">
@@ -2821,8 +2821,8 @@ function _ejSetPay(type){
   const w=document.getElementById('ej-wage'); if(w){ const ng=(type==='nego'); w.disabled=ng; w.placeholder=ng?'ไม่ต้องระบุ (ตามตกลง)':''; w.style.background=ng?'var(--p25)':''; if(ng) w.value=''; }   // ตามตกลง = disable (ไม่ซ่อน → ช่องไม่หาย)
 }
 function _editRenderDates(){ const c=document.getElementById('ej-dates-chips'); if(!c) return; c.innerHTML=_editDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_editRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
-function _editAddDate(inp){ var v=inp.value; if(v && _editDates.indexOf(v)<0){ _editDates.push(v); _editDates.sort(); _editRenderDates(); } inp.value=''; }
-function _editRmDate(d){ _editDates=_editDates.filter(function(x){ return x!==d; }); _editRenderDates(); }
+function _editAddDate(inp){ var v=inp.value; if(v && _editDates.indexOf(v)<0){ _editDates.push(v); _editDates.sort(); _editRenderDates(); _editExclSync(); } inp.value=''; }
+function _editRmDate(d){ _editDates=_editDates.filter(function(x){ return x!==d; }); _editRenderDates(); _editExclSync(); }
 function mEdit(btn){
   const card=btn.closest('.mcard'); if(!card) return;
   const id=card.dataset.jobid; const job=id?_dmJobs[id]:null;
@@ -2841,6 +2841,7 @@ function mEdit(btn){
   [].forEach.call(document.querySelectorAll('#ej-days .chip'), function(c){ const idx=_EJ_DAYS.indexOf(c.textContent.trim()); c.classList.toggle('on', idx>=0 ? wd.indexOf(idx+1)>=0 : (wd.length===0)); });   // chip "ตามตกลง" (idx=-1) = on เมื่อไม่มีวันทำงาน
   // วันที่เจาะจง
   _editDates=(job.work_dates&&job.work_dates.length)?job.work_dates.slice().sort():[]; _editRenderDates();
+  _editExclSync();   // ล็อกฝั่งที่ว่างตามข้อมูลที่โหลดมา
   // เวลา + รายละเอียด
   const t1=document.getElementById('ej-t1'), t2=document.getElementById('ej-t2'), de=document.getElementById('editjob-desc');
   if(t1) t1.value=job.time_start||''; if(t2) t2.value=job.time_end||''; if(de) de.value=job.description||'';
@@ -2860,6 +2861,7 @@ async function dmSaveJobEdit(){
   // วันที่
   const work_dates=_editDates.length?_editDates.slice():null;
   const work_date=_editDates.length?_editDates.slice().sort()[0]:null;
+  if(work_days.length===0 && _editDates.length===0){ if(err){ err.textContent='เลือกวันทำงานประจำ หรือ Part-time วันที่ อย่างน้อย 1 อย่าง'; err.style.display='block'; } return; }
   // เวลา + รายละเอียด
   const time_start=(((document.getElementById('ej-t1')||{}).value)||'').trim()||null;
   const time_end=(((document.getElementById('ej-t2')||{}).value)||'').trim()||null;
@@ -3392,8 +3394,23 @@ function _dmSched(job){
 }
 let _postDates=[];
 function _postRenderDates(){ const c=document.getElementById('postDatesChips'); if(!c) return; c.innerHTML=_postDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_postRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
-function _postAddDate(inp){ var v=inp.value; if(v && _postDates.indexOf(v)<0){ _postDates.push(v); _postDates.sort(); _postRenderDates(); } inp.value=''; }
-function _postRmDate(d){ _postDates=_postDates.filter(function(x){ return x!==d; }); _postRenderDates(); }
+function _postAddDate(inp){ var v=inp.value; if(v && _postDates.indexOf(v)<0){ _postDates.push(v); _postDates.sort(); _postRenderDates(); _postExclSync(); } inp.value=''; }
+function _postRmDate(d){ _postDates=_postDates.filter(function(x){ return x!==d; }); _postRenderDates(); _postExclSync(); }
+/* mutual-exclusive: วันทำงานประจำ ↔ Part-time วันที่ — เลือกฝั่งไหน ล็อกอีกฝั่ง (ฝั่งที่ยังว่าง) */
+function _exclLock(el, locked){ if(!el) return; el.style.opacity=locked?'.4':''; el.style.pointerEvents=locked?'none':''; if('disabled' in el) el.disabled=!!locked; }
+function _postExclSync(){
+  var post=document.getElementById('cc-post'); if(!post) return;
+  var daysSel=post.querySelectorAll('#postDays .chip.on').length;
+  var hasDates=(typeof _postDates!=='undefined') && _postDates.length>0;
+  _exclLock(document.getElementById('postDays'), hasDates && daysSel===0);     // มีวันที่ → ล็อกวันประจำ
+  _exclLock(document.getElementById('workdate'), daysSel>0 && !hasDates);      // มีวันประจำ → ล็อก date input
+}
+function _editExclSync(){
+  var daysSel=document.querySelectorAll('#ej-days .chip.on').length;
+  var hasDates=(typeof _editDates!=='undefined') && _editDates.length>0;
+  _exclLock(document.getElementById('ej-days'), hasDates && daysSel===0);
+  _exclLock(document.getElementById('ej-date'), daysSel>0 && !hasDates);
+}
 function dmCardAddLine(btn){ if(!dmUser || !dmUser.id){ openSheet('s-login'); return; }   // guest = ล็อก → login ก่อน ข้อมูลติดต่อ
   openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
 // อัปเดต count ทั้ง sec-hdr (.cnt-pill) + dt-toolbar (.pill) ของแท็บ + เก็บ data-total ให้ filter
@@ -5079,6 +5096,9 @@ function validatePost(){
   if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
     showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
   }
+  const _postEl=document.getElementById('cc-post');
+  const _daysSel=_postEl?_postEl.querySelectorAll('#postDays .chip.on').length:0;
+  if(_daysSel===0 && _postDates.length===0){ ok=false; msgs.push('เลือกวันทำงานประจำ หรือ Part-time วันที่ อย่างน้อย 1 อย่าง'); }
   if(!ok){ dmLog('[postjob] validation fail:', msgs.join(' · ')); if(err){ err.innerHTML='<i data-lucide="triangle-alert"></i> กรุณา'+msgs.join(' · '); err.style.display='block'; setTimeout(()=>err.style.display='none',3500); } return; }
   if(err) err.style.display='none';
   if(typeof dmSb==='function' && dmSb() && dmUser && dmUser.role==='clinic'){ dmLog('[postjob] → dmPostJob (insert จริง)'); dmPostJob(); }
