@@ -1847,6 +1847,50 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   </div>
 </div>
 
+<!-- ════════ VIEW: ADMIN — นำเข้าประกาศจาก LINE OpenChat (เห็นเฉพาะแอดมิน) ════════ -->
+<div class="view" id="v-admin">
+  <div class="mini-hdr"><div class="back-btn" onclick="goBack()"><i data-lucide="arrow-left"></i></div><div><div class="mini-hdr-title">แอดมิน: นำเข้าจาก LINE</div><div class="mini-hdr-sub">วาง export .txt → ตรวจ → โพสต์เป็นงานจริง</div></div></div>
+  <div class="scroll">
+    <div class="form-body">
+      <div class="form-group">
+        <label>วางข้อความที่ export จาก LINE OpenChat (.txt)</label>
+        <textarea class="inp" id="ad-import-text" rows="8" placeholder="วางทั้งไฟล์ .txt ที่ export จาก LINE ที่นี่..."></textarea>
+        <button class="btn-primary" style="margin-top:10px" onclick="dmAdminImportText()"><i data-lucide="upload"></i> แยกข้อความ → สร้าง draft</button>
+        <div id="ad-import-result" style="font-size:12.5px;color:var(--ink4);margin-top:8px"></div>
+      </div>
+      <div class="form-group">
+        <label>Drafts</label>
+        <div class="chip-row" id="ad-status-tabs">
+          <div class="chip on" data-status="pending" onclick="dmAdminFilterStatus(this)">รอตรวจ</div>
+          <div class="chip" data-status="published" onclick="dmAdminFilterStatus(this)">โพสต์แล้ว</div>
+          <div class="chip" data-status="rejected" onclick="dmAdminFilterStatus(this)">ปฏิเสธแล้ว</div>
+        </div>
+        <div id="ad-drafts-list"></div>
+      </div>
+      <div id="ad-edit-panel" style="display:none;border:2px solid var(--p300);border-radius:14px;padding:14px;margin-top:6px;background:var(--p25)">
+        <div style="font-weight:700;font-size:13.5px;margin-bottom:10px;color:var(--p700)">โพสต์เป็นงานจริง</div>
+        <div class="form-group"><label>ข้อความดิบ (อ้างอิง)</label><div id="ad-ref-text" style="font-size:12.5px;color:var(--ink4);white-space:pre-wrap;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px"></div></div>
+        <div class="form-group"><label>ชื่อคลินิกจริง (จากแชท)</label><input class="inp" id="ad-clinicname" placeholder="เช่น คลินิกเอบีซี"></div>
+        <div class="form-group"><label>หัวข้อประกาศ</label><input class="inp" id="ad-title" placeholder="เช่น รับผู้ช่วยทันตแพทย์ ด่วน"></div>
+        <div class="form-group"><label>ตำแหน่ง</label><select class="inp" id="ad-position"><option value="dentist">ทันตแพทย์</option><option value="assistant" selected>ผู้ช่วยฯ</option><option value="counter">เคาน์เตอร์</option></select></div>
+        <div class="form-group"><label>จังหวัด</label><input class="inp" id="ad-province" placeholder="เช่น กรุงเทพมหานคร"></div>
+        <div class="form-group"><label>เขต/อำเภอ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input class="inp" id="ad-district"></div>
+        <div class="form-group"><label>ค่าจ้าง</label><input class="inp" id="ad-wage" placeholder="เช่น 600/วัน"></div>
+        <div class="form-group"><label>วันทำงานประจำ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน)</span></label>
+          <div class="chip-row" id="ad-days"><div class="chip" onclick="chipMulti(this)">จันทร์</div><div class="chip" onclick="chipMulti(this)">อังคาร</div><div class="chip" onclick="chipMulti(this)">พุธ</div><div class="chip" onclick="chipMulti(this)">พฤหัส</div><div class="chip" onclick="chipMulti(this)">ศุกร์</div><div class="chip" onclick="chipMulti(this)">เสาร์</div><div class="chip" onclick="chipMulti(this)">อาทิตย์</div></div>
+        </div>
+        <div class="form-group"><label>หรือ Part-time วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(คั่นด้วยจุลภาค YYYY-MM-DD)</span></label><input class="inp" id="ad-dates" placeholder="2026-06-20,2026-06-22"></div>
+        <div class="form-group"><label>เวลา</label><div class="inp-row"><input class="inp" id="ad-time-start" placeholder="เริ่ม เช่น 09:00"><input class="inp" id="ad-time-end" placeholder="เลิก เช่น 17:00"></div></div>
+        <div class="form-group"><label>รายละเอียดเพิ่มเติม <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><textarea class="inp" id="ad-desc" rows="2"></textarea></div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button onclick="dmAdminClosePublish()" style="flex:1;padding:11px;border-radius:11px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-weight:700;cursor:pointer">ยกเลิก</button>
+          <button onclick="dmAdminConfirmPublish()" style="flex:2;padding:11px;border-radius:11px;border:none;background:var(--p600);color:#fff;font-weight:700;cursor:pointer">ยืนยันโพสต์งาน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ════════ SHEETS / OVERLAYS ════════ -->
 
 <!-- ADD LINE SHEET -->
@@ -3309,6 +3353,7 @@ async function dmCreateRecords(uid, s){
 // โหลดโปรไฟล์จริงจาก DB มาแสดงบนหัว (พิสูจน์ว่าไม่ใช่ mock)
 async function dmLoadProfile(){
   if(!dmUser || !dmSb()) return;
+  dmCheckAdmin();   // fire-and-forget — เติมปุ่มลอยแอดมินถ้าตรง (RLS เป็นตัวกันจริง)
   try{
     if(dmUser.role==='worker'){
       const { data } = await dmSb().from('worker_profiles')
@@ -4121,7 +4166,29 @@ async function dmInitSession(){
   finishLogin();
 }
 // logout จริง (เรียกจาก logoutClinic/logoutWorker)
-async function dmSignOut(){ dmUnsubscribeNoti(); try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; }
+async function dmSignOut(){ dmUnsubscribeNoti(); try{ if(dmSb()) await dmSb().auth.signOut(); }catch(e){} dmUser=null; dmIsAdmin=false; _dmUpdateAdminFab(); }
+/* ════════ ADMIN: เห็นเฉพาะแอดมิน (is_dm_admin() ฝั่ง DB เป็นตัวกันจริง — ปุ่มนี้แค่ UX) ════════ */
+let dmIsAdmin=false;
+async function dmCheckAdmin(){
+  if(!dmUser || !dmSb()){ dmIsAdmin=false; _dmUpdateAdminFab(); return; }
+  try{ const { data } = await dmSb().rpc('is_dm_admin'); dmIsAdmin=!!data; }catch(e){ dmIsAdmin=false; }
+  _dmUpdateAdminFab();
+}
+function _dmUpdateAdminFab(){
+  let fab=document.getElementById('dm-admin-fab');
+  if(dmIsAdmin){
+    if(!fab){
+      fab=document.createElement('button');
+      fab.id='dm-admin-fab';
+      fab.title='แอดมิน: นำเข้าจาก LINE';
+      fab.innerHTML='<i data-lucide="shield"></i>';
+      fab.style.cssText='position:fixed;bottom:90px;right:16px;z-index:200;width:48px;height:48px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--p700),var(--p500));color:#fff;box-shadow:0 6px 18px rgba(107,78,194,.4);cursor:pointer;display:flex;align-items:center;justify-content:center';
+      fab.onclick=function(){ goView('v-admin'); dmAdminLoadDrafts(); };
+      document.body.appendChild(fab);
+      refreshIcons();
+    }
+  } else if(fab){ fab.remove(); }
+}
 // re-validate session ตอนกลับมาที่แอป (มือถือ background นาน → token/UI อาจหลุด)
 document.addEventListener('visibilitychange', function(){
   if(document.visibilityState!=='visible' || !dmSb()) return;
@@ -5411,6 +5478,136 @@ function _dmSortByDateMatch(tc,date){
     return (+a.dataset.idx||0)-(+b.dataset.idx||0);
   });
   list.forEach(c=>cont.appendChild(c));
+}
+/* ════════ ADMIN: นำเข้าประกาศจาก LINE OpenChat export → job_drafts ════════ */
+// แยกบรรทัด export ของ LINE: header วันที่ "YYYY.MM.DD ..." (ไม่มี tab) + ข้อความ "HH:MM\tชื่อ\tข้อความ" (tab-separated)
+// บรรทัดอื่นที่ไม่เข้าทั้ง 2 แบบ = ข้อความหลายบรรทัดของอันก่อนหน้า (LINE export ไม่ repeat timestamp/ชื่อ)
+function _dmParseLineExport(text){
+  const lines=String(text||'').replace(/\r\n/g,'\n').split('\n');
+  const dateRe=/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})/;
+  const msgRe=/^(\d{1,2}):(\d{2})\t([^\t]+)\t(.+)$/;
+  const sysRe=/(เข้าร่วมกลุ่ม|ออกจากกลุ่ม|ถูกเรียกเข้าร่วม|unsent a message|ลบข้อความนี้แล้ว|เปลี่ยนชื่อกลุ่ม|เปลี่ยนรูปกลุ่ม)/;
+  let curDate=null; const out=[];
+  for(const raw of lines){
+    const line=raw.replace(/​/g,'').replace(/\s+$/,'');
+    if(!line.trim()) continue;
+    const dm=line.match(dateRe);
+    if(dm){ curDate=dm[1]+'-'+String(dm[2]).padStart(2,'0')+'-'+String(dm[3]).padStart(2,'0'); continue; }
+    const mm=line.match(msgRe);
+    if(mm){
+      const hh=mm[1], mi=mm[2], sender=mm[3].trim(), msg=mm[4].trim();
+      if(sysRe.test(msg)) continue;
+      const sentAt=curDate ? (curDate+'T'+hh.padStart(2,'0')+':'+mi+':00') : null;
+      out.push({ sender_name:sender, sent_at:sentAt, raw_message:msg });
+    } else if(out.length){
+      out[out.length-1].raw_message += '\n'+line.trim();   // ข้อความหลายบรรทัด ต่อเข้าอันก่อนหน้า
+    }
+  }
+  return out;
+}
+async function dmAdminImportText(){
+  const ta=document.getElementById('ad-import-text'); const txt=ta?ta.value:'';
+  const resEl=document.getElementById('ad-import-result');
+  const msgs=_dmParseLineExport(txt);
+  if(!msgs.length){ if(resEl) resEl.textContent='ไม่พบข้อความที่แยกได้ — ตรวจรูปแบบไฟล์ export'; return; }
+  if(!dmSb()||!dmUser){ if(resEl) resEl.textContent='ยังไม่ได้ล็อกอิน/เชื่อมต่อ database'; return; }
+  try{
+    const rows=msgs.map(m=>({ raw_message:m.raw_message, sender_name:m.sender_name, sent_at:m.sent_at, created_by:dmUser.id }));
+    const { error } = await dmSb().from('job_drafts').insert(rows);
+    if(error){ if(resEl) resEl.textContent='นำเข้าไม่สำเร็จ: '+error.message; return; }
+    if(resEl) resEl.textContent='นำเข้าสำเร็จ '+rows.length+' ข้อความ ✓';
+    if(ta) ta.value='';
+    dmAdminLoadDrafts();
+  }catch(e){ if(resEl) resEl.textContent='error: '+(e&&e.message||e); }
+}
+let _adStatus='pending';
+function dmAdminFilterStatus(el){
+  document.querySelectorAll('#ad-status-tabs .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  _adStatus=el.getAttribute('data-status');
+  dmAdminLoadDrafts();
+}
+async function dmAdminLoadDrafts(){
+  const list=document.getElementById('ad-drafts-list'); if(!list||!dmSb()) return;
+  list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';
+  const { data, error } = await dmSb().from('job_drafts').select('*').eq('status',_adStatus).order('created_at',{ascending:false}).limit(100);
+  if(error){ list.innerHTML='<div style="padding:20px;color:var(--red)">โหลดไม่สำเร็จ: '+_dmEsc(error.message)+'</div>'; return; }
+  if(!data || !data.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">ไม่มีรายการ</div>'; return; }
+  list.innerHTML=data.map(_dmAdminDraftCard).join('');
+  refreshIcons();
+}
+function _dmAdminDraftCard(d){
+  const sent=d.sent_at?new Date(d.sent_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+  const actions = d.status==='pending'
+    ? '<button onclick="dmAdminRejectDraft(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-size:12.5px;cursor:pointer">ปฏิเสธ</button>'
+      +'<button onclick="dmAdminOpenPublish(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:none;background:var(--p600);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer">โพสต์เป็นงาน</button>'
+    : '<span style="font-size:12px;color:var(--ink4)">'+(d.status==='published'?'โพสต์แล้ว ✓':'ปฏิเสธแล้ว')+'</span>';
+  return '<div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff">'
+    +'<div style="font-size:11.5px;color:var(--ink4);margin-bottom:6px">'+_dmEsc(d.sender_name||'ไม่ระบุ')+(sent?' · '+sent:'')+'</div>'
+    +'<div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;margin-bottom:10px">'+_dmEsc(d.raw_message)+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+actions+'</div>'
+    +'</div>';
+}
+function dmAdminRejectDraft(id){
+  if(!confirm('ปฏิเสธ draft นี้?')) return;
+  dmSb().from('job_drafts').update({status:'rejected'}).eq('id',id).then(function(r){ if(r.error) showToast('ไม่สำเร็จ: '+r.error.message); else { showToast('ปฏิเสธแล้ว'); dmAdminLoadDrafts(); } });
+}
+let _adEditingDraft=null;
+function dmAdminOpenPublish(id){
+  dmSb().from('job_drafts').select('*').eq('id',id).single().then(function(r){
+    if(r.error || !r.data){ showToast('โหลด draft ไม่สำเร็จ'); return; }
+    const d=r.data; _adEditingDraft=d;
+    const p=d.parsed||{};
+    document.getElementById('ad-ref-text').textContent=d.raw_message;
+    document.getElementById('ad-clinicname').value=d.clinic_name_text||'';
+    document.getElementById('ad-title').value=p.title||'';
+    document.getElementById('ad-position').value=p.position||'assistant';
+    document.getElementById('ad-province').value=p.province||'';
+    document.getElementById('ad-district').value=p.district||'';
+    document.getElementById('ad-wage').value=p.wage_text||'';
+    document.querySelectorAll('#ad-days .chip').forEach(c=>c.classList.remove('on'));
+    document.getElementById('ad-dates').value='';
+    document.getElementById('ad-time-start').value=p.time_start||'';
+    document.getElementById('ad-time-end').value=p.time_end||'';
+    document.getElementById('ad-desc').value='';
+    const panel=document.getElementById('ad-edit-panel'); panel.style.display='block'; panel.scrollIntoView({behavior:'smooth',block:'start'});
+    refreshIcons();
+  });
+}
+function dmAdminClosePublish(){ _adEditingDraft=null; document.getElementById('ad-edit-panel').style.display='none'; }
+async function dmAdminConfirmPublish(){
+  if(!_adEditingDraft) return;
+  const title=document.getElementById('ad-title').value.trim();
+  const position=document.getElementById('ad-position').value;
+  const province=document.getElementById('ad-province').value.trim();
+  if(!title || !province){ showToast('กรอกหัวข้อประกาศ + จังหวัด ก่อน'); return; }
+  const district=document.getElementById('ad-district').value.trim()||null;
+  const wage_text=document.getElementById('ad-wage').value.trim()||null;
+  const dayNames=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+  const work_days=[...document.querySelectorAll('#ad-days .chip.on')].map(c=>dayNames.indexOf(c.textContent.trim())+1).filter(n=>n>0);
+  const datesRaw=document.getElementById('ad-dates').value.trim();
+  const work_dates=datesRaw?datesRaw.split(',').map(s=>s.trim()).filter(Boolean):[];
+  const time_start=document.getElementById('ad-time-start').value.trim()||null;
+  const time_end=document.getElementById('ad-time-end').value.trim()||null;
+  const clinic_name_text=document.getElementById('ad-clinicname').value.trim()||null;
+  const descManual=document.getElementById('ad-desc').value.trim();
+  const description=[clinic_name_text?('คลินิก: '+clinic_name_text):'',descManual].filter(Boolean).join('\n')||null;
+  try{
+    const { data:pid, error:pidErr } = await dmSb().rpc('dm_proxy_clinic_id');
+    if(pidErr || !pid){ showToast('หา proxy clinic ไม่สำเร็จ: '+(pidErr&&pidErr.message||'')); return; }
+    const { data:job, error:jobErr } = await dmSb().from('jobs').insert({
+      clinic_id:pid, title, position, province, district, wage_text,
+      work_days: work_days.length?work_days:null,
+      work_dates: work_dates.length?work_dates:null,
+      time_start, time_end, description
+    }).select('id').single();
+    if(jobErr){ showToast('สร้างงานไม่สำเร็จ: '+jobErr.message); return; }
+    const { error:updErr } = await dmSb().from('job_drafts').update({ status:'published', published_job_id:job.id, clinic_name_text }).eq('id',_adEditingDraft.id);
+    if(updErr) console.warn('job_drafts update', updErr);
+    showToast('โพสต์งานสำเร็จ ✓');
+    dmAdminClosePublish();
+    dmAdminLoadDrafts();
+  }catch(e){ showToast('error: '+(e&&e.message||e)); }
 }
 function applyFilters(fw){
   const tc=fw.closest('.tab-content')||fw.closest('.view'); if(!tc) return;
