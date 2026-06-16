@@ -3500,7 +3500,7 @@ function _dmEmptyBoard(msg, icon){   // empty state แทนการคง moc
     +'<i data-lucide="'+(icon||'inbox')+'" style="width:38px;height:38px;color:var(--p300)"></i>'
     +'<div style="font-size:13.5px;margin-top:10px">'+_dmEsc(msg)+'</div></div>';
 }
-function dmJobCard(job){
+function dmJobCard(job,idx){
   const clinic=job.clinics||{};
   const cname=_dmEsc(clinic.name||'คลินิก');
   const pos=DM_POS_LABEL[job.position]||_dmEsc(job.position);
@@ -3513,7 +3513,7 @@ function dmJobCard(job){
   const loc=_dmEsc(job.province)+(job.district?' ('+_dmEsc(job.district)+')':'');
   const wage=_dmEsc(_dmWage(job));
   const addBtn=(typeof dmUser!=='undefined' && dmUser && dmUser.id && dmUser.role==='worker') ? `<button class="btn-line" data-clinic="${_dmEsc(clinic.name||'')}" data-job="${_dmEsc(job.title||'')}" data-line="${_dmEsc(clinic.line_id||'')}" data-jobid="${job.id}" onclick="event.stopPropagation();dmCardAddLine(this)"><span class="llogo">L</span>ข้อมูลติดต่อ</button>` : ((typeof dmUser==='undefined'||!dmUser||!dmUser.id) ? `<button class="btn-line" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบ</button>` : '');   // worker=ข้อมูลติดต่อ · guest=login · clinic=ซ่อน
-  return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" data-days="${_dmJobDayNames(job).join('|')}" data-dates="${(job.work_dates||[]).join('|')}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
+  return `<div class="jcard${isUrg?' urg':''}" data-clinic="${cname}" data-provinces="${_dmEsc(job.province||'')}" data-days="${_dmJobDayNames(job).join('|')}" data-dates="${(job.work_dates||[]).join('|')}" data-idx="${idx||0}" onclick="dmOpenJob('${job.id}')" style="cursor:pointer;border-left:4px solid ${pc.bar}">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:9px">
             <div class="badges" style="margin-bottom:0"><span class="bdg bdg-role" style="background:${pc.bg};color:${pc.fg}">${pos}</span>${badge2}</div>
             <div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><span class="jcard-ts" style="margin-left:0"><i data-lucide="clock" style="color:var(--ink4)"></i> ${_dmEsc(_dmAgo(job.created_at))}</span>${saveBtn}</div>
@@ -5391,6 +5391,27 @@ function _cardMatches(card,f){
   if(f.q && !clinicName.includes(f.q)) return false;
   return true;
 }
+/* อันดับความตรงของ "วันที่พร้อมรับงาน" — ตรงวันเจาะจง(0) > ตรงวันในสัปดาห์(1) > ตามตกลง(2) */
+function _dmDateRank(card,date){
+  if(card.classList.contains('wcard')) return 0;
+  const dd=card.getAttribute('data-dates')||'';
+  if(dd && dd.split('|').includes(date)) return 0;
+  const ddays=card.getAttribute('data-days')||'';
+  if(ddays==='') return 2;
+  const wd=new Date(date+'T00:00:00').getDay(); const wdName=DM_DAYNAMES[wd===0?6:wd-1];
+  return ddays.split('|').includes(wdName) ? 1 : 3;
+}
+// เรียงการ์ดตามความตรงวัน (date) — ไม่มี date = กลับลำดับเดิมตาม data-idx (สร้างใหม่สุดก่อน)
+function _dmSortByDateMatch(tc,date){
+  const cont=tc.querySelector('[id$="-cards"], .cards'); if(!cont) return;
+  const list=[...cont.querySelectorAll(':scope > .jcard, :scope > .wcard')];
+  list.sort((a,b)=>{
+    const ra=date?_dmDateRank(a,date):0, rb=date?_dmDateRank(b,date):0;
+    if(ra!==rb) return ra-rb;
+    return (+a.dataset.idx||0)-(+b.dataset.idx||0);
+  });
+  list.forEach(c=>cont.appendChild(c));
+}
 function applyFilters(fw){
   const tc=fw.closest('.tab-content')||fw.closest('.view'); if(!tc) return;
   const view=fw.closest('.view');
@@ -5416,6 +5437,7 @@ function applyFilters(fw){
   const cards=[...tc.querySelectorAll('.jcard,.wcard')];
   let visible=0;
   cards.forEach(c=>{ if(_cardMatches(c,f)){c.classList.remove('hidden');visible++;} else c.classList.add('hidden'); });
+  _dmSortByDateMatch(tc,date);   // มี date → ตรงวันเจาะจง > ตรงวันในสัปดาห์ > ตามตกลง · ไม่มี date → คืนลำดับเดิม
   const active=!!(pos||skills.length||provs.length||wantUrgent||days.length||q||date);
   _showBoardEmpty(tc,view,visible,active);
   _updateCount(tc,visible,active);
