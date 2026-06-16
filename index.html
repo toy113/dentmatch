@@ -1118,6 +1118,11 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
       </div>
+      <div class="tcj-date-wrap" style="padding:10px 16px 0">
+        <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> เลือกวันที่พร้อมรับงาน</div>
+        <div id="tcj-date-chips" class="chip-row" style="margin-bottom:8px"></div>
+        <input type="date" class="inp" id="tcj-date-custom" placeholder="หรือเลือกวันอื่น" onchange="_dmPickCustomDate('tcj',this)">
+      </div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
           <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none"><i data-lucide="search"></i></span>
@@ -1731,7 +1736,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="wtj-date-wrap" style="padding:10px 16px 0">
         <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> เลือกวันที่พร้อมรับงาน</div>
         <div id="wtj-date-chips" class="chip-row" style="margin-bottom:8px"></div>
-        <input type="date" class="inp" id="wtj-date-custom" placeholder="หรือเลือกวันอื่น" onchange="_wtjPickCustomDate(this)">
+        <input type="date" class="inp" id="wtj-date-custom" placeholder="หรือเลือกวันอื่น" onchange="_dmPickCustomDate('wtj',this)">
       </div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
@@ -2608,7 +2613,7 @@ function workerTab(name,el){
   ['profile','inbox','jobs','workers'].forEach(n=>{const e=document.getElementById('wt-'+n);if(e)e.classList.remove('on')});
   const t=document.getElementById('wt-'+name); if(t)t.classList.add('on');
   if(name==='inbox'){ try{ localStorage.setItem('dm_inbox_read', String(Date.now())); }catch(e){} if(typeof dmLoadNoti==='function') dmLoadNoti(); if(dmSb()&&dmUser&&dmUser.role==='worker') dmSb().from('invites').update({read_at:new Date().toISOString()}).eq('worker_id',dmUser.id).is('read_at',null).then(function(){},function(){}); }   // อ่านคำเชิญ → เคลียร์ noti + มาร์ก read_at (คลินิกเห็น "อ่านแล้ว")
-  if(name==='jobs' && typeof _wtjRenderDateChips==='function') _wtjRenderDateChips();
+  if(name==='jobs' && typeof _dmRenderDateChips==='function') _dmRenderDateChips('wtj');
 }
 /* ── NOTIFICATION SYSTEM ── */
 const _notiCount = { worker: 2, clinic: 2 };
@@ -3450,34 +3455,36 @@ function _editExclSync(){
   _exclLock(document.getElementById('ej-days'), hasDates && daysSel===0);
   _exclLock(document.getElementById('ej-date'), daysSel>0 && !hasDates);
 }
-/* ตัวกรอง "วันที่ต้องการทำงาน" — งาน tab ฝั่ง worker (เลือกได้ทีละวันเดียว) */
-let _wtjSelDate=null;
-function _wtjRenderDateChips(){
-  const wrap=document.getElementById('wtj-date-chips'); if(!wrap) return;
+/* ตัวกรอง "เลือกวันที่พร้อมรับงาน" — งาน tab ฝั่ง worker (wtj) + guest (tcj) (เลือกได้ทีละวันเดียว) */
+const _dmDateSel={};   // {wtj:'2026-06-16', tcj:null, ...}
+const _DM_DATE_TC={ wtj:'wt-jobs', tcj:'tc-jobs' };   // prefix → tab-content id
+function _dmRenderDateChips(prefix){
+  const wrap=document.getElementById(prefix+'-date-chips'); if(!wrap) return;
   const today=new Date(); let html='';
-  for(let i=0;i<7;i++){
+  const sel=_dmDateSel[prefix];
+  for(let i=0;i<14;i++){
     const d=new Date(today); d.setDate(today.getDate()+i);
     const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     const lbl=i===0?'วันนี้':(i===1?'พรุ่งนี้':DM_DAYS[d.getDay()===0?6:d.getDay()-1]);
     const mon=_thMonthsAbbr[d.getMonth()];
-    html+='<div class="chip'+(iso===_wtjSelDate?' on':'')+'" data-date="'+iso+'" onclick="_wtjPickDate(\''+iso+'\',this)" style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;min-width:54px;padding:8px 4px">'
+    html+='<div class="chip'+(iso===sel?' on':'')+'" data-date="'+iso+'" onclick="_dmPickDate(\''+prefix+'\',\''+iso+'\')" style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;min-width:54px;padding:8px 4px">'
       +'<span style="font-size:15px;font-weight:700">'+d.getDate()+'</span> '
       +'<span style="font-size:10px;white-space:nowrap">'+lbl+' · '+mon+'</span></div>';
   }
   wrap.innerHTML=html;
 }
-function _wtjApplyDateFilter(){ const fw=document.querySelector('#wt-jobs .filter-wrap'); if(fw) applyFilters(fw); }
-function _wtjPickDate(iso,el){
-  _wtjSelDate=(_wtjSelDate===iso)?null:iso;
-  const wrap=document.getElementById('wtj-date-chips');
-  if(wrap) wrap.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c.getAttribute('data-date')===_wtjSelDate));
-  const inp=document.getElementById('wtj-date-custom'); if(inp) inp.value='';
-  _wtjApplyDateFilter();
+function _dmApplyDateFilter(prefix){ const tcId=_DM_DATE_TC[prefix]; const fw=tcId&&document.querySelector('#'+tcId+' .filter-wrap'); if(fw) applyFilters(fw); }
+function _dmPickDate(prefix,iso){
+  _dmDateSel[prefix]=(_dmDateSel[prefix]===iso)?null:iso;
+  const wrap=document.getElementById(prefix+'-date-chips');
+  if(wrap) wrap.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c.getAttribute('data-date')===_dmDateSel[prefix]));
+  const inp=document.getElementById(prefix+'-date-custom'); if(inp) inp.value='';
+  _dmApplyDateFilter(prefix);
 }
-function _wtjPickCustomDate(inp){
-  _wtjSelDate=inp.value||null;
-  const wrap=document.getElementById('wtj-date-chips'); if(wrap) wrap.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
-  _wtjApplyDateFilter();
+function _dmPickCustomDate(prefix,inp){
+  _dmDateSel[prefix]=inp.value||null;
+  const wrap=document.getElementById(prefix+'-date-chips'); if(wrap) wrap.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
+  _dmApplyDateFilter(prefix);
 }
 function dmCardAddLine(btn){ if(!dmUser || !dmUser.id){ openSheet('s-login'); return; }   // guest = ล็อก → login ก่อน ข้อมูลติดต่อ
   openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
@@ -5401,7 +5408,8 @@ function applyFilters(fw){
   const nav=view&&view.querySelector('.dt-gsearch input');
   const inl=tc.querySelector('.clinic-search-inp');
   const q=((nav&&nav.value)||(inl&&inl.value)||'').trim().toLowerCase();
-  const date=(tc.id==='wt-jobs' && typeof _wtjSelDate!=='undefined') ? _wtjSelDate : null;
+  const _datePrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':null;
+  const date=(_datePrefix && typeof _dmDateSel!=='undefined') ? (_dmDateSel[_datePrefix]||null) : null;
   const f={pos,skills,provs,wantUrgent,days,q,date};
   const cards=[...tc.querySelectorAll('.jcard,.wcard')];
   let visible=0;
@@ -5441,7 +5449,8 @@ function clearAllFilters(view,tc){
   const nav=view&&view.querySelector('.dt-gsearch input'); if(nav) nav.value='';
   const inl=tc.querySelector('.clinic-search-inp'); if(inl) inl.value='';
   const clr=tc.querySelector('[id^="search-"][id$="-clear"]'); if(clr) clr.style.display='none';
-  if(tc.id==='wt-jobs'){ _wtjSelDate=null; const di=tc.querySelector('#wtj-date-custom'); if(di) di.value=''; const dc=tc.querySelector('#wtj-date-chips'); if(dc) dc.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on')); }
+  const _clrPrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':null;
+  if(_clrPrefix){ _dmDateSel[_clrPrefix]=null; const di=tc.querySelector('#'+_clrPrefix+'-date-custom'); if(di) di.value=''; const dc=tc.querySelector('#'+_clrPrefix+'-date-chips'); if(dc) dc.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on')); }
   if(fw) applyFilters(fw);
 }
 function applyActiveBoard(){
@@ -5572,7 +5581,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   hideZeroTrust();
   initA11y();
   initFilters();
-  _wtjRenderDateChips();
+  _dmRenderDateChips('wtj');
+  _dmRenderDateChips('tcj');
   initFilterCollapse();
   if(window.innerWidth>=768) initDesktop();
   window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); dmApplyStats(); });
