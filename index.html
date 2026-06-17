@@ -1372,16 +1372,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="form-group"><label>Part-time วันที่</label><input type="date" class="inp" id="workdate" placeholder="เลือกวันแล้วเพิ่มอัตโนมัติ" onchange="_postAddDate(this)"><div id="postDatesChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div></div>
         <div class="form-group"><label>เวลา <span style="font-size:11px;color:var(--ink4);font-weight:400">(24 ชม. · HH:MM)</span></label><div class="inp-row"><input type="text" class="inp" value="10:00" inputmode="numeric" maxlength="5" placeholder="เริ่ม เช่น 10:00" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"><input type="text" class="inp" value="19:30" inputmode="numeric" maxlength="5" placeholder="เลิก เช่น 19:30" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" oninput="fmtTime(this)"></div></div>
         <div class="form-group">
-          <label>ค่าตอบแทน</label>
-          <div style="display:flex;gap:8px;margin-bottom:10px">
-            <button id="pay-day" onclick="setPayType('day')" style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--p500);background:var(--p600);color:#fff;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:.2s">รายวัน</button>
-            <button id="pay-month" onclick="setPayType('month')" style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--border2);background:#fff;color:var(--ink3);font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s">รายเดือน</button>
-            <button id="pay-nego" onclick="setPayType('nego')" style="flex:1;padding:10px;border-radius:10px;border:2px solid var(--border2);background:#fff;color:var(--ink3);font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s">ตามตกลง</button>
-          </div>
-          <div id="wage-input-wrap" style="position:relative">
-            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--p600)">฿</span>
-            <input type="number" class="inp" id="wage-input" placeholder="" style="padding-left:32px">
-          </div>
+          <label>ค่าตอบแทน <span style="font-size:11px;color:var(--ink4);font-weight:400">(กรอกเอง · เว้นว่าง = ตามตกลง)</span></label>
+          <input type="text" class="inp" id="wage-input" placeholder="เช่น 600/วัน · 30,000/เดือน · DF 50:50 · ตามตกลง">
         </div>
         <div class="form-group"><label>รายละเอียดเพิ่มเติม</label><textarea class="inp" id="post-desc" rows="3" placeholder="ขอบเขตงาน, สิ่งที่คลินิกมีให้, ข้อกำหนด..."></textarea></div>
         <button class="btn-outline" type="button" onclick="previewPost()" style="margin-bottom:8px"><i data-lucide="eye"></i> ดูตัวอย่างการ์ด</button>
@@ -2458,16 +2450,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     </div>
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">หัวข้อประกาศ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เว้นว่างจะตั้งให้อัตโนมัติ)</span></label>
     <input type="text" class="inp" id="ej-title" maxlength="80" placeholder="เช่น รับด่วน! ทันตแพทย์ GP ใจดี เสาร์-อาทิตย์" style="margin-bottom:16px">
-    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">ค่าตอบแทน</label>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button type="button" id="ej-pay-day" onclick="_ejSetPay('day')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">รายวัน</button>
-      <button type="button" id="ej-pay-month" onclick="_ejSetPay('month')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">รายเดือน</button>
-      <button type="button" id="ej-pay-nego" onclick="_ejSetPay('nego')" style="flex:1;padding:10px;border-radius:10px;cursor:pointer">ตามตกลง</button>
-    </div>
-    <div id="ej-wage-wrap" style="position:relative;margin-bottom:16px">
-      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--p600)">฿</span>
-      <input type="number" class="inp" id="ej-wage" style="padding-left:32px">
-    </div>
+    <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">ค่าตอบแทน <span style="font-size:11px;color:var(--ink4);font-weight:400">(กรอกเอง · เว้นว่าง = ตามตกลง)</span></label>
+    <input type="text" class="inp" id="ej-wage" placeholder="เช่น 600/วัน · 30,000/เดือน · DF 50:50 · ตามตกลง" style="margin-bottom:16px">
     <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px">วันทำงานประจำ</label>
     <div class="chip-row" id="ej-days" style="flex-wrap:wrap;margin-bottom:16px">
       <div class="chip" onclick="chipMulti(this);_editExclSync()">จันทร์</div>
@@ -2907,16 +2891,8 @@ function finishWorkLog(){
   dmLoadManageBoard();   // refresh → progress + สถานะการ์ดอัปเดต (รองรับหลายวัน/หลายคน)
 }
 /* ── แก้ไขประกาศงาน (ล็อก ตำแหน่ง+ทักษะ · แก้ ค่าตอบแทน/วัน/วันที่/เวลา/รายละเอียด → UPDATE jobs) ── */
-let _editJobId=null, _editPay='day', _editDates=[];
+let _editJobId=null, _editDates=[];
 const _EJ_DAYS=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
-function _ejSetPay(type){
-  _editPay=type;
-  [['day','ej-pay-day'],['month','ej-pay-month'],['nego','ej-pay-nego']].forEach(function(p){
-    const b=document.getElementById(p[1]); if(!b) return; const on=(p[0]===type);
-    b.style.cssText='flex:1;padding:10px;border-radius:10px;cursor:pointer;font-family:\'Sarabun\',sans-serif;font-size:13.5px;transition:.2s;border:2px solid '+(on?'var(--p500)':'var(--border2)')+';background:'+(on?'var(--p600)':'#fff')+';color:'+(on?'#fff':'var(--ink3)')+';font-weight:'+(on?'700':'600');
-  });
-  const w=document.getElementById('ej-wage'); if(w){ const ng=(type==='nego'); w.disabled=ng; w.placeholder=ng?'ไม่ต้องระบุ (ตามตกลง)':''; w.style.background=ng?'var(--p25)':''; if(ng) w.value=''; }   // ตามตกลง = disable (ไม่ซ่อน → ช่องไม่หาย)
-}
 function _editRenderDates(){ const c=document.getElementById('ej-dates-chips'); if(!c) return; c.innerHTML=_editDates.map(function(d){ return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--p100);color:var(--p700);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600">'+_dmDateShort(d)+' <span onclick="_editRmDate(\''+d+'\')" style="cursor:pointer;font-weight:800">×</span></span>'; }).join(''); }
 function _editAddDate(inp){ var v=inp.value; if(v && _editDates.indexOf(v)<0){ _editDates.push(v); _editDates.sort(); _editRenderDates(); _editExclSync(); } inp.value=''; }
 function _editRmDate(d){ _editDates=_editDates.filter(function(x){ return x!==d; }); _editRenderDates(); _editExclSync(); }
@@ -2929,10 +2905,8 @@ function mEdit(btn){
   const tin=document.getElementById('ej-title'); if(tin) tin.value=job.title||'';
   const lk=document.getElementById('editjob-locked');
   if(lk) lk.innerHTML='<i data-lucide="briefcase"></i> '+_dmEsc(DM_POS_LABEL[job.position]||job.position||'-')+'  ·  <i data-lucide="sparkles"></i> '+_dmEsc((job.skills||[]).join(', ')||'—');
-  // ค่าตอบแทน — แกะจาก wage_text
-  const wt=job.wage_text||''; let pay='day', wageVal='';
-  if(/ตามตกลง/.test(wt)) pay='nego'; else { if(/เดือน/.test(wt)) pay='month'; wageVal=wt.replace(/[^0-9]/g,'')||''; }
-  _ejSetPay(pay); const wEl=document.getElementById('ej-wage'); if(wEl) wEl.value=wageVal;
+  // ค่าตอบแทน — กรอกเอง: โหลดข้อความเดิมมาตรง ๆ
+  const wEl=document.getElementById('ej-wage'); if(wEl) wEl.value=job.wage_text||'';
   // วันทำงาน
   const wd=job.work_days||[];
   [].forEach.call(document.querySelectorAll('#ej-days .chip'), function(c){ const idx=_EJ_DAYS.indexOf(c.textContent.trim()); c.classList.toggle('on', idx>=0 ? wd.indexOf(idx+1)>=0 : (wd.length===0)); });   // chip "ตามตกลง" (idx=-1) = on เมื่อไม่มีวันทำงาน
@@ -2949,10 +2923,8 @@ async function dmSaveJobEdit(){
   if(!_editJobId){ closeSheet('s-edit-job'); return; }
   if(!dmSb() || !dmUser || dmUser.role!=='clinic'){ closeSheet('s-edit-job'); showToast('ต้องเข้าสู่ระบบคลินิก'); return; }
   const err=document.getElementById('ej-err'); if(err) err.style.display='none';
-  // ค่าตอบแทน
-  const wv=(document.getElementById('ej-wage')||{}).value; let wage_text;
-  if(_editPay==='nego') wage_text='ตามตกลง';
-  else { if(!wv || +wv<=0){ if(err){ err.textContent='กรุณากรอกค่าตอบแทน'; err.style.display='block'; } return; } wage_text='฿'+(+wv).toLocaleString()+(_editPay==='month'?'/เดือน':'/วัน'); }
+  // ค่าตอบแทน — กรอกเอง: ข้อความล้วน · เว้นว่าง = ตามตกลง (null)
+  const wage_text=(((document.getElementById('ej-wage')||{}).value)||'').trim()||null;
   // วันทำงาน → int[]
   const work_days=[].filter.call(document.querySelectorAll('#ej-days .chip.on'), function(c){ return _EJ_DAYS.indexOf(c.textContent.trim())>=0; }).map(function(c){ return _EJ_DAYS.indexOf(c.textContent.trim())+1; });
   // วันที่
@@ -3810,10 +3782,8 @@ async function dmPostJob(){
   const ti=root.querySelectorAll('.inp-row input');
   const time_start=(ti[0]&&ti[0].value.trim())||null;
   const time_end=(ti[1]&&ti[1].value.trim())||null;
-  const wv=(document.getElementById('wage-input')||{}).value;
-  let wage_text=null;
-  if(_payType==='nego') wage_text='ตามตกลง';
-  else if(wv) wage_text='฿'+(+wv).toLocaleString()+(_payType==='month'?'/เดือน':'/วัน');
+  const wv=((document.getElementById('wage-input')||{}).value||'').trim();
+  const wage_text=wv||null;   // กรอกเอง: ข้อความล้วน · เว้นว่าง = null → _dmWage แสดง "ค่าตอบแทนตามตกลง"
   const de=document.getElementById('post-desc'); const description=(de&&de.value.trim())||null;
   const work_dates=_postDates.length?_postDates.slice():null;
   const work_date=_postDates.length?_postDates.slice().sort()[0]:((document.getElementById('workdate')||{}).value||null);   // work_date = วันแรก (backward compat)
@@ -5223,30 +5193,11 @@ function applyRegProvince(){
   closeSheet('s-reg-province');
 }
 
-/* ── PAY TYPE ── */
-let _payType = 'day';
-function setPayType(type) {
-  _payType = type;
-  const dayBtn = document.getElementById('pay-day');
-  const monBtn = document.getElementById('pay-month');
-  const negoBtn = document.getElementById('pay-nego');
-  const wrap = document.getElementById('wage-input-wrap');
-  const on = 'background:var(--p600);color:#fff;border-color:var(--p500);font-weight:700';
-  const off = 'background:#fff;color:var(--ink3);border-color:var(--border2);font-weight:600';
-  if(dayBtn) dayBtn.style.cssText += ';' + (type==='day'?on:off);
-  if(monBtn) monBtn.style.cssText += ';' + (type==='month'?on:off);
-  if(negoBtn) negoBtn.style.cssText += ';' + (type==='nego'?on:off);
-  if(wrap) wrap.style.display = type==='nego' ? 'none' : 'block';
-}
-/* validate ฟอร์มลงงาน: ค่าตอบแทน (ถ้าไม่ใช่ "ตามตกลง") · วันทำงานไม่บังคับ */
+/* validate ฟอร์มลงงาน: ค่าตอบแทนกรอกเอง (ไม่บังคับ · เว้นว่าง = ตามตกลง) · วันทำงานไม่บังคับ */
 function validatePost(){
   dmLog('[postjob] validatePost เรียกแล้ว · role=', (dmUser&&dmUser.role), '· sb=', (typeof dmSb==='function'&&!!dmSb()));
-  const wage=document.getElementById('wage-input');
   const err=document.getElementById('post-err');
   let ok=true, msgs=[];
-  if(typeof _payType!=='undefined' && _payType!=='nego' && wage && (!wage.value || +wage.value<=0)){
-    showInpError(wage); ok=false; msgs.push('กรอกค่าตอบแทน');
-  }
   const _postEl=document.getElementById('cc-post');
   const _daysSel=_postEl?_postEl.querySelectorAll('#postDays .chip.on').length:0;
   if(_daysSel===0 && _postDates.length===0){ ok=false; msgs.push('เลือกวันทำงานประจำ หรือ Part-time วันที่ อย่างน้อย 1 อย่าง'); }
@@ -5264,10 +5215,8 @@ function _dmRenderPreview(){
   const skills=[].map.call(post.querySelectorAll('#postSkillChips .chip.on'),c=>c.textContent.trim());
   const days=[].map.call(post.querySelectorAll('#postDays .chip.on'),c=>c.textContent.trim());
   const times=[].map.call(post.querySelectorAll('.inp-row input'),i=>i.value).filter(Boolean);
-  const wage=(document.getElementById('wage-input')||{}).value;
-  const nego=(typeof _payType!=='undefined'&&_payType==='nego');
-  const month=(typeof _payType!=='undefined'&&_payType==='month');
-  const payHtml = nego ? 'ค่าตอบแทนตามตกลง' : ((wage?('฿'+(+wage).toLocaleString()):'ระบุค่าตอบแทน')+' <span>'+(month?'/ เดือน':'/ วัน')+'</span>');
+  const wage=((document.getElementById('wage-input')||{}).value||'').trim();
+  const payHtml = wage ? _dmEsc(wage) : 'ค่าตอบแทนตามตกลง';
   const sched = (_postDates.length ? _postDates.map(_dmDateShort).join(', ') : (days.length?days.join(' '):'วันตามตกลง')) + (times.length===2?(' · '+times[0]+'–'+times[1]+' น.'):'');
   const _cl=(typeof dmUser!=='undefined'&&dmUser&&dmUser.clinic)||{};   // ชื่อ/ที่ตั้งคลินิกจริง (ไม่ใช่ mock)
   const _cname=_dmEsc(_cl.name||'คลินิกของคุณ');
