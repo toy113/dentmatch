@@ -5598,8 +5598,7 @@ function dmAdminParseDraft(id,btn){
   if(btn){ btn.disabled=true; btn.textContent='กำลังประมวลผล...'; }
   dmSb().functions.invoke('parse-job-draft',{ body:{ draftId:id } }).then(function(r){
     if(r.error || (r.data&&r.data.error)){ showToast('ดึงข้อมูลไม่สำเร็จ: '+(r.error&&r.error.message || (r.data&&r.data.error) || '')); if(btn){ btn.disabled=false; btn.textContent='🪄 ดึงข้อมูลอัตโนมัติ'; } return; }
-    showToast('ดึงข้อมูลสำเร็จ ✓');
-    dmAdminLoadDrafts();
+    dmAdminLoadDrafts().then(function(){ dmAdminOpenPublish(id); });
   });
 }
 function dmAdminRejectDraft(id){
