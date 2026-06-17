@@ -1865,6 +1865,12 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="chip" data-status="published" onclick="dmAdminFilterStatus(this)">โพสต์แล้ว</div>
           <div class="chip" data-status="rejected" onclick="dmAdminFilterStatus(this)">ปฏิเสธแล้ว</div>
         </div>
+        <div class="chip-row" id="ad-parse-tabs" style="margin-top:6px">
+          <div class="chip on" data-parse="all" onclick="dmAdminFilterParse(this)">ทั้งหมด</div>
+          <div class="chip" data-parse="unparsed" onclick="dmAdminFilterParse(this)">ยังไม่ได้ดึงข้อมูล</div>
+          <div class="chip" data-parse="is_job" onclick="dmAdminFilterParse(this)">✓ ใช่ประกาศงาน</div>
+          <div class="chip" data-parse="not_job" onclick="dmAdminFilterParse(this)">✗ ไม่ใช่งาน</div>
+        </div>
         <div id="ad-drafts-list"></div>
       </div>
       <div id="ad-edit-panel" style="display:none;border:2px solid var(--p300);border-radius:14px;padding:14px;margin-top:6px;background:var(--p25)">
@@ -5521,21 +5527,44 @@ async function dmAdminImportText(){
     dmAdminLoadDrafts();
   }catch(e){ if(resEl) resEl.textContent='error: '+(e&&e.message||e); }
 }
-let _adStatus='pending';
+let _adStatus='pending', _adParseFilter='all', _adCachedDrafts=[];
 function dmAdminFilterStatus(el){
   document.querySelectorAll('#ad-status-tabs .chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   _adStatus=el.getAttribute('data-status');
   dmAdminLoadDrafts();
 }
+function dmAdminFilterParse(el){
+  document.querySelectorAll('#ad-parse-tabs .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  _adParseFilter=el.getAttribute('data-parse');
+  _dmAdminRenderDrafts();
+}
+function _dmAdminApplyParseFilter(rows){
+  if(_adParseFilter==='all') return rows;
+  return rows.filter(function(d){
+    const p=d.parsed||{};
+    const hasParsed=Object.keys(p).length>0;
+    if(_adParseFilter==='unparsed') return !hasParsed;
+    if(_adParseFilter==='is_job')   return hasParsed && p.is_job_post===true;
+    if(_adParseFilter==='not_job')  return hasParsed && p.is_job_post===false;
+    return true;
+  });
+}
+function _dmAdminRenderDrafts(){
+  const list=document.getElementById('ad-drafts-list'); if(!list) return;
+  const filtered=_dmAdminApplyParseFilter(_adCachedDrafts);
+  if(!filtered.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">ไม่มีรายการ</div>'; return; }
+  list.innerHTML=filtered.map(_dmAdminDraftCard).join('');
+  refreshIcons();
+}
 async function dmAdminLoadDrafts(){
   const list=document.getElementById('ad-drafts-list'); if(!list||!dmSb()) return;
   list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';
   const { data, error } = await dmSb().from('job_drafts').select('*').eq('status',_adStatus).order('sent_at',{ascending:true,nullsFirst:false}).order('created_at',{ascending:true}).limit(100);
   if(error){ list.innerHTML='<div style="padding:20px;color:var(--red)">โหลดไม่สำเร็จ: '+_dmEsc(error.message)+'</div>'; return; }
-  if(!data || !data.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">ไม่มีรายการ</div>'; return; }
-  list.innerHTML=data.map(_dmAdminDraftCard).join('');
-  refreshIcons();
+  _adCachedDrafts=data||[];
+  _dmAdminRenderDrafts();
 }
 function _dmAdminParsedPreview(d){
   const p=d.parsed;
