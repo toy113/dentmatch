@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร</title>
-<meta name="description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ เคาน์เตอร์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
+<meta name="description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
 <meta name="theme-color" content="#2E1A7E">
 <!-- favicon: inline SVG (ฟันบนพื้นม่วง) — กัน 404 favicon.ico -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232E1A7E'/%3E%3Ctext x='50' y='54' font-size='60' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%A6%B7%3C/text%3E%3C/svg%3E">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.dentmatch.app/">
 <meta property="og:title" content="DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร">
-<meta property="og:description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ เคาน์เตอร์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
+<meta property="og:description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
 <meta property="og:locale" content="th_TH">
 <meta property="og:image" content="https://www.dentmatch.app/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DentMatch — จับคู่คลินิกทันตกรรม ↔ ทันตบุคลากร">
-<meta name="twitter:description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ เคาน์เตอร์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
+<meta name="twitter:description" content="DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร ยุค AI ทั้งทันตแพทย์ ผู้ช่วยทันตแพทย์ part-time และ full-time, ค้นหางาน/รับคำเชิญ แล้วติดต่อผ่าน LINE">
 <meta name="twitter:image" content="https://www.dentmatch.app/assets/og-image.jpg">
 <!-- Supabase config: publishable (anon) key ใส่ frontend ได้ (RLS คุม) · ห้ามใส่ service_role/secret -->
 <script>
@@ -987,7 +987,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
     background:#fff;border:1px solid var(--border);border-radius:22px;
     padding:30px 32px;box-shadow:var(--sh-soft);gap:16px;
   }
-  .pos-grid{grid-template-columns:repeat(3,1fr);gap:12px}
+  .pos-grid{grid-template-columns:repeat(2,1fr);gap:12px}
   .inp-row{grid-template-columns:1fr 1fr;gap:12px}
 
   /* ══════════════════════════════════════════════
@@ -1113,7 +1113,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       </div>
 
       <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('tcj',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('tcj',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('tcj',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row"><div class="chip" onclick="filterPos('tcj',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('tcj',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div></div>
         <div class="chip-row" id="tcj-skills"></div><!-- ทักษะ: ว่างจนกว่าเลือกตำแหน่ง → filterPos เติมตามตำแหน่ง -->
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
@@ -1158,8 +1158,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="card-ft"><div class="wage">฿1,200 <span>/ วัน</span></div><button class="btn-lock" onclick="event.stopPropagation();openSheet('s-login')"><i data-lucide="lock"></i> ข้อมูลติดต่อ</button></div>
         </div>
         <div class="jcard urg" data-clinic="DentCare Clinic เชียงใหม่" onclick="goView('v-job-detail')">
-          <div class="badges"><span class="bdg bdg-role">เคาน์เตอร์</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">เจ้าหน้าที่เคาน์เตอร์ / นัดหมาย</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 2 วันที่แล้ว</span></div>
+          <div class="badges"><span class="bdg bdg-role">ผู้ช่วยฯ</span><span class="bdg bdg-urg"><div class="pd"></div>งานด่วน</span></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px"><div class="jcard-title" style="margin-bottom:0;flex:1">ผู้ช่วยทันตแพทย์ / นัดหมาย</div><span class="jcard-ts"><i data-lucide="clock" style="color:var(--ink4)"></i> 2 วันที่แล้ว</span></div>
           <div class="jcard-clinic"><i data-lucide="hospital"></i> DentCare Clinic เชียงใหม่</div>
           <div class="sched-strip"><span><i data-lucide="calendar-days"></i></span><span class="sched-txt">เสาร์-อาทิตย์ · 09:00–18:00 น.</span></div>
           <div class="meta"><span class="pill pill-p"><i data-lucide="map-pin"></i> เชียงใหม่</span></div>
@@ -1294,7 +1294,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- FIND JOBS -->
     <div class="tab-content on" id="cc-find">
       <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('ccf',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('ccf',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('ccf',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row"><div class="chip" onclick="filterPos('ccf',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('ccf',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div></div>
         <div class="chip-row" id="ccf-skills"></div><!-- ทักษะ: ว่างจนกว่าเลือกตำแหน่ง -->
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
@@ -1329,7 +1329,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- WORKERS clinic -->
     <div class="tab-content" id="cc-workers">
       <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('ccw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('ccw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('ccw',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row"><div class="chip" onclick="filterPos('ccw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('ccw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div></div>
         <div class="chip-row" id="ccw-skills"></div><!-- ทักษะ: ว่างจนกว่าเลือกตำแหน่ง -->
         <div class="chip-row"><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
@@ -1338,7 +1338,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div class="cards">
         <div class="wcard"><div class="wcard-top" style="cursor:default"><div class="av av-g0" style="background:linear-gradient(135deg,var(--p700),var(--p500))"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">4829</span></div><div class="av-dot"></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:var(--p100);color:var(--p700)">ทันตแพทย์</span><span class="w-exp">5 ปี</span></div><div class="w-loc"><i data-lucide="map-pin"></i> กรุงเทพฯ (บางนา)</div></div></div><div class="skills"><span class="sk">GP</span><span class="sk">Orthodontic</span><span class="sk">Extraction</span></div><div class="quote">มีประสบการณ์จัดฟัน 3 ปี ทำงานได้ทุกเคส ชอบงาน part-time เสาร์-อาทิตย์</div><div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 8 ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> 14 เดือน</span></div><div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d">จ</div><div class="d">อ</div><div class="d">พ</div><div class="d">พฤ</div><div class="d">ศ</div><div class="d on">ส</div><div class="d on">อา</div></div></div></div>
         <div class="wcard"><div class="wcard-top" style="cursor:default"><div class="av av-g3" style="background:linear-gradient(135deg,#2f6fe0,#1e4fa8)"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">3371</span></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:var(--blue-bg);color:var(--blue)">ผู้ช่วยฯ</span><span class="w-exp">3 ปี</span></div><div class="w-loc"><i data-lucide="map-pin"></i> เชียงใหม่</div></div></div><div class="skills"><span class="sk">Scaling</span><span class="sk">Assist Surgery</span></div><div class="quote">ชอบงาน part-time วันหยุด มีประสบการณ์คลินิก 3 ปี</div><div class="trust"><span class="tr ok"><i data-lucide="circle-check-big" style="color:var(--green)"></i> 5 ครั้ง</span><span class="tr"><i data-lucide="calendar-days"></i> 8 เดือน</span></div><div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d">จ</div><div class="d">อ</div><div class="d">พ</div><div class="d">พฤ</div><div class="d">ศ</div><div class="d on">ส</div><div class="d on">อา</div></div></div></div>
-        <div class="wcard"><div class="wcard-top" style="cursor:default"><div class="av av-g5" style="background:linear-gradient(135deg,#0ea371,#0a7a52)"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">7195</span></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:var(--green-bg);color:#1a7a3a">เคาน์เตอร์</span></div><div class="w-loc"><i data-lucide="map-pin"></i> นนทบุรี</div></div></div><div class="skills"><span class="sk">นัดหมาย</span><span class="sk">เบิกประกัน</span><span class="sk">ต้อนรับ</span></div><div class="quote">ประสบการณ์ front desk คลินิกทันตกรรม 2 ปี พร้อมรับงาน full-time</div><div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d on">จ</div><div class="d on">อ</div><div class="d on">พ</div><div class="d on">พฤ</div><div class="d on">ศ</div><div class="d">ส</div><div class="d">อา</div></div></div></div>
+        <div class="wcard"><div class="wcard-top" style="cursor:default"><div class="av av-g5" style="background:linear-gradient(135deg,#2f6fe0,#1e4fa8)"><div class="av-content"><span class="av-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></span><span class="av-lbl">7195</span></div></div><div class="wi"><div class="wr-row"><span class="bdg-wr" style="background:var(--blue-bg);color:var(--blue)">ผู้ช่วยฯ</span></div><div class="w-loc"><i data-lucide="map-pin"></i> นนทบุรี</div></div></div><div class="skills"><span class="sk">นัดหมาย</span><span class="sk">เบิกประกัน</span><span class="sk">ต้อนรับ</span></div><div class="quote">ประสบการณ์ front desk คลินิกทันตกรรม 2 ปี พร้อมรับงาน full-time</div><div class="avail-row"><span class="al">วันสะดวก:</span><div class="days"><div class="d on">จ</div><div class="d on">อ</div><div class="d on">พ</div><div class="d on">พฤ</div><div class="d on">ศ</div><div class="d">ส</div><div class="d">อา</div></div></div></div>
       </div>
     </div>
     <!-- POST -->
@@ -1349,7 +1349,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="pos-grid">
             <div class="pos-card on" data-pos="dentist" onclick="posCard(this)"><div class="pos-icon"><svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg></div><div class="pos-name">ทันตแพทย์</div><div class="pos-sub">DDS / ทพ.</div></div>
             <div class="pos-card" data-pos="assistant" onclick="posCard(this)"><div class="pos-icon"><i data-lucide="handshake"></i></div><div class="pos-name">ผู้ช่วยฯ</div><div class="pos-sub">DA / ผช.ทพ.</div></div>
-            <div class="pos-card" data-pos="counter" onclick="posCard(this)"><div class="pos-icon"><i data-lucide="monitor"></i></div><div class="pos-name">เคาน์เตอร์</div><div class="pos-sub">Front desk</div></div>
           </div>
         </div>
         <div class="form-group"><label>หัวข้อประกาศ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ · เว้นว่างจะตั้งให้อัตโนมัติ)</span></label><input type="text" class="inp" id="post-title" maxlength="80" placeholder="เช่น รับด่วน! ทันตแพทย์ GP ใจดี เสาร์-อาทิตย์"></div>
@@ -1721,7 +1720,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- WORKER JOBS -->
     <div class="tab-content on" id="wt-jobs">
       <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('wtj',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('wtj',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('wtj',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row"><div class="chip" onclick="filterPos('wtj',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('wtj',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div></div>
         <div class="chip-row" id="wtj-skills"><div class="chip" onclick="chipToggle(this)">GP</div><div class="chip" onclick="chipToggle(this)">Orthodontic</div><div class="chip" onclick="chipToggle(this)">Endodontic</div><div class="chip" onclick="chipToggle(this)">Surgery</div><div class="chip" onclick="chipToggle(this)">Implant</div><div class="chip" onclick="chipToggle(this)">Prosthodontic</div><div class="chip" onclick="chipToggle(this)">Pediatric</div><div class="chip" onclick="chipToggle(this)">ผู้ช่วยจัดฟัน</div><div class="chip" onclick="chipToggle(this)">Sterilize</div><div class="chip" onclick="chipToggle(this)">Implant assist</div><div class="chip" onclick="chipToggle(this)">นัดหมาย</div><div class="chip" onclick="chipToggle(this)">ประกันสังคม</div></div>
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
@@ -1766,7 +1765,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
     <!-- WORKERS (read-only — ใช้การ์ด/ข้อมูลชุดเดียวกับ cc-workers ผ่าน buildWorkerBoards) -->
     <div class="tab-content" id="wt-workers">
       <div class="filter-wrap">
-        <div class="chip-row"><div class="chip" onclick="filterPos('wtw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('wtw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div><div class="chip" onclick="filterPos('wtw',this,'เคาน์เตอร์')">เคาน์เตอร์</div></div>
+        <div class="chip-row"><div class="chip" onclick="filterPos('wtw',this,'ทันตแพทย์')">ทันตแพทย์</div><div class="chip" onclick="filterPos('wtw',this,'ผู้ช่วยฯ')">ผู้ช่วยฯ</div></div>
         <div class="chip-row" id="wtw-skills"><div class="chip" onclick="chipToggle(this)">GP</div><div class="chip" onclick="chipToggle(this)">Orthodontic</div><div class="chip" onclick="chipToggle(this)">Endodontic</div><div class="chip" onclick="chipToggle(this)">Surgery</div><div class="chip" onclick="chipToggle(this)">Implant</div><div class="chip" onclick="chipToggle(this)">Prosthodontic</div><div class="chip" onclick="chipToggle(this)">Pediatric</div><div class="chip" onclick="chipToggle(this)">Periodontic</div></div>
         <div class="chip-row"><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
@@ -1798,7 +1797,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           </div>
         </div>
         <div style="font-size:11.5px;color:var(--ink4);display:flex;align-items:flex-start;gap:5px;padding:0 2px;line-height:1.5">
-          <span>ℹ️</span><span id="edit-pos-hint">ผู้ช่วยฯ ↔ เคาน์เตอร์ สลับกันได้ในหน้านี้</span>
+          <span>ℹ️</span><span id="edit-pos-hint">เปลี่ยนตำแหน่งติดต่อแอดมิน</span>
         </div>
       </div>
       <!-- ชื่อ-นามสกุล: read-only, locked -->
@@ -1870,7 +1869,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="form-group"><label>ข้อความดิบ (อ้างอิง)</label><div id="ad-ref-text" style="font-size:12.5px;color:var(--ink4);white-space:pre-wrap;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px"></div></div>
         <div class="form-group"><label>ชื่อคลินิกจริง (จากแชท)</label><input class="inp" id="ad-clinicname" placeholder="เช่น คลินิกเอบีซี"></div>
         <div class="form-group"><label>หัวข้อประกาศ</label><input class="inp" id="ad-title" placeholder="เช่น รับผู้ช่วยทันตแพทย์ ด่วน"></div>
-        <div class="form-group"><label>ตำแหน่ง</label><select class="inp" id="ad-position"><option value="dentist">ทันตแพทย์</option><option value="assistant" selected>ผู้ช่วยฯ</option><option value="counter">เคาน์เตอร์</option></select></div>
+        <div class="form-group"><label>ตำแหน่ง</label><select class="inp" id="ad-position"><option value="dentist">ทันตแพทย์</option><option value="assistant" selected>ผู้ช่วยฯ</option></select></div>
         <div class="form-group"><label>จังหวัด</label><input class="inp" id="ad-province" placeholder="เช่น กรุงเทพมหานคร"></div>
         <div class="form-group"><label>เขต/อำเภอ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input class="inp" id="ad-district"></div>
         <div class="form-group"><label>ค่าจ้าง</label><input class="inp" id="ad-wage" placeholder="เช่น 600/วัน"></div>
@@ -2237,8 +2236,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="height:1px;background:var(--border);margin:4px 0 12px"></div>
       <div style="font-size:11.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">ข้อมูลโปรไฟล์ (แสดงแบบไม่ระบุตัวตน)</div>
       <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">ตำแหน่ง *</label>
-      <select class="inp" style="margin-bottom:9px" id="regWorkerPos" onchange="regWorkerSkills(this.value)"><option value="">เลือกตำแหน่ง...</option><option value="dentist">ทันตแพทย์</option><option value="assistant">ผู้ช่วยทันตแพทย์</option><option value="counter">เจ้าหน้าที่เคาน์เตอร์</option></select>
-      <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:-2px 0 11px;font-size:11.5px;color:var(--orange2);line-height:1.55;display:flex;align-items:flex-start;gap:6px"><span><i data-lucide="triangle-alert"></i></span><span><strong>ทันตแพทย์</strong> = แก้ไขไม่ได้ · <strong>ผู้ช่วยฯ ↔ เคาน์เตอร์</strong> สลับกันได้ภายหลัง</span></div>
+      <select class="inp" style="margin-bottom:9px" id="regWorkerPos" onchange="regWorkerSkills(this.value)"><option value="">เลือกตำแหน่ง...</option><option value="dentist">ทันตแพทย์</option><option value="assistant">ผู้ช่วยทันตแพทย์</option></select>
+      <div style="background:var(--orange-bg);border:1px solid rgba(245,129,31,.35);border-radius:10px;padding:9px 12px;margin:-2px 0 11px;font-size:11.5px;color:var(--orange2);line-height:1.55;display:flex;align-items:flex-start;gap:6px"><span><i data-lucide="triangle-alert"></i></span><span><strong>ทันตแพทย์</strong> = แก้ไขไม่ได้ · เปลี่ยนตำแหน่งภายหลังติดต่อแอดมิน</span></div>
       <!-- ใบประกอบ (เฉพาะทันตแพทย์ · self-attestation: เก็บเลข ไม่ verify) -->
       <div id="rw-license-wrap" style="display:none;margin:-2px 0 11px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">ใบประกอบวิชาชีพทันตกรรม</label>
@@ -2338,7 +2337,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
       <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">เลือกประกาศงาน</div>
       <!-- มีโพส: แสดง dropdown -->
       <div id="invite-has-jobs">
-        <select class="job-select" id="invite-job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option>เจ้าหน้าที่เคาน์เตอร์ · 1 มิ.ย. 68</option><option value="">— ไม่แนบประกาศงาน —</option></select>
+        <select class="job-select" id="invite-job-select"><option>ทันตแพทย์ GP · เสาร์ 24 พ.ค. — ฿3,500/วัน</option><option>ผู้ช่วยทันตแพทย์ Implant · อังคาร-พฤหัส</option><option value="">— ไม่แนบประกาศงาน —</option></select>
       </div>
       <!-- ไม่มีโพส: empty state -->
       <div id="invite-no-jobs" style="display:none;background:var(--p25);border:1.5px dashed var(--p200);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px">
@@ -3369,8 +3368,8 @@ async function dmLoadProfile(){
 
 /* ════════ C2 — บอร์ดบุคลากรจาก worker_profiles (public-safe เท่านั้น · ไม่แตะ worker_private) ════════ */
 const DM_TOOTH_SVG = '<svg class="lucide lucide-tooth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5.5c-1.5-1.4-3-2-4.6-2C4.9 3.5 3.5 5.6 3.5 8.2c0 1.9.5 3.4 1 5.3.4 1.6.5 3.8 1 5.3.3 1 .8 1.7 1.6 1.7s1.2-.8 1.4-1.8l.6-3c.2-1 .5-1.4 1.4-1.4h1c.9 0 1.2.4 1.4 1.4l.6 3c.2 1 .6 1.8 1.4 1.8s1.3-.7 1.6-1.7c.5-1.5.6-3.7 1-5.3.5-1.9 1-3.4 1-5.3 0-2.6-1.4-4.7-3.9-4.7-1.6 0-3.1.6-4.6 2Z"/></svg>';
-const DM_POS_LABEL = { dentist:'ทันตแพทย์', assistant:'ผู้ช่วยฯ', counter:'เคาน์เตอร์' };
-const _DM_POS_COLOR = { dentist:{bar:'var(--p600)',bg:'var(--p100)',fg:'var(--p700)'}, assistant:{bar:'var(--blue)',bg:'var(--blue-bg)',fg:'var(--blue)'}, counter:{bar:'var(--green)',bg:'var(--green-bg)',fg:'#1a7a3a'} };
+const DM_POS_LABEL = { dentist:'ทันตแพทย์', assistant:'ผู้ช่วยฯ', counter:'ผู้ช่วยฯ' };   // counter ยุบรวมผู้ช่วยฯ — map ไว้กันข้อมูลเดิมที่ยังไม่ migrate
+const _DM_POS_COLOR = { dentist:{bar:'var(--p600)',bg:'var(--p100)',fg:'var(--p700)'}, assistant:{bar:'var(--blue)',bg:'var(--blue-bg)',fg:'var(--blue)'}, counter:{bar:'var(--blue)',bg:'var(--blue-bg)',fg:'var(--blue)'} };
 function _dmPosColor(p){ return _DM_POS_COLOR[p] || {bar:'var(--p600)',bg:'var(--p100)',fg:'var(--p700)'}; }   // สีตามตำแหน่ง → scan การ์ดงานเร็ว
 let _dmJobsSkelDone=false, _dmWorkersSkelDone=false;   // skeleton เฉพาะโหลดครั้งแรก (re-load ไม่ flash)
 function _dmSkelJobs(n){ const c='<div class="jcard" style="cursor:default;border-left:4px solid var(--border2)"><div class="dm-sk" style="width:88px;height:18px;margin-bottom:10px"></div><div class="dm-sk" style="width:65%;height:18px;margin-bottom:9px"></div><div class="dm-sk" style="width:45%;height:13px;margin-bottom:10px"></div><div class="dm-sk" style="width:100%;height:30px;border-radius:10px"></div></div>'; return c.repeat(n||4); }
@@ -3388,7 +3387,7 @@ function _dmJobDayNames(job){   // ชื่อวันเต็มที่ง
 }
 function _dmEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _dmAvGrad(anon){ const n=parseInt(anon,10)||0; return 'av-g'+(n%6); }
-function _dmAvPos(p){ const m={dentist:'var(--p700),var(--p500)',assistant:'#2f6fe0,#1e4fa8',counter:'#0ea371,#0a7a52'}; return 'linear-gradient(135deg,'+(m[p]||m.dentist)+')'; }   // สี avatar ตามตำแหน่ง (ม่วง/ฟ้า/เขียว)
+function _dmAvPos(p){ const m={dentist:'var(--p700),var(--p500)',assistant:'#2f6fe0,#1e4fa8',counter:'#2f6fe0,#1e4fa8'}; return 'linear-gradient(135deg,'+(m[p]||m.dentist)+')'; }   // สี avatar ตามตำแหน่ง (ม่วง/ฟ้า · counter ยุบรวมผู้ช่วยฯ)
 function _dmMonths(d){ if(!d)return 0; const s=new Date(d),n=new Date(); return Math.max(0,(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())); }
 function _dmSince(d){ if(!d) return ''; const x=new Date(d); return 'ตั้งแต่ '+_thMonths[x.getMonth()]+' '+(x.getFullYear()+543); }   // member_since → "ตั้งแต่ <เดือนไทย> <พ.ศ.>"
 function _dmExpYears(s){ if(!s) return null; if(/จบใหม่|เริ่มต้น/.test(s)) return 0; if(/เดือน/.test(s)) return 1; const m=String(s).match(/\d+/); return m?parseInt(m[0],10):null; }   // "5 ปี"->5, "10+ ปี"->10, "เริ่มต้นทำงาน"->0, "6 เดือน-1 ปี"->1
@@ -3640,7 +3639,7 @@ function dmApplyWorkerTeaser(){
     sub.innerHTML='คลินิกดูโปรไฟล์และส่งคำเชิญ<br>ทันตแพทย์/พนักงาน ค้นหางานหรือสร้างโปรไฟล์รอรับคำเชิญได้';
   } else {
     head.innerHTML='<i data-lucide="users"></i> <b>'+total+'</b> บุคลากรกำลังหาคลินิก';
-    sub.innerHTML=DM_TOOTH_SVG+' ทันตแพทย์ '+(wc.dentist||0)+' · <i data-lucide="handshake"></i> ผู้ช่วยฯ '+(wc.assistant||0)+' · <i data-lucide="monitor"></i> เคาน์เตอร์ '+(wc.counter||0)+'<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้';
+    sub.innerHTML=DM_TOOTH_SVG+' ทันตแพทย์ '+(wc.dentist||0)+' · <i data-lucide="handshake"></i> ผู้ช่วยฯ '+((wc.assistant||0)+(wc.counter||0))+'<br>สมัครฟรีเพื่อดูโปรไฟล์ทั้งหมดและส่งคำเชิญได้';   // เคาน์เตอร์ยุบรวมผู้ช่วยฯ
   }
   refreshIcons();
 }
@@ -4415,40 +4414,16 @@ async function dmSetAvailable(available){
   }catch(e){ console.error('[wprofile] available exception', e); }
 }
 /* C4a-2 — แก้ไขโปรไฟล์: prefill ค่าปัจจุบัน + save จริง (UPDATE worker_profiles · เฉพาะฟิลด์ใน grant) */
-/* C4e — สลับ ผู้ช่วยฯ ↔ เคาน์เตอร์ ได้ในเว็บ (assistant↔counter · trigger enforce_position_lock อนุญาต · dentist ล็อก) */
-function dmPosSwapBtn(label, pos, active){
-  const on='background:var(--p600);color:#fff;border:2px solid var(--p500);font-weight:700';
-  const off='background:#fff;color:var(--ink3);border:2px solid var(--border2);font-weight:600';
-  return `<button onclick="dmSwapPosition('${pos}')" style="flex:1;padding:13px;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;cursor:pointer;transition:.2s;${active?on:off}">${label}</button>`;
-}
+/* แสดงตำแหน่งใน edit profile — ล็อกทุกตำแหน่ง (เปลี่ยนตำแหน่งติดต่อแอดมิน) */
 function dmRenderEditPos(pos){
   const wrap=document.getElementById('edit-pos-wrap'); if(!wrap) return;
   const hint=document.getElementById('edit-pos-hint');
-  if(pos==='dentist'){
-    wrap.innerHTML='<div style="background:var(--p50);border:2px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px"><span style="font-size:26px">'+DM_TOOTH_SVG+'</span><div style="flex:1"><div style="font-family:\'Prompt\',sans-serif;font-size:14px;font-weight:700;color:var(--p700)">ทันตแพทย์</div><div style="font-size:11.5px;color:var(--ink4);margin-top:2px">DDS / ทพ.</div></div><span style="font-size:16px"><i data-lucide="lock"></i></span></div>';
-    if(hint) hint.textContent='ตำแหน่งทันตแพทย์ถูกล็อก — เปลี่ยนต้องติดต่อแอดมิน';
-  } else {
-    wrap.innerHTML='<div style="display:flex;gap:8px">'+dmPosSwapBtn('ผู้ช่วยฯ','assistant',pos==='assistant')+dmPosSwapBtn('เคาน์เตอร์','counter',pos==='counter')+'</div>';
-    if(hint) hint.textContent='แตะเพื่อสลับ ผู้ช่วยฯ ↔ เคาน์เตอร์ ได้ทันที';
-  }
+  const isDentist=(pos==='dentist');
+  const icon=isDentist ? ('<span style="font-size:26px">'+DM_TOOTH_SVG+'</span>') : '<span style="font-size:22px"><i data-lucide="handshake"></i></span>';
+  const label=isDentist?'ทันตแพทย์':'ผู้ช่วยฯ', sub=isDentist?'DDS / ทพ.':'DA / ผช.ทพ.';
+  wrap.innerHTML='<div style="background:var(--p50);border:2px solid var(--p200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">'+icon+'<div style="flex:1"><div style="font-family:\'Prompt\',sans-serif;font-size:14px;font-weight:700;color:var(--p700)">'+label+'</div><div style="font-size:11.5px;color:var(--ink4);margin-top:2px">'+sub+'</div></div><span style="font-size:16px"><i data-lucide="lock"></i></span></div>';
+  if(hint) hint.textContent='เปลี่ยนตำแหน่งต้องติดต่อแอดมิน';
   refreshIcons();
-}
-async function dmSwapPosition(newPos){
-  if(!dmSb() || !dmUser || dmUser.role!=='worker' || !dmUser.worker) return;
-  if(dmUser.worker.position===newPos) return;                  // เดิมอยู่แล้ว
-  if(dmUser.worker.position==='dentist'){ showToast('ตำแหน่งทันตแพทย์ล็อก เปลี่ยนไม่ได้'); return; }
-  if(newPos!=='assistant' && newPos!=='counter'){ showToast('สลับได้เฉพาะ ผู้ช่วยฯ ↔ เคาน์เตอร์'); return; }
-  try{
-    const { error } = await dmSb().from('worker_profiles').update({ position:newPos }).eq('id', dmUser.id);   // position อยู่ใน grant · trigger อนุญาต assistant↔counter
-    if(error){ console.error('[swap-pos] ล้มเหลว:', error.message, '| code:', error.code, error); showToast('สลับไม่สำเร็จ: '+error.message); return; }
-    dmLog('[swap-pos] →', newPos);
-    dmUser.worker.position=newPos;
-    showToast('<i data-lucide="check"></i> สลับเป็น '+(DM_POS_LABEL[newPos]||newPos)+' แล้ว');
-    dmRenderEditPos(newPos);              // อัปเดตปุ่ม
-    dmFillEditForm(dmUser.worker);        // re-render ทักษะตามตำแหน่งใหม่
-    dmFillWorkerProfile(dmUser.worker);   // อัปเดต body
-    dmLoadWorkerBoard();                   // re-fetch บอร์ด (ตำแหน่งบนการ์ดเปลี่ยน)
-  }catch(e){ console.error('[swap-pos] exception', e); }
 }
 function dmFillEditForm(w){
   if(!w) return;
@@ -4775,8 +4750,7 @@ function dmUnsubscribeNoti(){
 const FILTER_SKILLS = {
   'ทั้งหมด':   ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine','Ortho Assist','Implant Assist','4-Hand Assist','Sterilize','X-Ray','Impression','เตรียมห้อง','Stock','นัดหมาย','เก็บเงิน','ประกันสังคม','เคลมประกัน','เวชระเบียน','ภาษาอังกฤษ','Line OA','ช่วย GP','งานเคาน์เตอร์','โปรแกรมคลินิก','Social media'],
   'ทันตแพทย์': ['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine'],
-  'ผู้ช่วยฯ':  ['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์'],
-  'เคาน์เตอร์':['งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media'],
+  'ผู้ช่วยฯ':  ['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media'],
 };
 function filterPos(filterId, el, pos) {
   const wasOn = el.classList.contains('on');
@@ -4793,8 +4767,7 @@ function filterPos(filterId, el, pos) {
 
 const POS_SKILLS={
   dentist:{label:'สาขา / ทักษะทางคลินิก',skills:['GP','Orthodontic','Endodontic','Surgery','Implant','Prosthodontic','Pediatric','Periodontic','Esthetic','Occlusion','Oral Medicine']},
-  assistant:{label:'ทักษะผู้ช่วย',skills:['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์']},
-  counter:{label:'ทักษะเคาน์เตอร์',skills:['งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media']}
+  assistant:{label:'ทักษะผู้ช่วย',skills:['GP','จัดฟัน','Implant','Prosthodontic','Endodontic','เด็ก','งานเคาน์เตอร์','ภาษาอังกฤษ','ช่วย GP','โปรแกรมคลินิก','Social media']}
 };
 function renderSkills(containerId,labelId,pos,multi){
   const c=document.getElementById(containerId); if(!c)return;
@@ -4807,7 +4780,6 @@ function skillChip(el,multi){ chipMulti(el); }
 const BIO_PLACEHOLDER = {
   dentist:   'เช่น อายุ, วุฒิ, จบที่ไหน, งานที่ถนัด, พื้นที่รับงาน, อื่นๆ',
   assistant: 'เช่น อายุ, งานที่ถนัด, ไม่มีประวัติเทงาน, พื้นที่รับงาน',
-  counter:   'เช่น อายุ, บุคลิกดี, สื่อสารเก่ง, รับนัดและจัดตารางได้, ใช้โปรแกรม...ได้, พื้นที่รับงาน',
 };
 function regWorkerSkills(pos){
   const licW=document.getElementById('rw-license-wrap');   // กล่องยืนยันใบประกอบ: โชว์เฉพาะทันตแพทย์ (เฉพาะ checkbox · ไม่มีช่องเลข)
@@ -5378,7 +5350,6 @@ function _cardMatches(card,f){
   // position (single)
   if(f.pos){
     if(f.pos.includes('ผู้ช่วย')){ if(!role.includes('ผู้ช่วย')) return false; }
-    else if(f.pos.includes('เคาน์เตอร์')){ if(!role.includes('เคาน์เตอร์')) return false; }
     else if(f.pos.includes('ทันตแพทย์')){ if(!(role.includes('ทันตแพทย์') && !role.includes('ผู้ช่วย'))) return false; }
   }
   // skills (OR)
@@ -5555,7 +5526,7 @@ function _dmAdminParsedPreview(d){
   if(p.is_job_post===false){
     return '<div style="font-size:12px;color:var(--orange2);background:var(--orange-bg);border-radius:8px;padding:6px 9px;margin-bottom:10px">⚠ AI ว่าอาจไม่ใช่ประกาศงาน (ความมั่นใจ '+Math.round((p.confidence||0)*100)+'%)</div>';
   }
-  const bits=[p.position?({dentist:'ทันตแพทย์',assistant:'ผู้ช่วยฯ',counter:'เคาน์เตอร์'}[p.position]||p.position):'',p.province,p.wage_text].filter(Boolean).join(' · ');
+  const bits=[p.position?({dentist:'ทันตแพทย์',assistant:'ผู้ช่วยฯ',counter:'ผู้ช่วยฯ'}[p.position]||p.position):'',p.province,p.wage_text].filter(Boolean).join(' · ');
   return '<div style="font-size:12px;color:var(--p700);background:var(--p50);border-radius:8px;padding:6px 9px;margin-bottom:10px">✓ AI ตรวจพบ: '+_dmEsc(p.title||bits||'ประกาศงาน')+(bits&&p.title?' ('+_dmEsc(bits)+')':'')+' · ความมั่นใจ '+Math.round((p.confidence||0)*100)+'%</div>';
 }
 function _dmAdminDraftCard(d){
