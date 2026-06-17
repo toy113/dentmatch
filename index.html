@@ -5673,7 +5673,7 @@ async function dmAdminConfirmPublish(){
     if(pidErr || !pid){ showToast('หา proxy clinic ไม่สำเร็จ: '+(pidErr&&pidErr.message||'')); return; }
     const { data:job, error:jobErr } = await dmSb().from('jobs').insert({
       clinic_id:pid, title, position, province, district, wage_text,
-      work_days: (_adFlexOn||work_days.length)?work_days:null,
+      work_days: work_days,
       work_dates: work_dates.length?work_dates:null,
       time_start, time_end, description
     }).select('id').single();
