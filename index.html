@@ -5440,28 +5440,42 @@ function _dmSortByDateMatch(tc,date){
   list.forEach(c=>cont.appendChild(c));
 }
 /* ════════ ADMIN: นำเข้าประกาศจาก LINE OpenChat export → job_drafts ════════ */
-// แยกบรรทัด export ของ LINE: header วันที่ "YYYY.MM.DD ..." (ไม่มี tab) + ข้อความ "HH:MM\tชื่อ\tข้อความ" (tab-separated)
+// แยกหัวข้อวันที่ของ LINE export → 'YYYY-MM-DD' (ค.ศ.) · รองรับหลายรูปแบบ + ปี พ.ศ.
+// 1) ปีนำหน้า  2026/06/17 · 2569.08.17    2) วันนำหน้า  17/06/2026 · 17-6-69
+// 3) วันไทย     วันเสาร์ที่ 17 มิถุนายน 2569 · 17 มิ.ย. 2026
+const _DM_THMON={'มกราคม':1,'กุมภาพันธ์':2,'มีนาคม':3,'เมษายน':4,'พฤษภาคม':5,'มิถุนายน':6,'กรกฎาคม':7,'สิงหาคม':8,'กันยายน':9,'ตุลาคม':10,'พฤศจิกายน':11,'ธันวาคม':12,'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,'เม.ย.':4,'พ.ค.':5,'มิ.ย.':6,'ก.ค.':7,'ส.ค.':8,'ก.ย.':9,'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12};
+function _dmYToCE(y){ y=+y; if(y<100) y+=(y>=50?2500:2000); return y>=2500 ? y-543 : y; }   // 2-หลัก → เดา ศตวรรษ · ≥2500 = พ.ศ. → ลบ 543
+function _dmISO(y,m,d){ return _dmYToCE(y)+'-'+String(+m).padStart(2,'0')+'-'+String(+d).padStart(2,'0'); }
+function _dmParseLineDate(line){
+  let m;
+  if((m=/^(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})\b/.exec(line))) return _dmISO(m[1],m[2],m[3]);      // ปีนำหน้า YYYY-MM-DD
+  if((m=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})\b/.exec(line))) return _dmISO(m[3],m[2],m[1]);     // วันนำหน้า DD/MM/YYYY
+  if((m=/(\d{1,2})\s*(มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม|ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.)\s*(\d{2,4})/.exec(line))){
+    const mo=_DM_THMON[m[2]]; if(mo) return _dmISO(m[3],mo,m[1]);                                     // วันไทย DD <เดือน> YYYY
+  }
+  return null;
+}
+// แยกบรรทัด export ของ LINE: หัวข้อวันที่ (ไม่มี tab) + ข้อความ "HH:MM\tชื่อ\tข้อความ" (tab-separated)
 // บรรทัดอื่นที่ไม่เข้าทั้ง 2 แบบ = ข้อความหลายบรรทัดของอันก่อนหน้า (LINE export ไม่ repeat timestamp/ชื่อ)
 function _dmParseLineExport(text){
   const lines=String(text||'').replace(/\r\n/g,'\n').split('\n');
-  const dateRe=/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})/;
   const msgRe=/^(\d{1,2}):(\d{2})\t([^\t]+)\t(.+)$/;
   const sysRe=/(เข้าร่วมกลุ่ม|ออกจากกลุ่ม|ถูกเรียกเข้าร่วม|unsent a message|ลบข้อความนี้แล้ว|เปลี่ยนชื่อกลุ่ม|เปลี่ยนรูปกลุ่ม)/;
   let curDate=null; const out=[];
   for(const raw of lines){
     const line=raw.replace(/​/g,'').replace(/\s+$/,'');
     if(!line.trim()) continue;
-    const dm=line.match(dateRe);
-    if(dm){ curDate=dm[1]+'-'+String(dm[2]).padStart(2,'0')+'-'+String(dm[3]).padStart(2,'0'); continue; }
     const mm=line.match(msgRe);
     if(mm){
       const hh=mm[1], mi=mm[2], sender=mm[3].trim(), msg=mm[4].trim();
       if(sysRe.test(msg)) continue;
       const sentAt=curDate ? (curDate+'T'+hh.padStart(2,'0')+':'+mi+':00') : null;
       out.push({ sender_name:sender, sent_at:sentAt, raw_message:msg });
-    } else if(out.length){
-      out[out.length-1].raw_message += '\n'+line.trim();   // ข้อความหลายบรรทัด ต่อเข้าอันก่อนหน้า
+      continue;
     }
+    const d=_dmParseLineDate(line);   // ลองข้อความก่อน แล้วค่อยลองหัวข้อวัน (กันบรรทัดข้อความถูกตีเป็นวัน)
+    if(d){ curDate=d; continue; }
+    if(out.length) out[out.length-1].raw_message += '\n'+line.trim();   // ข้อความหลายบรรทัด ต่อเข้าอันก่อนหน้า
   }
   return out;
 }
@@ -5472,10 +5486,26 @@ async function dmAdminImportText(){
   if(!msgs.length){ if(resEl) resEl.textContent='ไม่พบข้อความที่แยกได้ — ตรวจรูปแบบไฟล์ export'; return; }
   if(!dmSb()||!dmUser){ if(resEl) resEl.textContent='ยังไม่ได้ล็อกอิน/เชื่อมต่อ database'; return; }
   try{
-    const rows=msgs.map(m=>({ raw_message:m.raw_message, sender_name:m.sender_name, sent_at:m.sent_at, created_by:dmUser.id }));
-    const { error } = await dmSb().from('job_drafts').insert(rows);
-    if(error){ if(resEl) resEl.textContent='นำเข้าไม่สำเร็จ: '+error.message; return; }
-    if(resEl) resEl.textContent='นำเข้าสำเร็จ '+rows.length+' ข้อความ ✓';
+    if(resEl) resEl.textContent='กำลังนำเข้า...';
+    // เทียบกับ draft เดิม (match ด้วย raw_message): ไม่มี = insert · มีแต่ยังไม่มีวันโพสต์ = เติม sent_at ให้ · มีครบแล้ว = ข้าม
+    const { data:existing } = await dmSb().from('job_drafts').select('id, raw_message, sent_at');
+    const byMsg=new Map(); (existing||[]).forEach(r=>{ if(!byMsg.has(r.raw_message)) byMsg.set(r.raw_message, r); });
+    const toInsert=[], toBackfill=[]; let dupCnt=0;
+    msgs.forEach(m=>{
+      const ex=byMsg.get(m.raw_message);
+      if(!ex) toInsert.push(m);
+      else if(m.sent_at && !ex.sent_at) toBackfill.push({ id:ex.id, sent_at:m.sent_at });   // เติมวันโพสต์ให้ draft เดิม
+      else dupCnt++;
+    });
+    if(!toInsert.length && !toBackfill.length){ if(resEl) resEl.textContent='ไม่มีข้อความใหม่ — '+msgs.length+' ข้อความนำเข้าไปแล้วทั้งหมด'; return; }
+    if(toInsert.length){
+      const rows=toInsert.map(m=>({ raw_message:m.raw_message, sender_name:m.sender_name, sent_at:m.sent_at, created_by:dmUser.id }));
+      const { error } = await dmSb().from('job_drafts').insert(rows);
+      if(error){ if(resEl) resEl.textContent='นำเข้าไม่สำเร็จ: '+error.message; return; }
+    }
+    for(const u of toBackfill){ await dmSb().from('job_drafts').update({ sent_at:u.sent_at }).eq('id', u.id); }   // low volume → loop ได้
+    const parts=[]; if(toInsert.length) parts.push('นำเข้าใหม่ '+toInsert.length); if(toBackfill.length) parts.push('เติมวันโพสต์ '+toBackfill.length); if(dupCnt) parts.push('ข้ามซ้ำ '+dupCnt);
+    if(resEl) resEl.textContent=parts.join(' · ')+' ✓';
     if(ta) ta.value='';
     dmAdminLoadDrafts();
   }catch(e){ if(resEl) resEl.textContent='error: '+(e&&e.message||e); }
