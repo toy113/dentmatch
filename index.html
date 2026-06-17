@@ -490,6 +490,39 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .inp:focus{border-color:var(--p500);box-shadow:0 0 0 3px rgba(124,92,191,.12)}
 .inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ===== ปฏิทินงาน (jobs board calendar) ===== */
+.dm-cal{padding:10px 16px 4px}
+.dm-cal-head{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--p700),var(--p500));border-radius:14px 14px 0 0;padding:10px 12px;color:#fff}
+.dm-cal-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:15px}
+.dm-cal-nav{width:30px;height:30px;border:none;border-radius:9px;background:rgba(255,255,255,.18);color:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.dm-cal-nav:not(:disabled):hover{background:rgba(255,255,255,.32)}
+.dm-cal-nav:disabled{opacity:.3;cursor:default}
+.dm-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:46px;align-items:stretch;gap:2px;background:#fff;border:1px solid var(--border);border-top:none;padding:5px}
+.dm-cal-wdh{grid-auto-rows:auto}
+.dm-cal-wdh{padding-bottom:0;border-bottom:none}
+.dm-cal-wd{text-align:center;font-size:11px;font-weight:700;color:var(--ink4);padding:5px 0 2px}
+.dm-cal-cell{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:42px;padding:5px 0 6px;border-radius:10px;cursor:pointer;transition:.13s}
+.dm-cal-cell.empty{cursor:default}
+.dm-cal-cell:not(.empty):not(.past):hover{background:var(--p50)}
+.dm-cal-num{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1}
+.dm-cal-cell.past{cursor:default}
+.dm-cal-cell.past .dm-cal-num{color:var(--ink5);opacity:.45}
+.dm-cal-cell.today:not(.sel){box-shadow:inset 0 0 0 1.5px var(--p300)}
+.dm-cal-cell.today:not(.sel) .dm-cal-num{color:var(--p700);font-weight:800}
+.dm-cal-cell.sel{background:var(--p600)}
+.dm-cal-cell.sel .dm-cal-num{color:#fff;font-weight:800}
+.dm-dot{width:6px;height:6px;border-radius:50%;background:transparent}
+.dm-dot.job{background:var(--p500)}
+.dm-dot.urg{background:#f5811f}
+.dm-cal-cell.sel .dm-dot{background:#fff!important}
+.dm-cal-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:9px 0 2px;font-size:11px;color:var(--ink3)}
+.dm-cal-legend span{display:inline-flex;align-items:center;gap:5px}
+.dm-leg-sel{width:11px;height:11px;border-radius:50%;background:var(--p600)}
+.dm-day-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:0 2px}
+.dm-day-hdr b{font-family:'Prompt',sans-serif;font-size:15px;color:var(--ink)}
+.dm-day-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--p600);color:#fff;font-size:12px;font-weight:700;margin-left:5px;vertical-align:middle}
+.dm-day-mon{font-size:12px;color:var(--ink4)}
+.dm-day-clear{border:none;background:var(--p50);color:var(--p700);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;border-radius:8px;padding:5px 10px;cursor:pointer}
 .pos-card{border:2px solid var(--border2);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;background:#fff;transition:.2s}
 .pos-card.on{border-color:var(--p500);background:var(--p50);box-shadow:0 3px 12px rgba(107,78,194,.2)}
 .pos-icon{font-size:24px;margin-bottom:6px}
@@ -1118,12 +1151,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
       </div>
-      <div class="tcj-date-wrap" style="padding:10px 16px 0">
-        <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> เลือกวันที่พร้อมรับงาน</div>
-        <div id="tcj-date-chips" class="chip-row" style="margin-bottom:8px"></div>
-        <div style="font-size:11.5px;color:var(--ink4);margin-bottom:5px">หรือเลือกวันอื่น</div>
-        <input type="date" class="inp" id="tcj-date-custom" onchange="_dmPickCustomDate('tcj',this)">
-      </div>
+      <div id="tcj-cal" class="dm-cal"></div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
           <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none"><i data-lucide="search"></i></span>
@@ -1299,6 +1327,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
       </div>
+      <div id="ccf-cal" class="dm-cal"></div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
           <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none"><i data-lucide="search"></i></span>
@@ -1725,12 +1754,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="chip-row"><div class="chip urg" onclick="chipToggle(this)"><div class="pd"></div>งานด่วน</div><div class="chip" onclick="chipToggle(this)">จันทร์</div><div class="chip" onclick="chipToggle(this)">อังคาร</div><div class="chip" onclick="chipToggle(this)">พุธ</div><div class="chip" onclick="chipToggle(this)">พฤหัส</div><div class="chip" onclick="chipToggle(this)">ศุกร์</div><div class="chip" onclick="chipToggle(this)">เสาร์</div><div class="chip" onclick="chipToggle(this)">อาทิตย์</div></div>
         <div class="chip-row province-row"><div class="chip" onclick="provChip(this)">กรุงเทพฯ</div><div class="chip" onclick="provChip(this)">ชลบุรี</div><div class="chip" onclick="provChip(this)">เชียงใหม่</div><div class="chip" onclick="provChip(this)">สมุทรปราการ</div><div class="chip" onclick="provChip(this)">ปทุมธานี</div><div class="chip" onclick="provChip(this)">นนทบุรี</div><button class="chip-more" onclick="openSheet('s-province')"><i data-lucide="search"></i> จังหวัดอื่น...</button></div>
       </div>
-      <div class="wtj-date-wrap" style="padding:10px 16px 0">
-        <div style="font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i data-lucide="calendar-days"></i> เลือกวันที่พร้อมรับงาน</div>
-        <div id="wtj-date-chips" class="chip-row" style="margin-bottom:8px"></div>
-        <div style="font-size:11.5px;color:var(--ink4);margin-bottom:5px">หรือเลือกวันอื่น</div>
-        <input type="date" class="inp" id="wtj-date-custom" onchange="_dmPickCustomDate('wtj',this)">
-      </div>
+      <div id="wtj-cal" class="dm-cal"></div>
       <div class="clinic-search-wrap" style="padding:10px 16px 4px">
         <div style="position:relative">
           <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none"><i data-lucide="search"></i></span>
@@ -2633,12 +2657,14 @@ function mainTab(name,el){
   document.getElementById('tc-jobs').classList.remove('on');
   document.getElementById('tc-workers').classList.remove('on');
   document.getElementById('tc-'+name).classList.add('on');
+  if(name==='jobs' && typeof _dmRenderCalendar==='function') _dmRenderCalendar('tcj');
 }
 function clinicTab(name,el){
   document.querySelectorAll('#v-clinic .tab-bar .tb').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
   ['find','workers','post','manage','invites'].forEach(n=>{const e=document.getElementById('cc-'+n);if(e)e.classList.remove('on')});
   const t=document.getElementById('cc-'+name); if(t)t.classList.add('on');
+  if(name==='find' && typeof _dmRenderCalendar==='function') _dmRenderCalendar('ccf');
 }
 function workerTab(name,el){
   // highlight tab by name (robust ต่อจำนวน/ลำดับแท็บ — ไม่พึ่ง nth-child)
@@ -2649,7 +2675,7 @@ function workerTab(name,el){
   ['profile','inbox','jobs','workers'].forEach(n=>{const e=document.getElementById('wt-'+n);if(e)e.classList.remove('on')});
   const t=document.getElementById('wt-'+name); if(t)t.classList.add('on');
   if(name==='inbox'){ try{ localStorage.setItem('dm_inbox_read', String(Date.now())); }catch(e){} if(typeof dmLoadNoti==='function') dmLoadNoti(); if(dmSb()&&dmUser&&dmUser.role==='worker') dmSb().from('invites').update({read_at:new Date().toISOString()}).eq('worker_id',dmUser.id).is('read_at',null).then(function(){},function(){}); }   // อ่านคำเชิญ → เคลียร์ noti + มาร์ก read_at (คลินิกเห็น "อ่านแล้ว")
-  if(name==='jobs' && typeof _dmRenderDateChips==='function') _dmRenderDateChips('wtj');
+  if(name==='jobs' && typeof _dmRenderCalendar==='function') _dmRenderCalendar('wtj');
 }
 /* ── NOTIFICATION SYSTEM ── */
 const _notiCount = { worker: 2, clinic: 2 };
@@ -3481,35 +3507,65 @@ function _editExclSync(){
   _exclLock(document.getElementById('ej-date'), daysSel>0 && !hasDates);
 }
 /* ตัวกรอง "เลือกวันที่พร้อมรับงาน" — งาน tab ฝั่ง worker (wtj) + guest (tcj) (เลือกได้ทีละวันเดียว) */
-const _dmDateSel={};   // {wtj:'2026-06-16', tcj:null, ...}
-const _DM_DATE_TC={ wtj:'wt-jobs', tcj:'tc-jobs' };   // prefix → tab-content id
-function _dmRenderDateChips(prefix){
-  const wrap=document.getElementById(prefix+'-date-chips'); if(!wrap) return;
-  const today=new Date(); let html='';
-  const sel=_dmDateSel[prefix];
-  for(let i=0;i<14;i++){
-    const d=new Date(today); d.setDate(today.getDate()+i);
-    const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    const lbl=i===0?'วันนี้':(i===1?'พรุ่งนี้':DM_DAYS[d.getDay()===0?6:d.getDay()-1]);
-    const mon=_thMonthsAbbr[d.getMonth()];
-    html+='<div class="chip'+(iso===sel?' on':'')+'" data-date="'+iso+'" onclick="_dmPickDate(\''+prefix+'\',\''+iso+'\')" style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;min-width:54px;padding:8px 4px">'
-      +'<span style="font-size:15px;font-weight:700">'+d.getDate()+'</span> '
-      +'<span style="font-size:10px;white-space:nowrap">'+lbl+' · '+mon+'</span></div>';
-  }
-  wrap.innerHTML=html;
+/* ════════ ปฏิทินงาน — เลือกวันที่ดูงาน + เห็น pattern วันมีงาน/งานด่วน (guest tcj · worker wtj · clinic ccf) ════════ */
+const _dmDateSel={};   // prefix → ISO ที่เลือก (null=ดูทั้งหมด)
+const _DM_DATE_TC={ wtj:'wt-jobs', tcj:'tc-jobs', ccf:'cc-find' };   // prefix → tab-content id
+const _dmCalMonth={};  // prefix → Date (วันที่ 1 ของเดือนที่โชว์)
+const DM_WDH=['อา','จ','อ','พ','พฤ','ศ','ส'];   // หัวคอลัมน์ (อาทิตย์ขึ้นก่อน)
+function _dmISOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function _dmCalCardsCont(prefix){ const tc=document.getElementById(_DM_DATE_TC[prefix]); return tc?tc.querySelector('[id$="-cards"]'):null; }
+// สถานะวัน: 0=ไม่มีงาน · 1=มีงาน · 2=มีงานด่วน (จากการ์ดที่ตรงวันเจาะจง/วันในสัปดาห์)
+function _dmDayState(prefix, iso){
+  const cont=_dmCalCardsCont(prefix); if(!cont) return 0;
+  let st=0;
+  cont.querySelectorAll('.jcard').forEach(function(c){
+    if(_dmDateRank(c,iso)>1) return;   // ไม่ได้อยู่วันนี้แบบเจาะจง/รายสัปดาห์
+    if(c.classList.contains('urg')) st=2; else if(st<1) st=1;
+  });
+  return st;
 }
 function _dmApplyDateFilter(prefix){ const tcId=_DM_DATE_TC[prefix]; const fw=tcId&&document.querySelector('#'+tcId+' .filter-wrap'); if(fw) applyFilters(fw); }
-function _dmPickDate(prefix,iso){
-  _dmDateSel[prefix]=(_dmDateSel[prefix]===iso)?null:iso;
-  const wrap=document.getElementById(prefix+'-date-chips');
-  if(wrap) wrap.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c.getAttribute('data-date')===_dmDateSel[prefix]));
-  const inp=document.getElementById(prefix+'-date-custom'); if(inp) inp.value='';
-  _dmApplyDateFilter(prefix);
+function _dmRenderCalendar(prefix){
+  const host=document.getElementById(prefix+'-cal'); if(!host) return;
+  const t=new Date(); t.setHours(0,0,0,0);
+  if(!_dmCalMonth[prefix]) _dmCalMonth[prefix]=new Date(t.getFullYear(),t.getMonth(),1);
+  const m=_dmCalMonth[prefix], y=m.getFullYear(), mo=m.getMonth();
+  const sel=_dmDateSel[prefix]||null, beYear=y+543;
+  const firstDow=new Date(y,mo,1).getDay(), daysInMonth=new Date(y,mo+1,0).getDate();
+  const atCurMonth=(y===t.getFullYear()&&mo===t.getMonth());
+  let html='<div class="dm-cal-head">'
+    +'<button class="dm-cal-nav" '+(atCurMonth?'disabled':'')+' onclick="_dmCalNav(\''+prefix+'\',-1)">‹</button>'
+    +'<div class="dm-cal-title">'+(_thMonths[mo]||'')+' '+beYear+'</div>'
+    +'<button class="dm-cal-nav" onclick="_dmCalNav(\''+prefix+'\',1)">›</button></div>';
+  html+='<div class="dm-cal-grid dm-cal-wdh">'+DM_WDH.map(function(w){return '<div class="dm-cal-wd">'+w+'</div>';}).join('')+'</div>';
+  html+='<div class="dm-cal-grid">';
+  for(let i=0;i<firstDow;i++) html+='<div class="dm-cal-cell empty"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const cd=new Date(y,mo,d), iso=_dmISOf(cd);
+    const past=cd<t, isToday=cd.getTime()===t.getTime(), isSel=(iso===sel);
+    const st=past?0:_dmDayState(prefix,iso);
+    let cls='dm-cal-cell'; if(past)cls+=' past'; if(isToday)cls+=' today'; if(isSel)cls+=' sel';
+    const dot=st===2?'<span class="dm-dot urg"></span>':(st===1?'<span class="dm-dot job"></span>':'<span class="dm-dot"></span>');
+    html+='<div class="'+cls+'" '+(past?'':'onclick="_dmCalPick(\''+prefix+'\',\''+iso+'\')"')+'><span class="dm-cal-num">'+d+'</span>'+dot+'</div>';
+  }
+  html+='</div>';
+  html+='<div class="dm-cal-legend"><span><span class="dm-dot job"></span> มีงาน</span><span><span class="dm-dot urg"></span> งานด่วน</span><span><span class="dm-leg-sel"></span> วันที่เลือก</span></div>';
+  const cont=_dmCalCardsCont(prefix);
+  const n=cont?[...cont.querySelectorAll('.jcard')].filter(function(c){return !c.classList.contains('hidden');}).length:0;
+  if(sel){
+    html+='<div class="dm-day-hdr"><div><b>งานวันที่ '+(+sel.slice(8,10))+'</b><span class="dm-day-cnt">'+n+'</span></div>'
+      +'<button class="dm-day-clear" onclick="_dmCalPick(\''+prefix+'\',\''+sel+'\')">ดูทั้งหมด</button></div>';
+  } else {
+    html+='<div class="dm-day-hdr"><div><b>งานที่เปิดรับ</b><span class="dm-day-cnt">'+n+'</span></div><span class="dm-day-mon">'+(_thMonths[mo]||'')+' '+beYear+'</span></div>';
+  }
+  host.innerHTML=html;
+  if(typeof refreshIcons==='function') refreshIcons();
 }
-function _dmPickCustomDate(prefix,inp){
-  _dmDateSel[prefix]=inp.value||null;
-  const wrap=document.getElementById(prefix+'-date-chips'); if(wrap) wrap.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
-  _dmApplyDateFilter(prefix);
+function _dmCalNav(prefix,delta){ const m=_dmCalMonth[prefix]||new Date(); _dmCalMonth[prefix]=new Date(m.getFullYear(),m.getMonth()+delta,1); _dmRenderCalendar(prefix); }
+function _dmCalPick(prefix,iso){
+  _dmDateSel[prefix]=(iso&&_dmDateSel[prefix]===iso)?null:(iso||null);   // กดวันเดิมซ้ำ = ยกเลิก (ดูทั้งหมด)
+  _dmApplyDateFilter(prefix);   // กรองการ์ดตามวัน + อัปเดต count
+  _dmRenderCalendar(prefix);    // ไฮไลต์วัน + อัปเดตหัว "งานวันที่ X"
 }
 function dmCardAddLine(btn){ if(!dmUser || !dmUser.id){ openSheet('s-login'); return; }   // guest = ล็อก → login ก่อน ข้อมูลติดต่อ
   openAddLine(btn, btn.dataset.clinic||'', btn.dataset.job||'', btn.dataset.line||'', btn.dataset.jobid||''); }
@@ -3571,6 +3627,7 @@ async function dmLoadJobsBoard(){
     STATS.urgent=data.filter(_dmIsUrgent).length; dmApplyStats();   // sync ตัวเลข "งานด่วน" บนแถบสถิติให้ตรงการ์ด (derived ≤7 วัน)
     SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=html; });
     _dmSetCount('#tc-jobs',data.length,'งาน'); _dmSetCount('#cc-find',data.length,'งาน'); _dmSetCount('#wt-jobs',data.length,'งาน');
+    ['tcj','wtj','ccf'].forEach(function(p){ if(_dmDateSel[p]) _dmApplyDateFilter(p); _dmRenderCalendar(p); });   // dots + count อิงการ์ดที่เพิ่งโหลด
     refreshIcons();
   }catch(e){ console.warn('dmLoadJobsBoard', e); }
 }
@@ -5659,7 +5716,7 @@ function applyFilters(fw){
   const nav=view&&view.querySelector('.dt-gsearch input');
   const inl=tc.querySelector('.clinic-search-inp');
   const q=((nav&&nav.value)||(inl&&inl.value)||'').trim().toLowerCase();
-  const _datePrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':null;
+  const _datePrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':(tc.id==='cc-find')?'ccf':null;
   const date=(_datePrefix && typeof _dmDateSel!=='undefined') ? (_dmDateSel[_datePrefix]||null) : null;
   const f={pos,skills,provs,wantUrgent,days,q,date};
   const cards=[...tc.querySelectorAll('.jcard,.wcard')];
@@ -5701,8 +5758,8 @@ function clearAllFilters(view,tc){
   const nav=view&&view.querySelector('.dt-gsearch input'); if(nav) nav.value='';
   const inl=tc.querySelector('.clinic-search-inp'); if(inl) inl.value='';
   const clr=tc.querySelector('[id^="search-"][id$="-clear"]'); if(clr) clr.style.display='none';
-  const _clrPrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':null;
-  if(_clrPrefix){ _dmDateSel[_clrPrefix]=null; const di=tc.querySelector('#'+_clrPrefix+'-date-custom'); if(di) di.value=''; const dc=tc.querySelector('#'+_clrPrefix+'-date-chips'); if(dc) dc.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on')); }
+  const _clrPrefix=(tc.id==='wt-jobs')?'wtj':(tc.id==='tc-jobs')?'tcj':(tc.id==='cc-find')?'ccf':null;
+  if(_clrPrefix){ _dmDateSel[_clrPrefix]=null; if(typeof _dmRenderCalendar==='function') _dmRenderCalendar(_clrPrefix); }   // ล้างวันที่เลือก → ปฏิทินกลับ "ดูทั้งหมด"
   if(fw) applyFilters(fw);
 }
 function applyActiveBoard(){
@@ -5833,8 +5890,9 @@ window.addEventListener('DOMContentLoaded',()=>{
   hideZeroTrust();
   initA11y();
   initFilters();
-  _dmRenderDateChips('wtj');
-  _dmRenderDateChips('tcj');
+  _dmRenderCalendar('wtj');
+  _dmRenderCalendar('tcj');
+  _dmRenderCalendar('ccf');
   initFilterCollapse();
   if(window.innerWidth>=768) initDesktop();
   window.addEventListener('resize',()=>{ if(window.innerWidth>=768) initDesktop(); dmApplyStats(); });
