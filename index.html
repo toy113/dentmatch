@@ -5531,7 +5531,7 @@ function dmAdminFilterStatus(el){
 async function dmAdminLoadDrafts(){
   const list=document.getElementById('ad-drafts-list'); if(!list||!dmSb()) return;
   list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">กำลังโหลด...</div>';
-  const { data, error } = await dmSb().from('job_drafts').select('*').eq('status',_adStatus).order('created_at',{ascending:false}).limit(100);
+  const { data, error } = await dmSb().from('job_drafts').select('*').eq('status',_adStatus).order('sent_at',{ascending:true,nullsFirst:false}).order('created_at',{ascending:true}).limit(100);
   if(error){ list.innerHTML='<div style="padding:20px;color:var(--red)">โหลดไม่สำเร็จ: '+_dmEsc(error.message)+'</div>'; return; }
   if(!data || !data.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--ink4);font-size:13px">ไม่มีรายการ</div>'; return; }
   list.innerHTML=data.map(_dmAdminDraftCard).join('');
