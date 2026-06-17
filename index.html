@@ -3565,7 +3565,7 @@ async function dmLoadJobsBoard(){
       SEL.forEach(sel=>{ const c=document.querySelector(sel); if(c) c.innerHTML=empty; });
       _dmSetCount('#tc-jobs',0,'งาน'); _dmSetCount('#cc-find',0,'งาน'); _dmSetCount('#wt-jobs',0,'งาน'); refreshIcons(); return;
     }
-    data.forEach(j=>{ _dmJobs[j.id]=j; });   // merge ไม่ reset — กันงานที่ปิด/ไม่อยู่บอร์ดหายจาก cache (toggle/detail ใช้ได้)
+    data.forEach(j=>{ _dmNormJob(j); _dmJobs[j.id]=j; });   // merge ไม่ reset — กันงานที่ปิด/ไม่อยู่บอร์ดหายจาก cache (toggle/detail ใช้ได้) · normalize ปี พ.ศ.→ค.ศ.
     try{ const { data:_vc } = await dmSb().rpc('job_views_count',{ids:data.map(j=>j.id)}); (_vc||[]).forEach(r=>{ _dmJobViews[r.job_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิว public (RPC ไม่เผย viewer)
     const html=data.map(dmJobCard).join('');
     STATS.urgent=data.filter(_dmIsUrgent).length; dmApplyStats();   // sync ตัวเลข "งานด่วน" บนแถบสถิติให้ตรงการ์ด (derived ≤7 วัน)
@@ -3738,7 +3738,7 @@ async function dmOpenJob(id){
   let job=_dmJobs[id];
   if(!job && id && dmSb()){   // ไม่อยู่ใน cache (เปิดจากคำเชิญ/งานปิด) → ดึงจาก DB
     try{ const { data } = await dmSb().from('jobs').select('id, clinic_id, title, position, province, district, wage_text, work_dates, work_days, time_start, time_end, urgent, is_open, expires_at, skills, description, patients_per_day, created_at, clinics(name, province, district, about, line_id)').eq('id', id).maybeSingle();
-      if(data){ _dmJobs[id]=data; job=data; } }catch(e){ console.error('dmOpenJob fetch', e); }
+      if(data){ _dmNormJob(data); _dmJobs[id]=data; job=data; } }catch(e){ console.error('dmOpenJob fetch', e); }
   }
   const sc=document.querySelector('#v-job-detail .scroll');
   if(!job || !sc){ goView('v-job-detail'); return; }   // ไม่เจอจริง ๆ = mock เดิม
@@ -3930,6 +3930,10 @@ async function dmSendInvite(){
 const _thMonthsAbbr = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 function _dmThaiDate(d){ if(!d) return ''; const p=String(d).split('-'); if(p.length!==3) return _dmEsc(d); return (+p[2])+' '+(_thMonthsAbbr[+p[1]-1]||'')+' '+(((+p[0])+543)%100); }
 let _dmJobLogged = {};   // jobid -> [วันที่บันทึกผลแล้ว 'YYYY-MM-DD']
+/* แปลงปี พ.ศ. → ค.ศ. ในสตริงวันที่ 'YYYY-MM-DD' (ปี ≥ 2500 = พ.ศ. → ลบ 543) · กันโพสต์ LINE/แอดมินที่ใส่ปีไทย ทำให้ date filter ไม่ตรง */
+function _dmCEDate(s){ const m=/^(\d{4})(-\d{2}-\d{2})/.exec(String(s||'').trim()); if(!m) return s; const y=+m[1]; return y>=2500 ? (y-543)+m[2] : s; }
+function _dmCEDates(arr){ return Array.isArray(arr) ? arr.map(_dmCEDate) : arr; }
+function _dmNormJob(j){ if(j){ if(j.work_dates) j.work_dates=_dmCEDates(j.work_dates); if(j.work_date) j.work_date=_dmCEDate(j.work_date); } return j; }   // normalize วันที่งานทุกแถวที่โหลดจาก DB → ทุก consumer (filter/แสดงผล/แก้ไข) เห็น ค.ศ.
 function _dmJobDates(job){ if(job && job.work_dates && job.work_dates.length) return job.work_dates.slice().sort(); return (job && job.work_date) ? [job.work_date] : []; }   // วันงานทั้งหมด (เรียงวัน)
 function _dmPastDates(job){ const t=new Date(); t.setHours(0,0,0,0); return _dmJobDates(job).filter(function(d){ return new Date(d) < t; }); }   // เฉพาะวันที่ผ่านไปแล้ว (บันทึกได้)
 function _dmJobIsPast(job){ const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(ds[ds.length-1]) < t; }   // วันสุดท้ายผ่านแล้ว = งานจบ
@@ -3989,7 +3993,7 @@ async function dmLoadManageBoard(){
       .eq('clinic_id', dmUser.id).order('created_at',{ascending:false}).limit(100);
     if(error){ dmLog('[manage] load', error); return; }
     if(!data) return;
-    data.forEach(j=>{ _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้
+    data.forEach(j=>{ _dmNormJob(j); _dmJobs[j.id]=j; });   // ให้ dmOpenJob เปิด detail การ์ด manage ได้ · normalize ปี พ.ศ.→ค.ศ.
     try{ const { data:_wl } = await dmSb().from('work_logs').select('job_id, work_date').eq('clinic_id', dmUser.id).in('job_id', data.map(j=>j.id)); _dmJobLogged={}; (_wl||[]).forEach(w=>{ if(!w.job_id) return; const dd=String(w.work_date).slice(0,10); _dmJobLogged[w.job_id]=_dmJobLogged[w.job_id]||[]; if(_dmJobLogged[w.job_id].indexOf(dd)<0) _dmJobLogged[w.job_id].push(dd); }); }catch(e){ dmLog('[manage] logged dates', e); }   // วันที่บันทึกผลแล้ว/งาน (สำหรับ progress)
     _dmLogBadge(data.filter(_dmJobNeedsLog).length);   // อัปเดต badge เตือนงานรอบันทึกผลที่แท็บจัดการ
     try{ const { data:_vc } = await dmSb().rpc('job_views_count',{ids:data.map(j=>j.id)}); (_vc||[]).forEach(r=>{ _dmJobViews[r.job_id]=Number(r.n)||0; }); }catch(e){}   // ยอดวิว
@@ -5573,7 +5577,7 @@ function dmAdminOpenPublish(id){
       if(c.textContent.trim()==='ตามตกลง') c.classList.toggle('on',_adIsNego);
       else c.classList.toggle('on', !_adIsNego && (p.work_days||[]).includes(_adDayNames.indexOf(c.textContent.trim())+1));
     });
-    document.getElementById('ad-dates').value=(p.work_dates||[]).join(',');
+    document.getElementById('ad-dates').value=_dmCEDates(p.work_dates||[]).join(',');   // โชว์ปี ค.ศ. (แปลงจาก พ.ศ. ถ้า AI สกัดมาเป็นปีไทย)
     document.getElementById('ad-time-start').value=p.time_start||'';
     document.getElementById('ad-time-end').value=p.time_end||'';
     document.getElementById('ad-contactline').value=p.contact_line_id||'';
@@ -5605,7 +5609,7 @@ async function dmAdminConfirmPublish(){
   const _adFlexOn=document.querySelector('#ad-days .chip.on:last-child')?.textContent.trim()==='ตามตกลง';
   const work_days=_adFlexOn ? [] : [...document.querySelectorAll('#ad-days .chip.on')].map(c=>dayNames.indexOf(c.textContent.trim())+1).filter(n=>n>0);
   const datesRaw=document.getElementById('ad-dates').value.trim();
-  const work_dates=datesRaw?datesRaw.split(',').map(s=>s.trim()).filter(Boolean):[];
+  const work_dates=datesRaw?datesRaw.split(',').map(s=>_dmCEDate(s.trim())).filter(Boolean):[];   // กันแอดมินกรอกปี พ.ศ. → เก็บ ค.ศ.
   const time_start=document.getElementById('ad-time-start').value.trim()||null;
   const time_end=document.getElementById('ad-time-end').value.trim()||null;
   const clinic_name_text=document.getElementById('ad-clinicname').value.trim()||null;

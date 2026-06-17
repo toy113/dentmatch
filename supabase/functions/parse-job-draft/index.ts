@@ -27,7 +27,7 @@ const EXTRACT_TOOL = {
       district:         { type: 'string' },
       wage_text:        { type: 'string', description: 'ค่าจ้างตามที่ระบุ เช่น 600/วัน' },
       work_days:        { type: 'array', items: { type: 'integer', minimum: 1, maximum: 7 }, description: 'วันทำงานประจำ 1=จันทร์ ... 7=อาทิตย์ (ใส่เมื่อเป็นวันประจำรายสัปดาห์)' },
-      work_dates:       { type: 'array', items: { type: 'string' }, description: 'วันที่ทำงานเจาะจง รูปแบบ YYYY-MM-DD (ใส่เมื่อระบุวันที่ตรงตัว ไม่ใช่วันประจำ)' },
+      work_dates:       { type: 'array', items: { type: 'string' }, description: 'วันที่ทำงานเจาะจง รูปแบบ YYYY-MM-DD แบบปี ค.ศ. เสมอ (ใส่เมื่อระบุวันที่ตรงตัว ไม่ใช่วันประจำ) — สำคัญ: ข้อความมักเป็นปี พ.ศ. (เช่น "สิงหาคม 2569") ต้องแปลงเป็น ค.ศ. โดยลบ 543 ก่อน (2569→2026) · ถ้าไม่ระบุปี ให้อนุมานปีปัจจุบัน/ปีถัดไปที่ใกล้ที่สุด' },
       time_start:       { type: 'string', description: 'เวลาเริ่ม HH:MM' },
       time_end:         { type: 'string', description: 'เวลาเลิก HH:MM' },
       contact_line_id:  { type: 'string', description: 'LINE ID ติดต่อ ถ้ามีระบุ' },
@@ -85,6 +85,16 @@ Deno.serve(async (req) => {
     const toolUse = (aiJson.content || []).find((c: any) => c.type === 'tool_use');
     if (!toolUse) return new Response(JSON.stringify({ error: 'no structured result from AI' }), { status: 502, headers: corsHeaders() });
     const parsed = toolUse.input;
+
+    // กันพลาด: AI อาจคืนวันที่เป็นปี พ.ศ. (เช่น 2569-08-01) → แปลงเป็น ค.ศ. (ปี ≥ 2500 ลบ 543)
+    if (Array.isArray(parsed.work_dates)) {
+      parsed.work_dates = parsed.work_dates.map((d: any) => {
+        const m = /^(\d{4})(-\d{2}-\d{2})/.exec(String(d || '').trim());
+        if (!m) return d;
+        const y = +m[1];
+        return y >= 2500 ? (y - 543) + m[2] : d;
+      });
+    }
 
     const { error: uErr } = await sb.from('job_drafts').update({
       parsed,
