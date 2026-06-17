@@ -5629,7 +5629,7 @@ function dmAdminOpenPublish(id){
     document.getElementById('ad-time-start').value=p.time_start||'';
     document.getElementById('ad-time-end').value=p.time_end||'';
     document.getElementById('ad-contactline').value=p.contact_line_id||'';
-    document.getElementById('ad-desc').value='';
+    document.getElementById('ad-desc').value=d.raw_message||'';
     const panel=document.getElementById('ad-edit-panel'); panel.style.display='block'; panel.scrollIntoView({behavior:'smooth',block:'start'});
     refreshIcons();
   });
