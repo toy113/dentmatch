@@ -5547,14 +5547,19 @@ function _dmAdminParsedPreview(d){
   return '<div style="font-size:12px;color:var(--p700);background:var(--p50);border-radius:8px;padding:6px 9px;margin-bottom:10px">✓ AI ตรวจพบ: '+_dmEsc(p.title||bits||'ประกาศงาน')+(bits&&p.title?' ('+_dmEsc(bits)+')':'')+' · ความมั่นใจ '+Math.round((p.confidence||0)*100)+'%</div>';
 }
 function _dmAdminDraftCard(d){
-  const sent=d.sent_at?new Date(d.sent_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+  const lineDate = d.sent_at
+    ? new Date(d.sent_at).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'})
+    : null;
   const actions = d.status==='pending'
     ? '<button onclick="dmAdminParseDraft(\''+d.id+'\',this)" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--p300);background:var(--p50);color:var(--p700);font-size:12.5px;font-weight:700;cursor:pointer">🪄 ดึงข้อมูลอัตโนมัติ</button>'
       +'<button onclick="dmAdminRejectDraft(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);font-size:12.5px;cursor:pointer">ปฏิเสธ</button>'
       +'<button onclick="dmAdminOpenPublish(\''+d.id+'\')" style="padding:7px 12px;border-radius:9px;border:none;background:var(--p600);color:#fff;font-size:12.5px;font-weight:700;cursor:pointer">โพสต์เป็นงาน</button>'
     : '<span style="font-size:12px;color:var(--ink4)">'+(d.status==='published'?'โพสต์แล้ว ✓':'ปฏิเสธแล้ว')+'</span>';
   return '<div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff">'
-    +'<div style="font-size:11.5px;color:var(--ink4);margin-bottom:6px">'+_dmEsc(d.sender_name||'ไม่ระบุ')+(sent?' · '+sent:'')+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">'
+    +'<span style="font-size:12.5px;color:var(--ink3);font-weight:600">'+_dmEsc(d.sender_name||'ไม่ระบุ')+'</span>'
+    +(lineDate?'<span style="font-size:11.5px;color:var(--ink4);white-space:nowrap"><i data-lucide="calendar" style="width:12px;height:12px;vertical-align:-2px;margin-right:3px"></i>โพสต์ใน LINE: '+lineDate+'</span>':'')
+    +'</div>'
     +'<div style="font-size:13.5px;color:var(--ink);white-space:pre-wrap;margin-bottom:10px">'+_dmEsc(d.raw_message)+'</div>'
     +_dmAdminParsedPreview(d)
     +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+actions+'</div>'
