@@ -1883,7 +1883,7 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="form-group"><label>เขต/อำเภอ <span style="font-size:11px;color:var(--ink4);font-weight:400">(ไม่บังคับ)</span></label><input class="inp" id="ad-district"></div>
         <div class="form-group"><label>ค่าจ้าง</label><input class="inp" id="ad-wage" placeholder="เช่น 600/วัน"></div>
         <div class="form-group"><label>วันทำงานประจำ <span style="font-size:11px;color:var(--ink4);font-weight:400">(เลือกได้หลายวัน)</span></label>
-          <div class="chip-row" id="ad-days"><div class="chip" onclick="chipMulti(this)">จันทร์</div><div class="chip" onclick="chipMulti(this)">อังคาร</div><div class="chip" onclick="chipMulti(this)">พุธ</div><div class="chip" onclick="chipMulti(this)">พฤหัส</div><div class="chip" onclick="chipMulti(this)">ศุกร์</div><div class="chip" onclick="chipMulti(this)">เสาร์</div><div class="chip" onclick="chipMulti(this)">อาทิตย์</div></div>
+          <div class="chip-row" id="ad-days"><div class="chip" onclick="dmAdminToggleDayChip(this)">จันทร์</div><div class="chip" onclick="dmAdminToggleDayChip(this)">อังคาร</div><div class="chip" onclick="dmAdminToggleDayChip(this)">พุธ</div><div class="chip" onclick="dmAdminToggleDayChip(this)">พฤหัส</div><div class="chip" onclick="dmAdminToggleDayChip(this)">ศุกร์</div><div class="chip" onclick="dmAdminToggleDayChip(this)">เสาร์</div><div class="chip" onclick="dmAdminToggleDayChip(this)">อาทิตย์</div><div class="chip" onclick="dmAdminToggleFlexDay(this)">ตามตกลง</div></div>
         </div>
         <div class="form-group"><label>หรือ Part-time วันที่ <span style="font-size:11px;color:var(--ink4);font-weight:400">(คั่นด้วยจุลภาค YYYY-MM-DD)</span></label><input class="inp" id="ad-dates" placeholder="2026-06-20,2026-06-22"></div>
         <div class="form-group"><label>เวลา</label><div class="inp-row"><input class="inp" id="ad-time-start" placeholder="เริ่ม เช่น 09:00"><input class="inp" id="ad-time-end" placeholder="เลิก เช่น 17:00"></div></div>
@@ -5620,7 +5620,11 @@ function dmAdminOpenPublish(id){
     document.getElementById('ad-district').value=p.district||'';
     document.getElementById('ad-wage').value=p.wage_text||'';
     const _adDayNames=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
-    document.querySelectorAll('#ad-days .chip').forEach(c=>c.classList.toggle('on', (p.work_days||[]).includes(_adDayNames.indexOf(c.textContent.trim())+1)));
+    const _adWd=p.work_days; const _adIsNego=Array.isArray(_adWd)&&_adWd.length===0;
+    document.querySelectorAll('#ad-days .chip').forEach(function(c){
+      if(c.textContent.trim()==='ตามตกลง') c.classList.toggle('on',_adIsNego);
+      else c.classList.toggle('on', !_adIsNego && (p.work_days||[]).includes(_adDayNames.indexOf(c.textContent.trim())+1));
+    });
     document.getElementById('ad-dates').value=(p.work_dates||[]).join(',');
     document.getElementById('ad-time-start').value=p.time_start||'';
     document.getElementById('ad-time-end').value=p.time_end||'';
@@ -5631,6 +5635,16 @@ function dmAdminOpenPublish(id){
   });
 }
 function dmAdminClosePublish(){ _adEditingDraft=null; document.getElementById('ad-edit-panel').style.display='none'; }
+function dmAdminToggleDayChip(el){
+  el.classList.toggle('on');
+  // ถ้าเลือกวันใดวันหนึ่ง → ล้าง "ตามตกลง"
+  if(el.classList.contains('on')) document.querySelector('#ad-days .chip:last-child').classList.remove('on');
+}
+function dmAdminToggleFlexDay(el){
+  el.classList.toggle('on');
+  // ถ้าเลือกตามตกลง → ล้างวันทั้งหมด
+  if(el.classList.contains('on')) document.querySelectorAll('#ad-days .chip:not(:last-child)').forEach(c=>c.classList.remove('on'));
+}
 async function dmAdminConfirmPublish(){
   if(!_adEditingDraft) return;
   const title=document.getElementById('ad-title').value.trim();
@@ -5640,7 +5654,8 @@ async function dmAdminConfirmPublish(){
   const district=document.getElementById('ad-district').value.trim()||null;
   const wage_text=document.getElementById('ad-wage').value.trim()||null;
   const dayNames=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
-  const work_days=[...document.querySelectorAll('#ad-days .chip.on')].map(c=>dayNames.indexOf(c.textContent.trim())+1).filter(n=>n>0);
+  const _adFlexOn=document.querySelector('#ad-days .chip.on:last-child')?.textContent.trim()==='ตามตกลง';
+  const work_days=_adFlexOn ? [] : [...document.querySelectorAll('#ad-days .chip.on')].map(c=>dayNames.indexOf(c.textContent.trim())+1).filter(n=>n>0);
   const datesRaw=document.getElementById('ad-dates').value.trim();
   const work_dates=datesRaw?datesRaw.split(',').map(s=>s.trim()).filter(Boolean):[];
   const time_start=document.getElementById('ad-time-start').value.trim()||null;
@@ -5658,7 +5673,7 @@ async function dmAdminConfirmPublish(){
     if(pidErr || !pid){ showToast('หา proxy clinic ไม่สำเร็จ: '+(pidErr&&pidErr.message||'')); return; }
     const { data:job, error:jobErr } = await dmSb().from('jobs').insert({
       clinic_id:pid, title, position, province, district, wage_text,
-      work_days: work_days.length?work_days:null,
+      work_days: (_adFlexOn||work_days.length)?work_days:null,
       work_dates: work_dates.length?work_dates:null,
       time_start, time_end, description
     }).select('id').single();
