@@ -230,10 +230,10 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .chip{flex-shrink:0;padding:8px 14px;border-radius:var(--rc);font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:500;border:1.5px solid var(--border2);background:#fff;color:var(--ink3);cursor:pointer;transition:.18s;white-space:nowrap}
 .chip:active{transform:scale(.94)}
 .chip.on{background:var(--p600);border-color:var(--p600);color:#fff;box-shadow:0 3px 10px rgba(107,78,194,.35)}
-.chip.urg{border-color:var(--orange);color:var(--orange)}
+.chip.urg{border-color:var(--red);color:var(--red)}
 .chip.chip-green{border-color:var(--green2);color:var(--green2)}
 .chip.chip-green.on{background:var(--green2);border-color:var(--green2);color:#fff;box-shadow:0 3px 10px rgba(4,168,68,.3)}
-.chip.urg.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.chip.urg.on{background:var(--red);border-color:var(--red);color:#fff}
 .chip-more{flex-shrink:0;padding:6px 13px;border-radius:var(--rc);font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;border:1.5px dashed var(--p400);background:transparent;color:var(--p600);cursor:pointer;transition:.18s;white-space:nowrap}
 .chip-more:active{transform:scale(.94);background:var(--p50)}
 /* province search sheet */
@@ -278,8 +278,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .jcard:nth-child(1){animation-delay:.04s}.jcard:nth-child(2){animation-delay:.08s}.jcard:nth-child(3){animation-delay:.12s}.jcard:nth-child(4){animation-delay:.16s}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .jcard::before{content:'';position:absolute;top:0;left:0;width:3.5px;height:100%;background:linear-gradient(180deg,var(--p600),var(--p300));border-radius:3px 0 0 3px}
-.jcard.urg::before{background:linear-gradient(180deg,var(--orange),#FFB26B)}
-.jcard.urg{border-color:rgba(245,129,31,.18)}
+.jcard.urg::before{background:linear-gradient(180deg,var(--red),#f08070)}
+.jcard.urg{border-color:rgba(229,83,58,.18)}
 .badges{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap;align-items:center}
 .bdg{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;font-family:'Sarabun',sans-serif}
 .bdg-role{background:var(--p100);color:var(--p700)}
@@ -292,7 +292,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 @keyframes dmSpin{to{transform:rotate(360deg)}}
 .bdg-br{background:var(--p50);color:var(--p600);border:1px solid var(--p200)}
 .bdg-green{background:var(--green-bg);color:var(--green2);border:1px solid rgba(4,168,68,.3)}
-.bdg-urg{background:var(--orange-bg);color:var(--orange);display:flex;align-items:center;gap:4px}
+.bdg-urg{background:var(--red-bg);color:var(--red);display:flex;align-items:center;gap:4px}
 .jcard-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.3}
 .jcard-clinic{font-size:12px;color:var(--ink4);margin-bottom:9px;display:flex;align-items:center;gap:4px}
 .jcard-ts{font-size:10.5px;color:var(--ink5);margin-left:auto;flex-shrink:0;white-space:nowrap}
@@ -516,7 +516,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .dm-cal-cell.sel .dm-cal-num{color:#fff;font-weight:800}
 .dm-dot{width:6px;height:6px;border-radius:50%;background:transparent}
 .dm-dot.job{background:var(--p500)}
-.dm-dot.urg{background:#f5811f}
+.dm-dot.urg{background:var(--red)}
 .dm-cal-cell.sel .dm-dot{background:#fff!important}
 .dm-cal-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:9px 0 2px;font-size:11px;color:var(--ink3)}
 .dm-cal-legend span{display:inline-flex;align-items:center;gap:5px}
@@ -832,8 +832,8 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .dt-stat .n{font-family:'Prompt',sans-serif;font-size:25px;font-weight:800;color:var(--ink);line-height:1}
   .dt-stat .l{font-size:11.5px;color:var(--ink4);margin-top:5px;font-weight:500}
   .dt-stat .ic{position:absolute;right:14px;top:14px;font-size:20px;opacity:.9}
-  .dt-stat.urg .n{color:var(--orange2)}
-  .dt-stat.urg::before{background:linear-gradient(180deg,var(--orange),var(--orange2))}
+  .dt-stat.urg .n{color:var(--red)}
+  .dt-stat.urg::before{background:linear-gradient(180deg,var(--red),#c43a24)}
 
   /* ══════════════════════════════════════════════
      FILTER BAR
@@ -939,7 +939,7 @@ hr.divline{border:none;height:1px;background:var(--border);margin:12px 0}
   .wcard:hover{transform:translateY(-4px);box-shadow:var(--sh-lift);border-color:var(--p200)}
   .jcard::after{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--p500),var(--p300));opacity:0;transition:.2s}
   .jcard:hover::after{opacity:1}
-  .jcard.urg::after{background:linear-gradient(90deg,var(--orange),var(--gold2))}
+  .jcard.urg::after{background:linear-gradient(90deg,var(--red),#f08070)}
 
   /* ══════════════════════════════════════════════
      GUEST LOGIN BANNER
@@ -3645,7 +3645,7 @@ function dmApplyStats(){
   var _sn=document.querySelectorAll('#statRow .stat-n');
   if(_sn[0])_sn[0].innerHTML=STATS.jobs+'<sub> งาน</sub>';
   if(_sn[1])_sn[1].innerHTML=STATS.workers+'<sub> คน</sub>';
-  if(_sn[2])_sn[2].innerHTML='<i data-lucide="flame" style="color:var(--orange)"></i> '+STATS.urgent;
+  if(_sn[2])_sn[2].innerHTML='<i data-lucide="flame" style="color:var(--red)"></i> '+STATS.urgent;
   var _sr=document.getElementById('statRow'); if(_sr)_sr.style.display=LAUNCH_MODE?'none':'';
   // desktop .dt-stats (4 ตัว) — rebuild idempotent ตามความกว้าง + LAUNCH_MODE
   var tcJobs=document.getElementById('tc-jobs');
