@@ -2223,6 +2223,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
 <option>ภูเก็ต</option><option>สุราษฎร์ธานี</option><option>นครศรีธรรมราช</option><option>กระบี่</option><option>พังงา</option><option>ระนอง</option><option>ชุมพร</option><option>สงขลา</option><option>สตูล</option><option>ตรัง</option><option>พัทลุง</option><option>ปัตตานี</option><option>ยะลา</option><option>นราธิวาส</option>
 </optgroup>
 </select>
+      <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">เขต / อำเภอ <span style="font-size:10px;font-weight:400;color:var(--ink4)">(optional)</span></label>
+      <input id="rc-district" class="inp" placeholder="เช่น บางนา · ลาดพร้าว · เมืองชลบุรี" style="margin-bottom:9px">
       <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">LINE ID หรือ @LINE OA *</label>
       <input id="rc-line" class="inp" placeholder="เช่น @smileclinic" style="margin-bottom:9px">
       <label style="font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.4px;display:block;margin-bottom:5px">เบอร์โทรศัพท์ *</label>
@@ -3106,6 +3108,7 @@ async function nextAfterRegClinic() {
   pendingSignup={ role:'clinic', email,
     name:(document.getElementById('rc-name').value||'').trim(),
     province:document.getElementById('rc-province').value||'',
+    district:(document.getElementById('rc-district').value||'').trim()||null,
     line_id:(document.getElementById('rc-line').value||'').trim(),
     phone:(document.getElementById('rc-phone').value||'').trim(),
     bio:(document.getElementById('rc-bio').value||'').trim()||null };
@@ -3322,7 +3325,7 @@ async function dmCreateRecords(uid, s){
     if(error && !/duplicate|already exists/i.test(error.message)) throw error; };
   await ins('profiles', { id:uid, role:s.role });
   if(s.role==='clinic'){
-    await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null, about:s.bio||null });
+    await ins('clinics', { id:uid, name:s.name, province:s.province, district:s.district||null, line_id:s.line_id||null, phone:s.phone||null, about:s.bio||null });
   } else {
     // worker (รวม dentist self-attestation: license_verified=false เสมอ · trigger 0011 บังคับ)
     await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), skills:(s.skills&&s.skills.length?s.skills:null), available_days:[], bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
