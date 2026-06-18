@@ -5554,8 +5554,16 @@ async function dmAdminClearDrafts(){
   if(!filtered.length){ alert('ไม่มีรายการที่จะลบ'); return; }
   if(!confirm('ลบ draft '+filtered.length+' รายการที่กำลังแสดงอยู่ใช่ไหม?\n(ไม่สามารถกู้คืนได้)')) return;
   const ids=filtered.map(d=>d.id);
-  const { error }=await dmSb().from('job_drafts').delete().in('id',ids);
-  if(error){ alert('ลบไม่สำเร็จ: '+error.message); return; }
+  const resEl=document.getElementById('ad-import-result');
+  const BATCH=200; let deleted=0;
+  for(let i=0;i<ids.length;i+=BATCH){
+    const chunk=ids.slice(i,i+BATCH);
+    if(resEl) resEl.textContent='กำลังลบ '+deleted+'/'+ids.length+'...';
+    const { error }=await dmSb().from('job_drafts').delete().in('id',chunk);
+    if(error){ alert('ลบไม่สำเร็จ (ลบไปแล้ว '+deleted+'): '+error.message); dmAdminLoadDrafts(); return; }
+    deleted+=chunk.length;
+  }
+  if(resEl) resEl.textContent='ลบแล้ว '+deleted+' รายการ ✓';
   dmAdminLoadDrafts();
 }
 async function dmAdminLoadDrafts(){
