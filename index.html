@@ -232,6 +232,8 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .chip:active{transform:scale(.94)}
 .chip.on{background:var(--p600);border-color:var(--p600);color:#fff;box-shadow:0 3px 10px rgba(107,78,194,.35)}
 .chip.urg{border-color:var(--orange);color:var(--orange)}
+.chip.chip-green{border-color:var(--green2);color:var(--green2)}
+.chip.chip-green.on{background:var(--green2);border-color:var(--green2);color:#fff;box-shadow:0 3px 10px rgba(4,168,68,.3)}
 .chip.urg.on{background:var(--orange);border-color:var(--orange);color:#fff}
 .chip-more{flex-shrink:0;padding:6px 13px;border-radius:var(--rc);font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;border:1.5px dashed var(--p400);background:transparent;color:var(--p600);cursor:pointer;transition:.18s;white-space:nowrap}
 .chip-more:active{transform:scale(.94);background:var(--p50)}
@@ -4774,7 +4776,7 @@ function filterPos(filterId, el, pos) {
   el.classList.add('on');
   if(row){
     const skills = FILTER_SKILLS[pos] || FILTER_SKILLS['ทั้งหมด'];
-    row.innerHTML = skills.map(s=>`<div class="chip" onclick="chipMulti(this)">${s}</div>`).join('');   // ทักษะตามตำแหน่ง (multi-select)
+    row.innerHTML = skills.map(s=>`<div class="chip${s==='งานเคาน์เตอร์'?' chip-green':''}" onclick="chipMulti(this)">${s}</div>`).join('');   // ทักษะตามตำแหน่ง (multi-select)
   }
   applyActiveBoard();
 }
@@ -4788,7 +4790,7 @@ function renderSkills(containerId,labelId,pos,multi){
   const conf=POS_SKILLS[pos]||POS_SKILLS.dentist;
   const lbl=document.getElementById(labelId); if(lbl)lbl.textContent=conf.label;
   // เลือกได้หลายทักษะ ไม่มี default on = แปลว่าทั้งหมด
-  c.innerHTML=conf.skills.map(s=>`<div class="chip" onclick="chipMulti(this)">${s}</div>`).join('');
+  c.innerHTML=conf.skills.map(s=>`<div class="chip${s==='งานเคาน์เตอร์'?' chip-green':''}" onclick="chipMulti(this)">${s}</div>`).join('');
 }
 function skillChip(el,multi){ chipMulti(el); }
 const BIO_PLACEHOLDER = {
