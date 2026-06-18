@@ -3975,7 +3975,20 @@ let _dmJobLogged = {};   // jobid -> [วันที่บันทึกผล
 /* แปลงปี พ.ศ. → ค.ศ. ในสตริงวันที่ 'YYYY-MM-DD' (ปี ≥ 2500 = พ.ศ. → ลบ 543) · กันโพสต์ LINE/แอดมินที่ใส่ปีไทย ทำให้ date filter ไม่ตรง */
 function _dmCEDate(s){ const m=/^(\d{4})(-\d{2}-\d{2})/.exec(String(s||'').trim()); if(!m) return s; const y=+m[1]; return y>=2500 ? (y-543)+m[2] : s; }
 function _dmCEDates(arr){ return Array.isArray(arr) ? arr.map(_dmCEDate) : arr; }
-function _dmNormJob(j){ if(j){ if(j.work_dates) j.work_dates=_dmCEDates(j.work_dates); if(j.work_date) j.work_date=_dmCEDate(j.work_date); } return j; }   // normalize วันที่งานทุกแถวที่โหลดจาก DB → ทุก consumer (filter/แสดงผล/แก้ไข) เห็น ค.ศ.
+// AI/แอดมินมักใส่ "ปีผิด" (อดีต) เพราะโมเดลไม่รู้ว่าวันนี้คือวันไหน → เลื่อนทั้งชุดไปข้างหน้าทีละปีให้วันแรกสุด ≥ วันโพสต์ (เผื่อ 31 วัน กันวันเพิ่งผ่านไม่ให้ถูกเลื่อน) · เลื่อนเฉพาะอนาคต ไม่ดึงย้อนหลัง
+function _dmRollFwd(dates, anchorISO){
+  if(!Array.isArray(dates) || !dates.length) return dates;
+  let a=new Date(String(anchorISO||'').slice(0,10)+'T00:00:00'); if(isNaN(a.getTime())){ a=new Date(); a.setHours(0,0,0,0); }
+  a.setDate(a.getDate()-31);
+  const parsed=dates.map(function(s){ return new Date(String(s).slice(0,10)+'T00:00:00'); });
+  const valid=parsed.filter(function(d){ return !isNaN(d.getTime()); });
+  if(!valid.length) return dates;
+  const earliest=valid.reduce(function(m,d){ return (!m||d<m)?d:m; }, null);
+  let k=0; while(k<50){ const e=new Date(earliest); e.setFullYear(earliest.getFullYear()+k); if(e>=a) break; k++; }
+  if(k===0) return dates;
+  return dates.map(function(s){ const d=new Date(String(s).slice(0,10)+'T00:00:00'); if(isNaN(d.getTime())) return s; d.setFullYear(d.getFullYear()+k); return _dmISOf(d); });
+}
+function _dmNormJob(j){ if(j){ if(j.work_dates) j.work_dates=_dmCEDates(j.work_dates); if(j.work_date) j.work_date=_dmCEDate(j.work_date); if(j.work_dates) j.work_dates=_dmRollFwd(j.work_dates, j.created_at); if(j.work_date) j.work_date=_dmRollFwd([j.work_date], j.created_at)[0]; } return j; }   // normalize วันที่งานทุกแถวที่โหลดจาก DB → พ.ศ.→ค.ศ. + แก้ปีอดีตที่ AI ใส่ผิด → ทุก consumer (filter/ปฏิทิน/ด่วน/แสดงผล) เห็นปีถูก
 function _dmJobDates(job){ if(job && job.work_dates && job.work_dates.length) return job.work_dates.slice().sort(); return (job && job.work_date) ? [job.work_date] : []; }   // วันงานทั้งหมด (เรียงวัน)
 function _dmPastDates(job){ const t=new Date(); t.setHours(0,0,0,0); return _dmJobDates(job).filter(function(d){ return new Date(d) < t; }); }   // เฉพาะวันที่ผ่านไปแล้ว (บันทึกได้)
 function _dmJobIsPast(job){ const ds=_dmJobDates(job); if(!ds.length) return false; const t=new Date(); t.setHours(0,0,0,0); return new Date(ds[ds.length-1]) < t; }   // วันสุดท้ายผ่านแล้ว = งานจบ

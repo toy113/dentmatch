@@ -27,7 +27,7 @@ const EXTRACT_TOOL = {
       district:         { type: 'string' },
       wage_text:        { type: 'string', description: 'ค่าจ้างตามที่ระบุ เช่น 600/วัน' },
       work_days:        { type: 'array', items: { type: 'integer', minimum: 1, maximum: 7 }, description: 'วันทำงานประจำ 1=จันทร์ ... 7=อาทิตย์ (ใส่เมื่อเป็นวันประจำรายสัปดาห์)' },
-      work_dates:       { type: 'array', items: { type: 'string' }, description: 'วันที่ทำงานเจาะจง รูปแบบ YYYY-MM-DD แบบปี ค.ศ. เสมอ (ใส่เมื่อระบุวันที่ตรงตัว ไม่ใช่วันประจำ) — สำคัญ: ข้อความมักเป็นปี พ.ศ. (เช่น "สิงหาคม 2569") ต้องแปลงเป็น ค.ศ. โดยลบ 543 ก่อน (2569→2026) · ถ้าไม่ระบุปี ให้อนุมานปีปัจจุบัน/ปีถัดไปที่ใกล้ที่สุด' },
+      work_dates:       { type: 'array', items: { type: 'string' }, description: 'วันที่ทำงานเจาะจง รูปแบบ YYYY-MM-DD แบบปี ค.ศ. เสมอ (ใส่เมื่อระบุวันที่ตรงตัว ไม่ใช่วันประจำ) — สำคัญ: ข้อความมักเป็นปี พ.ศ. (เช่น "สิงหาคม 2569") ต้องแปลงเป็น ค.ศ. โดยลบ 543 ก่อน (2569→2026) · ถ้าไม่ระบุปี ห้ามเดาปีเอง ให้ใช้ "วันนี้" ที่ระบุในข้อความ แล้วเลือกปีที่ทำให้วันที่นั้นเป็นวันถัดไปที่ยังไม่ผ่าน (≥ วันนี้)' },
       time_start:       { type: 'string', description: 'เวลาเริ่ม HH:MM' },
       time_end:         { type: 'string', description: 'เวลาเลิก HH:MM' },
       contact_line_id:  { type: 'string', description: 'LINE ID ติดต่อ ถ้ามีระบุ' },
@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
         tool_choice: { type: 'tool', name: 'extract_job_post' },
         messages: [{
           role: 'user',
-          content: `ข้อความจากกลุ่ม LINE OpenChat หางานทันตกรรม:\n\n"""\n${draft.raw_message}\n"""\n\nแยกข้อมูลประกาศงานตาม schema ที่กำหนด`,
+          content: `วันนี้คือ ${new Date().toISOString().slice(0, 10)} (ค.ศ.)\n\nข้อความจากกลุ่ม LINE OpenChat หางานทันตกรรม:\n\n"""\n${draft.raw_message}\n"""\n\nแยกข้อมูลประกาศงานตาม schema ที่กำหนด`,
         }],
       }),
     });
@@ -94,6 +94,22 @@ Deno.serve(async (req) => {
         const y = +m[1];
         return y >= 2500 ? (y - 543) + m[2] : d;
       });
+      // กันพลาด 2: AI มักเดา "ปีอดีต" เมื่อข้อความไม่ระบุปี (เพราะรู้แค่ training cutoff) → เลื่อนทั้งชุดไปข้างหน้าทีละปีให้วันแรกสุด ≥ วันนี้-31วัน
+      const anchor = new Date(); anchor.setUTCHours(0, 0, 0, 0); anchor.setUTCDate(anchor.getUTCDate() - 31);
+      const parsedDates = parsed.work_dates
+        .map((s: any) => new Date(String(s).slice(0, 10) + 'T00:00:00Z'))
+        .filter((dt: Date) => !isNaN(dt.getTime()));
+      if (parsedDates.length) {
+        const earliest = parsedDates.reduce((a: Date, b: Date) => (b < a ? b : a));
+        let k = 0;
+        while (k < 50) { const e = new Date(earliest); e.setUTCFullYear(earliest.getUTCFullYear() + k); if (e >= anchor) break; k++; }
+        if (k > 0) parsed.work_dates = parsed.work_dates.map((s: any) => {
+          const dt = new Date(String(s).slice(0, 10) + 'T00:00:00Z');
+          if (isNaN(dt.getTime())) return s;
+          dt.setUTCFullYear(dt.getUTCFullYear() + k);
+          return dt.toISOString().slice(0, 10);
+        });
+      }
     }
 
     const { error: uErr } = await sb.from('job_drafts').update({
