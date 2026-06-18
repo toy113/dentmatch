@@ -344,6 +344,7 @@ html,body{background:var(--p800);font-family:'Sarabun',sans-serif;color:var(--in
 .w-loc{font-size:13px;font-weight:500;color:var(--ink)}
 .skills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
 .sk{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--p100);color:var(--p700);border:1.5px solid var(--p300);font-weight:700}
+.sk.sk-green{background:var(--green-bg);color:var(--green2);border-color:rgba(4,168,68,.35)}
 .quote{border-left:3px solid var(--p400);padding:7px 10px;background:var(--p25);border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink3);line-height:1.55;margin-bottom:10px;font-style:italic}
 .trust{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .tr{font-size:11px;color:var(--ink4);display:flex;align-items:center;gap:3px}
@@ -3398,7 +3399,7 @@ function dmWorkerCard(w){
   const exp = (w.experience_years==null) ? '' : `<span class="w-exp">${w.experience_years>1 ? w.experience_years+' ปี' : (w.experience_years===1 ? '6 เดือน-1 ปี' : 'เริ่มต้นทำงาน')}</span>`;
   const provs = (w.provinces&&w.provinces.length) ? w.provinces : (w.province?[w.province]:[]);
   const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
-  const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
+  const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk${s==='งานเคาน์เตอร์'?' sk-green':''}">${_dmEsc(s)}</span>`).join('');
   const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since), _vw=_dmWorkerViews[w.id]||0;   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
   const statCells=[ _ts>0?`<div class="wstat"><i data-lucide="circle-check-big" style="color:var(--green)"></i> <b>${_ts}</b> งานสำเร็จ</div>`:'',
@@ -4382,7 +4383,7 @@ function dmFillWorkerProfile(w){
   const mEl=document.getElementById('pf-member'); if(mEl) mEl.textContent=_mo>0?('สมาชิก '+_mo+' เดือน'):'สมาชิกใหม่';
   const sEl=document.getElementById('pf-since'); if(sEl) sEl.textContent=_dmSince(w.member_since);
   const sk=document.getElementById('pf-skills');
-  if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
+  if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk${s==='งานเคาน์เตอร์'?' sk-green':''}" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
   const bio=document.getElementById('pf-bio'); if(bio) bio.textContent=w.bio||'–';
   refreshIcons();
 }
@@ -4403,7 +4404,7 @@ function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข
   set('wd-since', _dmSince(w.member_since));
   const bd=document.getElementById('wd-badges'); if(bd) bd.innerHTML='<span class="bdg bdg-role">'+_dmEsc(pos)+'</span>';
   const sk=document.getElementById('wd-skills');
-  if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
+  if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk${s==='งานเคาน์เตอร์'?' sk-green':''}">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
   const q=document.getElementById('wd-quote'); if(q) q.textContent=w.bio||'–';
   const dot=document.getElementById('wd-dot'); if(dot) dot.style.display=(w.available!==false)?'':'none';
   refreshIcons();
