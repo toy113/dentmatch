@@ -3731,12 +3731,12 @@ function dmJobDetailHTML(job){
   if(job.patients_per_day!=null) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">จำนวนคนไข้</div><div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">${_dmEsc(job.patients_per_day)} คน/วัน</div></div>`;
   if(isOwner) cells+=`<div style="text-align:center;padding:10px;background:var(--p25);border-radius:10px"><div style="font-size:11px;color:var(--ink4);margin-bottom:3px">ยอดวิว</div><div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--p700)">${_dmJobViews[job.id]||0} ครั้ง</div></div>`;
   const grid=cells?`<hr class="divline"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">${cells}</div>`:'';
-  const descPara=job.description?`<div style="font-size:13.5px;color:var(--ink3);line-height:1.7">${_dmEsc(job.description)}</div>`:'';
+  const descPara=job.description?`<div style="font-size:13.5px;color:var(--ink3);line-height:1.7;white-space:pre-wrap">${_dmEsc(job.description)}</div>`:'';
   const descCard=(descPara||grid)?`<div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
         <div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:12px"><i data-lucide="clipboard-list"></i> รายละเอียดงาน</div>
         ${descPara}${grid}
       </div>`:'';
-  const aboutTxt=clinic.about?`<div style="font-size:13px;color:var(--ink3);line-height:1.65">${_dmEsc(clinic.about)}</div>`:'';
+  const aboutTxt=clinic.about?`<div style="font-size:13px;color:var(--ink3);line-height:1.65;white-space:pre-wrap">${_dmEsc(clinic.about)}</div>`:'';
   const clinicAddr=_dmAddr(clinic.province, clinic.district);
   return `<div style="padding:16px;display:flex;flex-direction:column;gap:14px">
       <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--sh-card);border:1px solid var(--border);position:relative;overflow:hidden">
