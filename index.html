@@ -3518,13 +3518,22 @@ function _dmRenderCalendar(prefix){
     +'<div class="dm-cal-title">'+(_thMonths[mo]||'')+' '+beYear+'</div>'
     +'<button class="dm-cal-nav" onclick="_dmCalNav(\''+prefix+'\',1)">›</button></div>';
   html+='<div class="dm-cal-grid dm-cal-wdh">'+DM_WDH.map(function(w){return '<div class="dm-cal-wd">'+w+'</div>';}).join('')+'</div>';
+  // เก็บวันที่ที่มีงาน (จาก data-dates ของการ์ดทุกใบ ไม่สนใจ filter ที่ซ่อนอยู่) → จุดบนปฏิทิน
+  const _cont=_dmCalCardsCont(prefix), _jobDays={};
+  if(_cont){ _cont.querySelectorAll('.jcard').forEach(function(c){
+    const dd=c.getAttribute('data-dates'); if(!dd) return;
+    const isUrg=c.classList.contains('urg');
+    dd.split('|').forEach(function(iso){ if(!iso) return; if(!_jobDays[iso]) _jobDays[iso]={urg:false}; if(isUrg) _jobDays[iso].urg=true; });
+  }); }
   html+='<div class="dm-cal-grid">';
   for(let i=0;i<firstDow;i++) html+='<div class="dm-cal-cell empty"></div>';
   for(let d=1;d<=daysInMonth;d++){
     const cd=new Date(y,mo,d), iso=_dmISOf(cd);
     const past=cd<t, isToday=cd.getTime()===t.getTime(), isSel=(iso===sel);
     let cls='dm-cal-cell'; if(past)cls+=' past'; if(isToday)cls+=' today'; if(isSel)cls+=' sel';
-    html+='<div class="'+cls+'" '+(past?'':'onclick="_dmCalPick(\''+prefix+'\',\''+iso+'\')"')+'><span class="dm-cal-num">'+d+'</span></div>';
+    const _jd=_jobDays[iso];
+    const dot='<span class="dm-dot'+(_jd?(_jd.urg?' urg':' job'):'')+'"></span>';
+    html+='<div class="'+cls+'" '+(past?'':'onclick="_dmCalPick(\''+prefix+'\',\''+iso+'\')"')+'><span class="dm-cal-num">'+d+'</span>'+dot+'</div>';
   }
   html+='</div>';
   const cont=_dmCalCardsCont(prefix);
