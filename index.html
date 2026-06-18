@@ -1859,8 +1859,8 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
   <div class="scroll">
     <div class="form-body">
       <div class="form-group">
-        <label>วางข้อความที่ export จาก LINE OpenChat (.txt)</label>
-        <textarea class="inp" id="ad-import-text" rows="8" placeholder="วางทั้งไฟล์ .txt ที่ export จาก LINE ที่นี่..."></textarea>
+        <label>วางข้อความจาก LINE <span style="font-size:11px;font-weight:400;color:var(--ink4)">(copy ตรงหรือ export .txt ก็ได้)</span></label>
+        <textarea class="inp" id="ad-import-text" rows="8" placeholder="copy ข้อความจาก LINE มาวางตรงนี้เลย หรือจะ export .txt แล้ววางก็ได้&#10;&#10;ถ้า copy ตรง: แต่ละข้อความคั่นด้วย 1 บรรทัดว่าง"></textarea>
         <button class="btn-primary" style="margin-top:10px" onclick="dmAdminImportText()"><i data-lucide="upload"></i> แยกข้อความ → สร้าง draft</button>
         <div id="ad-import-result" style="font-size:12.5px;color:var(--ink4);margin-top:8px"></div>
       </div>
@@ -5456,21 +5456,31 @@ function _dmParseLineExport(text){
   const lines=String(text||'').replace(/\r\n/g,'\n').split('\n');
   const msgRe=/^(\d{1,2}):(\d{2})\t([^\t]+)\t(.+)$/;
   const sysRe=/(เข้าร่วมกลุ่ม|ออกจากกลุ่ม|ถูกเรียกเข้าร่วม|unsent a message|ลบข้อความนี้แล้ว|เปลี่ยนชื่อกลุ่ม|เปลี่ยนรูปกลุ่ม)/;
-  let curDate=null; const out=[];
-  for(const raw of lines){
-    const line=raw.replace(/​/g,'').replace(/\s+$/,'');
-    if(!line.trim()) continue;
-    const mm=line.match(msgRe);
-    if(mm){
-      const hh=mm[1], mi=mm[2], sender=mm[3].trim(), msg=mm[4].trim();
-      if(sysRe.test(msg)) continue;
-      const sentAt=curDate ? (curDate+'T'+hh.padStart(2,'0')+':'+mi+':00') : null;
-      out.push({ sender_name:sender, sent_at:sentAt, raw_message:msg });
-      continue;
+  const out=[];
+  // ถ้ามี LINE export format (tab-separated) → ใช้ parser เดิม
+  const isExport=lines.some(l=>msgRe.test(l.replace(/​/g,'')));
+  if(isExport){
+    let curDate=null;
+    for(const raw of lines){
+      const line=raw.replace(/​/g,'').replace(/\s+$/,'');
+      if(!line.trim()) continue;
+      const mm=line.match(msgRe);
+      if(mm){
+        const hh=mm[1], mi=mm[2], sender=mm[3].trim(), msg=mm[4].trim();
+        if(sysRe.test(msg)) continue;
+        const sentAt=curDate?(curDate+'T'+hh.padStart(2,'0')+':'+mi+':00'):null;
+        out.push({ sender_name:sender, sent_at:sentAt, raw_message:msg });
+        continue;
+      }
+      const d=_dmParseLineDate(line);
+      if(d){ curDate=d; continue; }
+      if(out.length) out[out.length-1].raw_message+='\n'+line.trim();
     }
-    const d=_dmParseLineDate(line);   // ลองข้อความก่อน แล้วค่อยลองหัวข้อวัน (กันบรรทัดข้อความถูกตีเป็นวัน)
-    if(d){ curDate=d; continue; }
-    if(out.length) out[out.length-1].raw_message += '\n'+line.trim();   // ข้อความหลายบรรทัด ต่อเข้าอันก่อนหน้า
+  } else {
+    // plain text (copy ตรงจาก LINE): แยกด้วย blank line → แต่ละ paragraph = 1 draft
+    text.trim().split(/\n[ \t]*\n/).forEach(block=>{
+      const msg=block.trim(); if(msg) out.push({ sender_name:null, sent_at:null, raw_message:msg });
+    });
   }
   return out;
 }
