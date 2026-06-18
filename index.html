@@ -5908,42 +5908,7 @@ function initA11y(){
   });
 }
 
-/* ซ่อน chip ตัวกรองไว้หลังปุ่ม "ตัวกรอง" — กดถึงกาง (ประหยัดพื้นที่ มือถือ+desktop) */
-function initFilterCollapse(){
-  document.querySelectorAll('.filter-wrap').forEach(fw=>{
-    if(fw.querySelector('.dt-filterbar')) return;
-    fw.classList.add('dt-collapsible');               // collapsed by default
-    const bar=document.createElement('div');
-    bar.className='dt-filterbar';
-    bar.innerHTML='<button class="dt-filter-toggle" type="button">ตัวกรอง <span class="dt-filter-badge">0</span><span class="chev"><i data-lucide="chevron-down"></i></span></button><span class="dt-filter-summary"></span><button class="dt-filter-clear" type="button"><i data-lucide="x"></i> ล้างทั้งหมด</button>';
-    fw.insertBefore(bar,fw.firstChild);
-    // ห่อ chip rows เป็น panel ลอย (dropdown) → ตอนเปิดไม่ดันเนื้อหา/ไม่ทำ sticky header สูง
-    const panel=document.createElement('div'); panel.className='dt-filter-panel';
-    [...fw.querySelectorAll(':scope > .chip-row')].forEach(r=>panel.appendChild(r));
-    fw.appendChild(panel);
-    const toggle=bar.querySelector('.dt-filter-toggle');
-    const badge=bar.querySelector('.dt-filter-badge');
-    const summary=bar.querySelector('.dt-filter-summary');
-    const clearBtn=bar.querySelector('.dt-filter-clear');
-    const refresh=()=>{
-      const ons=[...fw.querySelectorAll('.chip.on')].map(c=>c.textContent.trim()).filter(Boolean);
-      badge.textContent=ons.length;
-      badge.style.display=ons.length?'inline-flex':'none';
-      summary.textContent=ons.length?ons.join('  ·  '):'';
-    };
-    toggle.addEventListener('click',()=>fw.classList.toggle('dt-open'));
-    clearBtn.addEventListener('click',(e)=>{
-      e.stopPropagation();
-      const view=fw.closest('.view');
-      const tc=fw.closest('.tab-content')||view;
-      clearAllFilters(view,tc);
-      refresh();
-    });
-    fw.addEventListener('click',()=>setTimeout(refresh,0));
-    refresh();
-  });
-  refreshIcons();
-}
+function initFilterCollapse(){}
 function initDesktop(){
   if(document.body.classList.contains('dt-initialized')) return;
   document.body.classList.add('dt-initialized');
