@@ -3511,13 +3511,10 @@ function _dmRenderCalendar(prefix){
   for(let d=1;d<=daysInMonth;d++){
     const cd=new Date(y,mo,d), iso=_dmISOf(cd);
     const past=cd<t, isToday=cd.getTime()===t.getTime(), isSel=(iso===sel);
-    const st=past?0:_dmDayState(prefix,iso);
     let cls='dm-cal-cell'; if(past)cls+=' past'; if(isToday)cls+=' today'; if(isSel)cls+=' sel';
-    const dot=st===2?'<span class="dm-dot urg"></span>':(st===1?'<span class="dm-dot job"></span>':'<span class="dm-dot"></span>');
-    html+='<div class="'+cls+'" '+(past?'':'onclick="_dmCalPick(\''+prefix+'\',\''+iso+'\')"')+'><span class="dm-cal-num">'+d+'</span>'+dot+'</div>';
+    html+='<div class="'+cls+'" '+(past?'':'onclick="_dmCalPick(\''+prefix+'\',\''+iso+'\')"')+'><span class="dm-cal-num">'+d+'</span></div>';
   }
   html+='</div>';
-  html+='<div class="dm-cal-legend"><span><span class="dm-dot job"></span> มีงาน</span><span><span class="dm-dot urg"></span> งานด่วน</span><span><span class="dm-leg-sel"></span> วันที่เลือก</span></div>';
   const cont=_dmCalCardsCont(prefix);
   const n=cont?[...cont.querySelectorAll('.jcard')].filter(function(c){return !c.classList.contains('hidden');}).length:0;
   if(sel){
