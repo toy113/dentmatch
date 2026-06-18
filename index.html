@@ -5502,10 +5502,9 @@ function _dmParseLineExport(text){
       if(out.length) out[out.length-1].raw_message+='\n'+line.trim();
     }
   } else {
-    // plain text (copy ตรงจาก LINE): แยกด้วย blank line → แต่ละ paragraph = 1 draft
-    text.trim().split(/\n[ \t]*\n/).forEach(block=>{
-      const msg=block.trim(); if(msg) out.push({ sender_name:null, sent_at:null, raw_message:msg });
-    });
+    // plain text (copy ตรงจาก LINE) = 1 ข้อความ → 1 draft (โพสต์เดียวมักมีบรรทัดว่างคั่นระหว่างหัวข้อ/วันที่/จังหวัด/ติดต่อ — ห้ามแยกตามบรรทัดว่าง)
+    // ต้องการนำเข้าหลายโพสต์พร้อมกัน → ใช้ไฟล์ EXPORT .txt (มี timestamp+ชื่อ คั่นข้อความชัดเจน) ผ่าน branch ด้านบน
+    const msg=text.trim(); if(msg) out.push({ sender_name:null, sent_at:null, raw_message:msg });
   }
   return out;
 }
