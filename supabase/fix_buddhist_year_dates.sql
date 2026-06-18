@@ -8,17 +8,22 @@
 -- กฎแปลง: ปี >= 2500 = พ.ศ. → ลบ 543  (2569 → 2026)
 -- แก้ทั้ง jobs.work_dates / jobs.work_date และ job_drafts.parsed.work_dates
 -- ปลอดภัยรันซ้ำได้ (idempotent: ปี ค.ศ. < 2500 จะไม่ถูกแตะ)
+-- หมายเหตุ: jobs.work_dates เป็น jsonb (ไม่ใช่ text[])
 
 -- ============================================================
 -- 0) ตรวจก่อนแก้ — ดูแถวที่ยังมีปี พ.ศ. (ปี >= 2500)
 -- ============================================================
 select id, title, work_dates, work_date
 from jobs
-where exists (
-  select 1 from unnest(coalesce(work_dates, array[]::text[])) d
-  where substring(d from 1 for 4)::int >= 2500
+where (
+  work_dates is not null
+  and jsonb_typeof(work_dates) = 'array'
+  and exists (
+    select 1 from jsonb_array_elements_text(work_dates) d
+    where substring(d from 1 for 4)::int >= 2500
+  )
 )
-   or (work_date is not null and substring(work_date::text from 1 for 4)::int >= 2500);
+or (work_date is not null and substring(work_date::text from 1 for 4)::int >= 2500);
 
 select id, sender_name, parsed->'work_dates' as work_dates
 from job_drafts
@@ -29,22 +34,23 @@ where jsonb_typeof(parsed->'work_dates') = 'array'
   );
 
 -- ============================================================
--- 1) แก้ jobs.work_dates (text[]) — ลบ 543 จากปีที่ >= 2500
+-- 1) แก้ jobs.work_dates (jsonb array) — ลบ 543 จากปีที่ >= 2500
 -- ============================================================
 update jobs
 set work_dates = (
-  select array_agg(
+  select jsonb_agg(
     case when substring(d from 1 for 4)::int >= 2500
-         then (substring(d from 1 for 4)::int - 543)::text || substring(d from 5)
-         else d end
-    order by ord
+         then to_jsonb((substring(d from 1 for 4)::int - 543)::text || substring(d from 5))
+         else to_jsonb(d) end
   )
-  from unnest(work_dates) with ordinality as t(d, ord)
+  from jsonb_array_elements_text(work_dates) d
 )
-where exists (
-  select 1 from unnest(coalesce(work_dates, array[]::text[])) d
-  where substring(d from 1 for 4)::int >= 2500
-);
+where work_dates is not null
+  and jsonb_typeof(work_dates) = 'array'
+  and exists (
+    select 1 from jsonb_array_elements_text(work_dates) d
+    where substring(d from 1 for 4)::int >= 2500
+  );
 
 -- ============================================================
 -- 2) แก้ jobs.work_date (วันเดียว / backward-compat)
@@ -56,7 +62,7 @@ where work_date is not null
   and substring(work_date::text from 1 for 4)::int >= 2500;
 
 -- ============================================================
--- 3) แก้ job_drafts.parsed.work_dates (jsonb array) — เผื่อเปิดฟอร์ม publish ซ้ำ
+-- 3) แก้ job_drafts.parsed.work_dates (jsonb array)
 -- ============================================================
 update job_drafts
 set parsed = jsonb_set(
