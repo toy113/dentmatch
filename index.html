@@ -1284,10 +1284,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div style="display:flex;align-items:center;gap:10px"></div>
         </div>
       </div>
-      <div style="background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-card);border:1px solid var(--border)">
-        <div style="font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
-        <div class="avail-days-big" id="wd-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big">ส</div><div class="d-big">อา</div></div>
-      </div>
       <button class="btn-primary" id="wd-cta" onclick="openSheet('s-login')"><i data-lucide="lock"></i> เข้าสู่ระบบเพื่อส่งคำเชิญ</button>
     </div>
   </div>
@@ -1642,9 +1638,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <div class="profile-section"><div class="ps-title"><i data-lucide="message-circle"></i> แนะนำตัวเอง</div>
           <div class="intro-box"><div class="intro-txt" id="pf-bio">–</div></div>
         </div>
-        <div class="profile-section"><div class="ps-title"><i data-lucide="calendar-days"></i> วันที่สะดวกรับงาน</div>
-          <div class="avail-card"><div class="avail-days-big" id="pf-days"><div class="d-big">จ</div><div class="d-big">อ</div><div class="d-big">พ</div><div class="d-big">พฤ</div><div class="d-big">ศ</div><div class="d-big">ส</div><div class="d-big">อา</div></div></div>
-        </div>
         <button class="btn-edit-profile" onclick="dmOpenEditProfile()"><i data-lucide="square-pen"></i> แก้ไขโปรไฟล์</button>
         <button onclick="openSheet('s-contact')" style="width:100%;background:#fff;color:var(--ink4);border:1.5px solid var(--border2);border-radius:var(--rb);padding:12px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px" onmouseover="this.style.background='var(--p50)'" onmouseout="this.style.background='#fff'"><i data-lucide="message-circle"></i> ติดต่อเรา</button>
       </div>
@@ -1854,9 +1847,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
         <button class="chip-more" style="width:100%;text-align:center;border-radius:10px;padding:9px" onclick="openEditProvSheet()"><i data-lucide="search"></i> ค้นหาจังหวัดอื่น...</button>
       </div>
       <div class="form-group"><label>แนะนำตัวสั้นๆ</label><textarea class="inp" id="edit-bio" rows="3" placeholder="เช่น อายุ, งานที่ถนัด, พื้นที่รับงาน, อื่นๆ"></textarea></div>
-      <div class="form-group"><label>วันที่สะดวก</label>
-        <div class="avail-days-big" id="editDays"><div class="d-big" onclick="dayToggle(this)">จ</div><div class="d-big" onclick="dayToggle(this)">อ</div><div class="d-big" onclick="dayToggle(this)">พ</div><div class="d-big" onclick="dayToggle(this)">พฤ</div><div class="d-big" onclick="dayToggle(this)">ศ</div><div class="d-big on" onclick="dayToggle(this)">ส</div><div class="d-big on" onclick="dayToggle(this)">อา</div></div>
-      </div>
       <button class="btn-primary" onclick="dmSaveWorkerProfile()"><i data-lucide="save"></i> บันทึกโปรไฟล์</button>
     </div>
   </div>
@@ -2289,18 +2279,6 @@ svg.lucide{width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
           <div class="chip" onclick="toggleRegProv(this,'นนทบุรี')">นนทบุรี</div>
         </div>
         <button class="chip-more" style="width:100%;text-align:center;border-radius:10px;padding:9px" onclick="openRegProvSheet()"><i data-lucide="search"></i> จังหวัดอื่น...</button>
-      </div>
-      <div class="form-group" style="margin-bottom:9px">
-        <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">วันที่รับงานได้ <span style="font-size:10px;font-weight:400;color:var(--ink4)">(optional · เลือกได้หลายวัน)</span></label>
-        <div style="display:flex;flex-wrap:wrap;gap:7px" id="regWorkerDayChips">
-          <div class="chip" data-day="1" onclick="this.classList.toggle('on')">จันทร์</div>
-          <div class="chip" data-day="2" onclick="this.classList.toggle('on')">อังคาร</div>
-          <div class="chip" data-day="3" onclick="this.classList.toggle('on')">พุธ</div>
-          <div class="chip" data-day="4" onclick="this.classList.toggle('on')">พฤหัส</div>
-          <div class="chip" data-day="5" onclick="this.classList.toggle('on')">ศุกร์</div>
-          <div class="chip" data-day="6" onclick="this.classList.toggle('on')">เสาร์</div>
-          <div class="chip" data-day="7" onclick="this.classList.toggle('on')">อาทิตย์</div>
-        </div>
       </div>
       <div class="form-group" style="margin-bottom:9px">
         <label style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:7px">แนะนำตัวสั้นๆ <span style="font-size:10px;font-weight:400;color:var(--ink4)">(optional)</span></label>
@@ -3145,14 +3123,12 @@ async function nextAfterRegWorker() {
   const _pos=document.getElementById('regWorkerPos').value||'assistant';
   const _lic=((document.getElementById('rw-license')||{}).value||'').trim();
   const _regSkills=[].map.call(document.querySelectorAll('#regWorkerSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
-  const _regDays=[].map.call(document.querySelectorAll('#regWorkerDayChips .chip.on'), c=>parseInt(c.getAttribute('data-day'))).filter(Boolean);
   pendingSignup={ role:'worker', email,
     first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
     phone:(document.getElementById('rw-phone').value||'').trim(),
     position:_pos,
-    province:[...regProvs][0]||'', provinces:[...regProvs],   // province=ตัวหลัก · provinces=ครบ
+    province:[...regProvs][0]||'', provinces:[...regProvs],
     skills:_regSkills,
-    available_days:_regDays,
     bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value),
     license_no:(_pos==='dentist'&&_lic)?_lic:null };
   _otpEmail=email; _otpMode='register';
@@ -3347,7 +3323,7 @@ async function dmCreateRecords(uid, s){
     await ins('clinics', { id:uid, name:s.name, province:s.province, line_id:s.line_id||null, phone:s.phone||null, about:s.bio||null });
   } else {
     // worker (รวม dentist self-attestation: license_verified=false เสมอ · trigger 0011 บังคับ)
-    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), skills:(s.skills&&s.skills.length?s.skills:null), available_days:(s.available_days&&s.available_days.length?s.available_days:[]), bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
+    await ins('worker_profiles', { id:uid, anon_id:'pending', position:s.position, province:s.province, provinces:(s.provinces&&s.provinces.length?s.provinces:(s.province?[s.province]:[])), skills:(s.skills&&s.skills.length?s.skills:null), available_days:[], bio:s.bio||null, experience_years:(s.experience_years!=null?s.experience_years:null) });
     await ins('worker_private', { worker_id:uid, first_name:s.first_name, last_name:s.last_name, phone:s.phone, line_user_id:s.line_user_id||null });
     if(s.position==='dentist' && s.license_no){   // เก็บเลขใบประกอบ (audit trail · ไม่ verify · ไม่มี badge)
       await ins('worker_license', { worker_id:uid, license_no:s.license_no });
@@ -3426,8 +3402,6 @@ function dmWorkerCard(w){
   const loc = _dmEsc(provs[0]||w.province||'-') + (w.district ? ' ('+_dmEsc(w.district)+')' : '') + (provs.length>1 ? ' <span style="color:var(--p600);font-weight:700">+'+(provs.length-1)+'</span>' : '');
   const skills = (w.skills||[]).slice(0,3).map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join('');
   const quote = w.bio ? `<div class="quote">${_dmEsc(w.bio)}</div>` : '';
-  const ad = w.available_days||[];
-  const days = DM_DAYS.map((lbl,i)=>`<div class="d${ad.includes(i+1)?' on':''}">${lbl}</div>`).join('');
   const _ts=w.trust_score||0, _mo=_dmMonths(w.member_since), _vw=_dmWorkerViews[w.id]||0;   // ซ่อนเลข 0 (คนเพิ่งสมัคร) — โชว์เฉพาะ >0
   const statCells=[ _ts>0?`<div class="wstat"><i data-lucide="circle-check-big" style="color:var(--green)"></i> <b>${_ts}</b> งานสำเร็จ</div>`:'',
                     _mo>0?`<div class="wstat"><i data-lucide="calendar-days"></i> <b>${_mo}</b> เดือน</div>`:'' ].filter(Boolean);
@@ -3438,7 +3412,6 @@ function dmWorkerCard(w){
           <div class="skills">${skills}</div>
           ${quote}
           ${statStrip}
-          <div class="wdays"><span class="wdays-lbl"><i data-lucide="calendar-check"></i> วันสะดวก</span><div class="days">${days}</div></div>
           <button class="btn-invite" onclick="dmOpenInvite('${w.id}','${w.anon_id}')"><i data-lucide="send"></i> ส่งคำเชิญ</button>
         </div>`;
 }
@@ -3900,7 +3873,6 @@ function _dmResetWorkerDetail(anon){   // คืนหน้า detail เป็
   const bd=document.getElementById('wd-badges'); if(bd) bd.innerHTML='';
   const sk=document.getElementById('wd-skills'); if(sk) sk.innerHTML='';
   const q=document.getElementById('wd-quote'); if(q) q.textContent='';
-  const dd=document.getElementById('wd-days'); if(dd) dd.innerHTML=DM_DAYS.map(l=>`<div class="d-big">${l}</div>`).join('');
   const trow=document.getElementById('wd-trust-row'); if(trow) trow.style.display='none';
   refreshIcons();
 }
@@ -4315,11 +4287,10 @@ async function dmFinishLineSignup(role){
     const ln=document.querySelector('#ls-reg-worker input[placeholder="นามสกุล *"]');
     const bio=document.getElementById('rw-bio');
     const _lsSkills=[].map.call(document.querySelectorAll('#regWorkerSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
-    const _lsDays=[].map.call(document.querySelectorAll('#regWorkerDayChips .chip.on'), c=>parseInt(c.getAttribute('data-day'))).filter(Boolean);
     s={ role, first_name:fn?fn.value.trim():'', last_name:ln?ln.value.trim():'',
         phone:(document.getElementById('rw-phone').value||'').trim(),
         position:document.getElementById('regWorkerPos').value||'assistant',
-        province:[...regProvs][0]||'', provinces:[...regProvs], skills:_lsSkills, available_days:_lsDays, bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid, license_no:((document.getElementById('regWorkerPos').value==='dentist')?(((document.getElementById('rw-license')||{}).value||'').trim()||null):null) };
+        province:[...regProvs][0]||'', provinces:[...regProvs], skills:_lsSkills, bio:bio?bio.value.trim():'', experience_years:_dmExpYears((document.getElementById('rw-exp')||{}).value), line_user_id:_lineSignup.lid, license_no:((document.getElementById('regWorkerPos').value==='dentist')?(((document.getElementById('rw-license')||{}).value||'').trim()||null):null) };
   }
   try{ await dmCreateRecords(uid, s); }catch(e){ showToast('สร้างโปรไฟล์ไม่สำเร็จ: '+(e.message||e)); return; }
   dmUser={ id:uid, role }; currentRole=role; selectedLoginRole=role; _lineSignup=null;
@@ -4418,8 +4389,6 @@ function dmFillWorkerProfile(w){
   const sk=document.getElementById('pf-skills');
   if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk" style="font-size:13px;padding:5px 12px">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
   const bio=document.getElementById('pf-bio'); if(bio) bio.textContent=w.bio||'–';
-  const dwrap=document.getElementById('pf-days');
-  if(dwrap){ const ad=w.available_days||[]; dwrap.innerHTML=DM_DAYS.map((lbl,i)=>`<div class="d-big${ad.includes(i+1)?' on':''}">${lbl}</div>`).join(''); }
   refreshIcons();
 }
 function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข้อมูลจริง (public-safe เท่านั้น · ไม่มี PII)
@@ -4441,8 +4410,6 @@ function dmFillWorkerDetail(w){   // C2x — render v-worker-detail จากข
   const sk=document.getElementById('wd-skills');
   if(sk) sk.innerHTML=(w.skills&&w.skills.length)?w.skills.map(s=>`<span class="sk">${_dmEsc(s)}</span>`).join(''):'<span style="font-size:12.5px;color:var(--ink4)">ยังไม่ได้ระบุทักษะ</span>';
   const q=document.getElementById('wd-quote'); if(q) q.textContent=w.bio||'–';
-  const dd=document.getElementById('wd-days');
-  if(dd){ const ad=w.available_days||[]; dd.innerHTML=DM_DAYS.map((lbl,i)=>`<div class="d-big${ad.includes(i+1)?' on':''}">${lbl}</div>`).join(''); }
   const dot=document.getElementById('wd-dot'); if(dot) dot.style.display=(w.available!==false)?'':'none';
   refreshIcons();
 }
@@ -4494,9 +4461,7 @@ function dmFillEditForm(w){
   const ps=document.getElementById('editProvSelected');
   if(ps){ const list=(w.provinces&&w.provinces.length)?w.provinces:(w.province?[w.province]:[]);
     ps.innerHTML=list.map(p=>'<div class="sel-prov-tag">'+_dmEsc(p)+' <button onclick="removeEditProv(this,\''+_dmEsc(p)+'\')"><i data-lucide="x"></i></button></div>').join(''); }
-  const bio=document.getElementById('edit-bio'); if(bio){ bio.value=w.bio||''; bio.placeholder=BIO_PLACEHOLDER[w.position]||BIO_PLACEHOLDER.dentist; }   // placeholder ต่อตำแหน่ง (เหมือนตอนสมัคร)
-  const ad=new Set(w.available_days||[]);
-  document.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ d.classList.toggle('on', ad.has(i+1)); });
+  const bio=document.getElementById('edit-bio'); if(bio){ bio.value=w.bio||''; bio.placeholder=BIO_PLACEHOLDER[w.position]||BIO_PLACEHOLDER.dentist; }
   refreshIcons();
 }
 async function dmOpenEditProfile(){
@@ -4524,9 +4489,8 @@ async function dmSaveWorkerProfile(){
   const skills=[].map.call(root.querySelectorAll('#editSkillChips .chip.on'), c=>c.textContent.trim()).filter(Boolean);
   const expEl=document.getElementById('edit-exp'); const experience_years = expEl ? _dmExpYears(expEl.value) : null;
   const bioEl=document.getElementById('edit-bio'); const bio=(bioEl && bioEl.value.trim())||null;
-  const days=[]; root.querySelectorAll('#editDays .d-big').forEach((d,i)=>{ if(d.classList.contains('on')) days.push(i+1); });
   const provTags=[].map.call(root.querySelectorAll('#editProvSelected .sel-prov-tag'), t=>((t.childNodes[0]&&t.childNodes[0].textContent)||'').trim()).filter(Boolean);
-  const patch={ skills, experience_years, available_days:days, bio };   // ★ เฉพาะ grant · ไม่แตะ trust/anon/license ฯลฯ
+  const patch={ skills, experience_years, bio };   // ★ เฉพาะ grant · ไม่แตะ trust/anon/license ฯลฯ
   if(provTags.length){ patch.provinces=provTags; patch.province=provTags[0]; }   // provinces=ครบ · province=ตัวหลัก
   dmLog('[wprofile] save', JSON.stringify(patch));
   try{
