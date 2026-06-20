@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร</title>
+<meta name="description" content="DentMatch ช่วยคลินิกทันตกรรมหาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้รวดเร็ว และช่วยทันตบุคลากรหางาน Part-time / Full-time ผ่าน LINE ได้เลย">
+<meta name="keywords" content="หาผู้ช่วยทันตแพทย์, รับสมัครทันตแพทย์, หางานทันตแพทย์, แพลตฟอร์มทันตกรรม, คลินิกทันตกรรม, ผู้ช่วยทันตแพทย์ part time, DentMatch">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="DentMatch — จับคู่คลินิก ↔ ทันตบุคลากร ผ่าน LINE">
+<meta property="og:description" content="หาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น ไม่ต้องประกาศเอง">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.dentmatch.app/landing">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://www.dentmatch.app/landing">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p950:#2A1A5E;--p800:#372080;--p700:#4A2FA8;--p600:#6B4EC2;--p500:#7C5CBF;--p400:#9B7FD4;--p100:#EDE8F8;--p50:#F4F0FC;
+  --ink:#18102E;--ink2:#362758;--ink3:#544475;--ink4:#6E5F92;
+  --gold:#E8C86A;--gold2:#F0D98A;
+  --green:#1CA566;--red:#E03E3E;
+  --white:#fff;--bg:#FAFAFA;
+  --rb:14px;--sh:0 4px 24px rgba(74,47,168,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Sarabun',sans-serif;color:var(--ink);background:var(--white);-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(107,78,194,.1);padding:0 24px}
+.nav-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{font-family:'Prompt',sans-serif;font-size:22px;font-weight:800;color:var(--p700);letter-spacing:-.5px}
+.nav-logo span{color:var(--gold)}
+.nav-cta{background:var(--p700);color:#fff;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:700;padding:9px 18px;border-radius:10px;transition:.18s;white-space:nowrap}
+.nav-cta:hover{background:var(--p800)}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(145deg,var(--p950) 0%,var(--p700) 55%,var(--p500) 100%);padding:72px 24px 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.hero-inner{max-width:680px;margin:0 auto;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(232,200,106,.15);border:1px solid rgba(232,200,106,.4);border-radius:20px;padding:5px 14px;font-size:12.5px;font-weight:700;color:var(--gold2);letter-spacing:.4px;margin-bottom:22px}
+.hero h1{font-family:'Prompt',sans-serif;font-size:clamp(28px,6vw,48px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:18px}
+.hero h1 em{color:var(--gold2);font-style:normal}
+.hero-sub{font-size:clamp(15px,2.5vw,18px);color:rgba(255,255,255,.82);line-height:1.7;margin-bottom:36px;font-weight:400}
+.btn-line{display:inline-flex;align-items:center;gap:10px;background:#06C755;color:#fff;font-family:'Sarabun',sans-serif;font-size:17px;font-weight:700;padding:16px 32px;border-radius:14px;box-shadow:0 6px 24px rgba(6,199,85,.35);transition:.2s;cursor:pointer}
+.btn-line:hover{background:#05B34C;transform:translateY(-1px);box-shadow:0 10px 32px rgba(6,199,85,.45)}
+.btn-line svg{width:22px;height:22px;flex-shrink:0}
+.hero-note{margin-top:14px;font-size:12.5px;color:rgba(255,255,255,.5)}
+
+/* ── SECTION BASE ── */
+section{padding:72px 24px}
+.sec-inner{max-width:960px;margin:0 auto}
+.sec-label{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--p600);text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-family:'Prompt',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:12px}
+.sec-sub{font-size:15.5px;color:var(--ink4);line-height:1.7}
+
+/* ── STATS STRIP ── */
+.stats{background:var(--p50);border-top:1px solid var(--p100);border-bottom:1px solid var(--p100);padding:36px 24px}
+.stats-grid{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}
+.stat-n{font-family:'Prompt',sans-serif;font-size:34px;font-weight:800;color:var(--p700);line-height:1}
+.stat-l{font-size:13.5px;color:var(--ink4);margin-top:5px;font-weight:500}
+
+/* ── PAIN POINTS ── */
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:40px}
+.pain-card{background:var(--bg);border:1.5px solid var(--p100);border-radius:16px;padding:24px;display:flex;gap:16px;align-items:flex-start}
+.pain-icon{width:44px;height:44px;border-radius:12px;background:var(--p100);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.pain-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.pain-desc{font-size:13.5px;color:var(--ink4);line-height:1.6}
+
+/* ── HOW IT WORKS ── */
+.how{background:linear-gradient(135deg,var(--p950),var(--p700))}
+.how .sec-label{color:var(--gold2)}
+.how .sec-title{color:#fff}
+.how .sec-sub{color:rgba(255,255,255,.7)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:44px}
+.step{text-align:center;padding:0 12px}
+.step-num{width:52px;height:52px;border-radius:50%;background:rgba(232,200,106,.18);border:2px solid rgba(232,200,106,.4);display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-size:20px;font-weight:800;color:var(--gold2);margin:0 auto 16px}
+.step-icon{font-size:28px;margin-bottom:10px}
+.step-title{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:8px}
+.step-desc{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.6}
+.step-arrow{display:none}
+
+/* ── FOR WHOM ── */
+.whom-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+.whom-card{border-radius:20px;padding:32px;border:2px solid var(--p100)}
+.whom-card.clinic{background:var(--p50)}
+.whom-card.worker{background:#FFF8F0;border-color:#FDDCB5}
+.whom-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.whom-tag.c{background:var(--p100);color:var(--p700)}
+.whom-tag.w{background:#FFF0DC;color:#B05F00;border:1px solid #FDDCB5}
+.whom-title{font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:16px}
+.whom-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.whom-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink3);line-height:1.5}
+.whom-list li::before{content:'✓';font-weight:700;color:var(--green);flex-shrink:0;margin-top:1px}
+
+/* ── CTA BOTTOM ── */
+.cta-bot{background:var(--p50);text-align:center;border-top:1.5px solid var(--p100)}
+.cta-bot .sec-title{color:var(--p800)}
+.cta-note{margin-top:10px;font-size:13px;color:var(--ink4)}
+
+/* ── FOOTER ── */
+footer{background:var(--p950);padding:32px 24px;text-align:center}
+.ft-logo{font-family:'Prompt',sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:8px}
+.ft-logo span{color:var(--gold)}
+.ft-copy{font-size:12.5px;color:rgba(255,255,255,.4)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .whom-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+  .stat-n{font-size:26px}
+  nav .nav-cta{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/landing" class="nav-logo">Dent<span>Match</span></a>
+    <a href="https://line.me/R/ti/p/@dentmatch" class="nav-cta" rel="noopener">
+      เริ่มใช้งานผ่าน LINE →
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+      แพลตฟอร์มทันตกรรม #1 ผ่าน LINE
+    </div>
+    <h1>จับคู่คลินิกทันตกรรม<br>↔ <em>ทันตบุคลากร</em><br>ใน LINE เดียว</h1>
+    <p class="hero-sub">หาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น<br>ไม่ต้องประกาศเอง ไม่ต้องรอนาน</p>
+    <a href="https://line.me/R/ti/p/@dentmatch" class="btn-line" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.2 1.87 6.01 4.69 7.66L5.5 22l3.91-2.04c.84.22 1.71.34 2.59.34 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/></svg>
+      กดเพื่อเริ่มใช้งานผ่าน LINE
+    </a>
+    <p class="hero-note">ฟรี · ไม่ต้องโหลดแอปเพิ่ม · เปิดใน LINE ได้เลย</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid">
+    <div>
+      <div class="stat-n">100%</div>
+      <div class="stat-l">ผ่าน LINE<br>ไม่ต้องโหลดแอปเพิ่ม</div>
+    </div>
+    <div>
+      <div class="stat-n">3 ขั้น</div>
+      <div class="stat-l">เปิด → สมัคร<br>→ จับคู่ได้เลย</div>
+    </div>
+    <div>
+      <div class="stat-n">ฟรี</div>
+      <div class="stat-l">เริ่มต้นใช้งาน<br>ไม่มีค่าธรรมเนียม</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAIN POINTS -->
+<section style="background:var(--white)">
+  <div class="sec-inner">
+    <div class="sec-label">ปัญหาที่คลินิกเจอบ่อย</div>
+    <h2 class="sec-title">หาคนยากขึ้นทุกปี<br>โดยเฉพาะงานเร่งด่วน</h2>
+    <p class="sec-sub">DentMatch แก้ปัญหาเหล่านี้ด้วยระบบจับคู่อัตโนมัติ</p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">⏰</div>
+        <div>
+          <div class="pain-title">หาคนทดแทนด่วนไม่ได้</div>
+          <div class="pain-desc">หมอลา กะพรุ่งนี้ โพสต์ไปก็ไม่มีใครเห็นทัน</div>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📢</div>
+        <div>
+          <div class="pain-title">ประกาศแล้วไม่มีคนสมัคร</div>
+          <div class="pain-desc">โพสต์ใน Facebook กลุ่ม ได้รีแอคแต่ไม่มีคนติดต่อจริง</div>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🔍</div>
+        <div>
+          <div class="pain-title">ไม่รู้จะหาจากที่ไหน</div>
+          <div class="pain-desc">ไม่มีช่องทางรวมทันตบุคลากรที่หางานอยู่จริงๆ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="sec-inner">
+    <div class="sec-label">วิธีใช้งาน</div>
+    <h2 class="sec-title">เริ่มใช้ได้ใน 3 ขั้นตอน</h2>
+    <p class="sec-sub">ไม่ต้องโหลดแอปเพิ่ม ใช้ผ่าน LINE ที่มีอยู่แล้ว</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-icon">💬</div>
+        <div class="step-title">เปิด LINE @dentmatch</div>
+        <div class="step-desc">กดปุ่มด้านล่าง LINE จะเปิดบัญชี @dentmatch ให้อัตโนมัติ</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-icon">📝</div>
+        <div class="step-title">ลงทะเบียนบทบาท</div>
+        <div class="step-desc">เลือกว่าคุณเป็นคลินิกหรือทันตบุคลากร กรอกข้อมูลพื้นฐาน</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">จับคู่ได้เลย</div>
+        <div class="step-desc">คลินิกโพสต์งาน บุคลากรกดสมัคร ติดต่อกันผ่าน LINE ทันที</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHOM -->
+<section style="background:var(--white)">
+  <div class="sec-inner">
+    <div class="sec-label">ใครใช้ได้บ้าง</div>
+    <h2 class="sec-title">เหมาะสำหรับทุกฝ่าย<br>ในวงการทันตกรรม</h2>
+    <div class="whom-grid">
+      <div class="whom-card clinic">
+        <div class="whom-tag c">🏥 สำหรับคลินิก</div>
+        <div class="whom-title">หาบุคลากรได้เร็วขึ้น<br>ไม่ต้องประกาศเอง</div>
+        <ul class="whom-list">
+          <li>โพสต์งานได้ฟรี ไม่จำกัดจำนวน</li>
+          <li>มีระบบ "งานด่วน" เมื่อต้องการคนภายใน 7 วัน</li>
+          <li>เลือกรับสมัครทันตแพทย์ / ผู้ช่วยทันตแพทย์ / เคาน์เตอร์</li>
+          <li>ติดต่อตรงผ่าน LINE ไม่มีตัวกลาง</li>
+        </ul>
+      </div>
+      <div class="whom-card worker">
+        <div class="whom-tag w">👩‍⚕️ สำหรับทันตบุคลากร</div>
+        <div class="whom-title">หางาน Part-time / Full-time<br>ตรงกับตารางของคุณ</div>
+        <ul class="whom-list">
+          <li>ดูงานที่เปิดรับอยู่ทั้งหมดได้ฟรี</li>
+          <li>กรองตามจังหวัด วัน เวลา ตำแหน่ง</li>
+          <li>รับ invite จากคลินิกโดยตรง</li>
+          <li>บันทึกประวัติการทำงานในระบบ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BOTTOM -->
+<section class="cta-bot">
+  <div class="sec-inner">
+    <div class="sec-label">เริ่มเลย</div>
+    <h2 class="sec-title">พร้อมหาคน หรือหางาน?<br>เปิดผ่าน LINE ได้ทันที</h2>
+    <br>
+    <a href="https://line.me/R/ti/p/@dentmatch" class="btn-line" style="margin:0 auto" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.2 1.87 6.01 4.69 7.66L5.5 22l3.91-2.04c.84.22 1.71.34 2.59.34 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/></svg>
+      กดเพื่อเริ่มใช้งานผ่าน LINE
+    </a>
+    <p class="cta-note">ฟรี · ไม่มีค่าสมัคร · รองรับทั้งคลินิกและทันตบุคลากร</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Dent<span>Match</span></div>
+  <p class="ft-copy">© 2026 DentMatch · Smart Dental Matching · <a href="/" style="color:rgba(255,255,255,.5)">เข้าแอป</a></p>
+</footer>
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "DentMatch",
+  "url": "https://www.dentmatch.app",
+  "description": "แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากรผ่าน LINE",
+  "inLanguage": "th"
+}
+</script>
+
+</body>
+</html>
