@@ -3852,6 +3852,9 @@ async function dmPostJob(){
       return; }
     dmLog('[postjob] insert สำเร็จ ✓', data); _postDates=[]; _postRenderDates();   // เคลียร์วันที่ที่เลือกหลังโพสต์
     if(_ti) _ti.value='';   // เคลียร์หัวข้อ กันค้างไปงานถัดไป
+    if(data && data[0] && data[0].id){   // fire-and-forget แจ้งเตือน worker ที่ตรงผ่าน LINE bot — พังไม่กระทบการโพสต์งาน
+      dmSb().functions.invoke('notify-new-job', { body:{ jobId:data[0].id } }).catch(e=>console.warn('[notify-new-job]', e));
+    }
     openSheet('s-post-success');
     await dmLoadJobsBoard();     // refresh บอร์ด → งานใหม่โผล่บนสุด
     await dmLoadManageBoard();   // refresh แท็บจัดการด้วย
