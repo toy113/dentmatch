@@ -27,7 +27,8 @@
   window.DM_CFG = {
     SUPABASE_URL: 'https://zbaedgczudbamfkpeloo.supabase.co',
     SUPABASE_KEY: 'sb_publishable_sEehrAazbTyP-Ib13iPHqw_uih-_tCe',
-    LINE_CHANNEL_ID: '2010259716'   // public (LINE Login channel) · secret อยู่ฝั่ง Edge Function
+    LINE_CHANNEL_ID: '2010259716',   // public (LINE Login channel) · secret อยู่ฝั่ง Edge Function
+    LIFF_ID: '2010259716-qiyzWZCu'  // LIFF app ผูกกับ channel เดียวกัน · ใช้ตอนเปิดผ่าน LINE in-app (liff.init)
   };
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4274,7 +4275,10 @@ async function dmHandleLineCallback(){
   if(!email||!otp){ showToast('ข้อมูล LINE ไม่ครบ'); return false; }
   const { data, error } = await dmSb().auth.verifyOtp({ email, token:otp, type:'magiclink' });
   if(error){ showToast('LINE: แลก session ไม่สำเร็จ: '+error.message); return false; }
-  const uid=data.user.id;
+  return await _dmFinishLineAuth(data.user.id, isNew, name, lid);
+}
+// ใช้ร่วมกันทั้ง OAuth callback (web) และ LIFF id-token flow (in-app) — uid มี session แล้ว แค่ตัดสินใจ new/old
+async function _dmFinishLineAuth(uid, isNew, name, lid){
   if(isNew){
     _lineSignup={ uid, name, lid };
     _lineSignupOpening=true;   // กัน openSheet reset สถานะ LINE signup
@@ -4287,6 +4291,39 @@ async function dmHandleLineCallback(){
   dmUser={ id:uid, role:prof.role }; currentRole=prof.role; selectedLoginRole=prof.role;
   await dmLoadProfile(); finishLogin();
   return true;
+}
+// ════════ LIFF (เปิดผ่าน LINE in-app ที่ /app) — auto-login ด้วย liff.getIDToken() ไม่ต้อง redirect ออก ════════
+function _dmLoadLiffSdk(){
+  return new Promise((resolve,reject)=>{
+    if(window.liff) return resolve();
+    const s=document.createElement('script');
+    s.src='https://static.line-scdn.net/liff/edge/2/sdk.js';
+    s.onload=resolve; s.onerror=()=>reject(new Error('liff sdk load fail'));
+    document.head.appendChild(s);
+  });
+}
+async function dmInitLiff(){
+  if(!_dmIsLineApp() || !window.DM_CFG.LIFF_ID) return false;
+  try{
+    // มี session อยู่แล้ว (เปิด LIFF ซ้ำ) → ให้ dmInitSession restore ตามปกติ ไม่ต้องยิง LINE API ใหม่
+    const { data:sess } = await dmSb().auth.getSession();
+    if(sess && sess.session) return false;
+  }catch(_e){}
+  try{
+    await _dmLoadLiffSdk();
+    await liff.init({ liffId: window.DM_CFG.LIFF_ID });
+    if(!liff.isLoggedIn()){ liff.login(); return true; }   // เด้ง login ใน LINE แล้วโหลดหน้านี้ใหม่เอง
+    const idToken = liff.getIDToken();
+    if(!idToken) return false;
+    const res = await fetch(window.DM_CFG.SUPABASE_URL+'/functions/v1/line-liff-auth', {
+      method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ idToken }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){ console.warn('[liff] auth fail', data&&data.error); return false; }
+    const { data:vd, error } = await dmSb().auth.verifyOtp({ email:data.email, token:data.otp, type:'magiclink' });
+    if(error){ showToast('LINE: แลก session ไม่สำเร็จ: '+error.message); return false; }
+    return await _dmFinishLineAuth(vd.user.id, data.isNew, data.name, data.lid);
+  }catch(e){ console.warn('[liff] init error', e); return false; }
 }
 // ผู้ใช้ LINE ใหม่ กรอกฟอร์มเสร็จ → สร้าง record ตรง ๆ (session มีแล้ว ไม่ต้อง OTP)
 async function dmFinishLineSignup(role){
@@ -6059,6 +6096,7 @@ var _iconObs = (typeof MutationObserver!=='undefined') ? new MutationObserver(fu
   try {
     let handled = false;
     if (typeof dmHandleLineCallback === 'function') handled = await dmHandleLineCallback();   // LINE redirect กลับมา?
+    if (!handled && typeof dmInitLiff === 'function') handled = await dmInitLiff();             // เปิดผ่าน LINE in-app (LIFF) → auto-login
     if (!handled && typeof dmInitSession === 'function') await dmInitSession();                // ไม่ใช่ → restore session เดิม
     if (typeof dmLoadStats === 'function') dmLoadStats();             // สถิติจริง (public · guest ด้วย)
     if (typeof dmLoadJobsBoard === 'function') dmLoadJobsBoard();     // บอร์ดงาน public (guest เห็นงานจริง · authed ก็ refresh ซ้ำได้)
