@@ -3,15 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DentMatch — แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากร</title>
-<meta name="description" content="DentMatch ช่วยคลินิกทันตกรรมหาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้รวดเร็ว และช่วยทันตบุคลากรหางาน Part-time / Full-time ผ่าน LINE ได้เลย">
-<meta name="keywords" content="หาผู้ช่วยทันตแพทย์, รับสมัครทันตแพทย์, หางานทันตแพทย์, แพลตฟอร์มทันตกรรม, คลินิกทันตกรรม, ผู้ช่วยทันตแพทย์ part time, DentMatch">
+<title>DentMatch — หางานทันตแพทย์ ผู้ช่วยทันตแพทย์ และรับสมัครบุคลากรทันตกรรม</title>
+<meta name="description" content="DentMatch — แพลตฟอร์ม หางานทันตแพทย์ และหางานผู้ช่วยทันตแพทย์ Part-time / Full-time ผ่าน LINE ฟรี พร้อมช่วยคลินิก รับสมัครทันตแพทย์ และรับสมัครผู้ช่วยทันตแพทย์ ได้ง่ายขึ้น ไม่มีตัวกลาง">
+<meta name="keywords" content="หางานทันตแพทย์, หางานผู้ช่วยทันตแพทย์, รับสมัครทันตแพทย์, รับสมัครผู้ช่วยทันตแพทย์, แพลตฟอร์มทันตกรรม, คลินิกทันตกรรม, ผู้ช่วยทันตแพทย์ part time, DentMatch">
 <meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2A1A5E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232A1A5E'/%3E%3Ctext x='50' y='54' font-size='60' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%A6%B7%3C/text%3E%3C/svg%3E">
 <meta property="og:title" content="DentMatch — จับคู่คลินิก ↔ ทันตบุคลากร ผ่าน LINE">
 <meta property="og:description" content="หาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น ไม่ต้องประกาศเอง">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.dentmatch.app/landing">
+<meta property="og:locale" content="th_TH">
+<meta property="og:image" content="https://www.dentmatch.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DentMatch — จับคู่คลินิก ↔ ทันตบุคลากร ผ่าน LINE">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DentMatch — จับคู่คลินิก ↔ ทันตบุคลากร ผ่าน LINE">
+<meta name="twitter:description" content="หาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น ไม่ต้องประกาศเอง">
+<meta name="twitter:image" content="https://www.dentmatch.app/assets/og-image.jpg">
 <link rel="canonical" href="https://www.dentmatch.app/landing">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,6 +119,17 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
 .ft-logo span{color:var(--gold)}
 .ft-copy{font-size:12.5px;color:rgba(255,255,255,.4)}
 
+/* ── FAQ ── */
+.faq-list{display:flex;flex-direction:column;gap:1px;margin-top:36px;background:var(--p100);border-radius:16px;overflow:hidden}
+.faq-item{background:var(--white)}
+.faq-q{display:block;font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;color:var(--ink);padding:18px 20px;cursor:pointer;list-style:none;user-select:none;transition:background .15s}
+.faq-q:hover{background:var(--p50)}
+.faq-item[open] .faq-q{color:var(--p700)}
+.faq-a{font-size:14px;color:var(--ink3);line-height:1.75;padding:0 20px 18px;margin:0}
+.faq-q::-webkit-details-marker,.faq-q::marker{display:none}
+.faq-q::after{content:'＋';float:right;font-size:18px;color:var(--p400);transition:transform .2s;line-height:1}
+.faq-item[open] .faq-q::after{transform:rotate(45deg)}
+
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
   .whom-grid{grid-template-columns:1fr}
@@ -138,7 +159,7 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
       แพลตฟอร์มทันตกรรม #1 ผ่าน LINE
     </div>
     <h1>จับคู่คลินิกทันตกรรม<br>↔ <em>ทันตบุคลากร</em><br>ใน LINE เดียว</h1>
-    <p class="hero-sub">หาทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น<br>ไม่ต้องประกาศเอง ไม่ต้องรอนาน</p>
+    <p class="hero-sub">รับสมัครทันตแพทย์ ผู้ช่วยทันตแพทย์ และเคาน์เตอร์ได้ง่ายขึ้น<br>หรือหางานทันตแพทย์ หางานผู้ช่วยทันตแพทย์ — ฟรี ไม่ต้องรอนาน</p>
     <a href="https://line.me/R/ti/p/@dentmatch" class="btn-line" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.2 1.87 6.01 4.69 7.66L5.5 22l3.91-2.04c.84.22 1.71.34 2.59.34 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/></svg>
       กดเพื่อเริ่มใช้งานผ่าน LINE
@@ -234,7 +255,7 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
     <div class="whom-grid">
       <div class="whom-card clinic">
         <div class="whom-tag c">🏥 สำหรับคลินิก</div>
-        <div class="whom-title">หาบุคลากรได้เร็วขึ้น<br>ไม่ต้องประกาศเอง</div>
+        <div class="whom-title">รับสมัครทันตแพทย์ และผู้ช่วยทันตแพทย์<br>ได้ง่ายขึ้น ไม่ต้องประกาศเอง</div>
         <ul class="whom-list">
           <li>โพสต์งานได้ฟรี ไม่จำกัดจำนวน</li>
           <li>มีระบบ "งานด่วน" เมื่อต้องการคนภายใน 7 วัน</li>
@@ -244,7 +265,7 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
       </div>
       <div class="whom-card worker">
         <div class="whom-tag w">👩‍⚕️ สำหรับทันตบุคลากร</div>
-        <div class="whom-title">หางาน Part-time / Full-time<br>ตรงกับตารางของคุณ</div>
+        <div class="whom-title">หางานทันตแพทย์ และผู้ช่วยทันตแพทย์<br>Part-time / Full-time ตรงกับตารางของคุณ</div>
         <ul class="whom-list">
           <li>ดูงานที่เปิดรับอยู่ทั้งหมดได้ฟรี</li>
           <li>กรองตามจังหวัด วัน เวลา ตำแหน่ง</li>
@@ -260,13 +281,39 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
 <section class="cta-bot">
   <div class="sec-inner">
     <div class="sec-label">เริ่มเลย</div>
-    <h2 class="sec-title">พร้อมหาคน หรือหางาน?<br>เปิดผ่าน LINE ได้ทันที</h2>
+    <h2 class="sec-title">รับสมัครทันตแพทย์ หรือหางานผู้ช่วยทันตแพทย์?<br>เปิดผ่าน LINE ได้ทันที</h2>
     <br>
     <a href="https://line.me/R/ti/p/@dentmatch" class="btn-line" style="margin:0 auto" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.2 1.87 6.01 4.69 7.66L5.5 22l3.91-2.04c.84.22 1.71.34 2.59.34 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/></svg>
       กดเพื่อเริ่มใช้งานผ่าน LINE
     </a>
     <p class="cta-note">ฟรี · ไม่มีค่าสมัคร · รองรับทั้งคลินิกและทันตบุคลากร</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background:var(--white)">
+  <div class="sec-inner">
+    <div class="sec-label">FAQ</div>
+    <h2 class="sec-title">คำถามที่พบบ่อย</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-q">หางานทันตแพทย์ Part-time ผ่าน DentMatch ได้อย่างไร?</summary>
+        <p class="faq-a">ทันตแพทย์ที่ต้องการหางาน Part-time สามารถ Add LINE @dentmatch แล้วเลือกสมัครเป็น "บุคลากร" ระบบจะแสดงตำแหน่งงานคลินิกที่เปิดรับอยู่ กรองตามจังหวัด ทักษะ และวันที่สะดวก และยังรับ invite จากคลินิกได้โดยตรงอีกด้วย ใช้งานฟรีไม่มีค่าธรรมเนียม</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">หางานผู้ช่วยทันตแพทย์ต้องมีคุณสมบัติอะไรบ้าง?</summary>
+        <p class="faq-a">ผู้ช่วยทันตแพทย์ที่ต้องการหางานผ่าน DentMatch ไม่มีข้อกำหนดวุฒิขั้นต่ำ เพียงสมัครระบุทักษะ เช่น GP, จัดฟัน, Implant หรือเคาน์เตอร์ และจังหวัดที่รับงาน คลินิกที่สนใจจะส่ง invite มาหาคุณเองโดยตรง ไม่ต้องวิ่งหาเอง</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">คลินิกรับสมัครทันตแพทย์ผ่าน DentMatch ได้อย่างไร?</summary>
+        <p class="faq-a">คลินิกที่ต้องการรับสมัครทันตแพทย์สามารถ Add LINE @dentmatch สมัครเป็น "คลินิก" แล้วโพสต์ประกาศงานได้ทันที ฟรีไม่จำกัดจำนวน ระบบจะแจ้งเตือนทันตแพทย์ที่ตรงคุณสมบัติในจังหวัดนั้นโดยอัตโนมัติ หรือใช้ฟีเจอร์ "งานด่วน" เมื่อต้องการคนภายใน 7 วัน</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">รับสมัครผู้ช่วยทันตแพทย์มีค่าใช้จ่ายไหม?</summary>
+        <p class="faq-a">การรับสมัครผู้ช่วยทันตแพทย์ผ่าน DentMatch ฟรี 100% ทั้งสำหรับคลินิกและทันตบุคลากร ไม่มีค่าสมัคร ไม่มีค่าธรรมเนียม และไม่มีตัวกลาง คลินิกสามารถติดต่อบุคลากรได้โดยตรงผ่าน LINE</p>
+      </details>
+    </div>
   </div>
 </section>
 
@@ -283,8 +330,48 @@ footer{background:var(--p950);padding:32px 24px;text-align:center}
   "@type": "WebSite",
   "name": "DentMatch",
   "url": "https://www.dentmatch.app",
-  "description": "แพลตฟอร์มจับคู่คลินิกทันตกรรมกับทันตบุคลากรผ่าน LINE",
+  "description": "แพลตฟอร์มหางานทันตแพทย์ หางานผู้ช่วยทันตแพทย์ และรับสมัครบุคลากรทันตกรรมผ่าน LINE",
   "inLanguage": "th"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "หางานทันตแพทย์ Part-time ผ่าน DentMatch ได้อย่างไร?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ทันตแพทย์ที่ต้องการหางาน Part-time สามารถ Add LINE @dentmatch แล้วเลือกสมัครเป็น \"บุคลากร\" ระบบจะแสดงตำแหน่งงานคลินิกที่เปิดรับอยู่ กรองตามจังหวัด ทักษะ และวันที่สะดวก และยังรับ invite จากคลินิกได้โดยตรงอีกด้วย ใช้งานฟรีไม่มีค่าธรรมเนียม"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "หางานผู้ช่วยทันตแพทย์ต้องมีคุณสมบัติอะไรบ้าง?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ผู้ช่วยทันตแพทย์ที่ต้องการหางานผ่าน DentMatch ไม่มีข้อกำหนดวุฒิขั้นต่ำ เพียงสมัครระบุทักษะ เช่น GP, จัดฟัน, Implant หรือเคาน์เตอร์ และจังหวัดที่รับงาน คลินิกที่สนใจจะส่ง invite มาหาคุณเองโดยตรง ไม่ต้องวิ่งหาเอง"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "คลินิกรับสมัครทันตแพทย์ผ่าน DentMatch ได้อย่างไร?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "คลินิกที่ต้องการรับสมัครทันตแพทย์สามารถ Add LINE @dentmatch สมัครเป็น \"คลินิก\" แล้วโพสต์ประกาศงานได้ทันที ฟรีไม่จำกัดจำนวน ระบบจะแจ้งเตือนทันตแพทย์ที่ตรงคุณสมบัติในจังหวัดนั้นโดยอัตโนมัติ หรือใช้ฟีเจอร์ \"งานด่วน\" เมื่อต้องการคนภายใน 7 วัน"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "รับสมัครผู้ช่วยทันตแพทย์มีค่าใช้จ่ายไหม?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "การรับสมัครผู้ช่วยทันตแพทย์ผ่าน DentMatch ฟรี 100% ทั้งสำหรับคลินิกและทันตบุคลากร ไม่มีค่าสมัคร ไม่มีค่าธรรมเนียม และไม่มีตัวกลาง คลินิกสามารถติดต่อบุคลากรได้โดยตรงผ่าน LINE"
+      }
+    }
+  ]
 }
 </script>
 

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /landing
+Allow: /assets/
+Disallow: /
+
+Sitemap: https://www.dentmatch.app/sitemap.xml

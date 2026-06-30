@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": ".",
   "redirects": [
-    { "source": "/", "destination": "/landing", "permanent": false }
+    { "source": "/", "destination": "/landing", "permanent": true }
   ],
   "rewrites": [
     { "source": "/landing", "destination": "/landing.html" },
