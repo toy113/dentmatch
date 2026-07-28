@@ -1,24 +1,20 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": ".",
-  "redirects": [
-    { "source": "/", "destination": "/landing", "permanent": true }
-  ],
-  "rewrites": [
-    { "source": "/landing", "destination": "/landing.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=(), payment=()" },
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh https://unpkg.com https://cdn.jsdelivr.net https://static.line-scdn.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.line.me https://access.line.me; frame-ancestors 'self' https://liff.line.me; base-uri 'self'; form-action 'self'; object-src 'none'" }
-      ]
-    }
+      "src": "/(.*)",
+      "headers": {
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(), microphone=(), camera=(), payment=()",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh https://unpkg.com https://cdn.jsdelivr.net https://static.line-scdn.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.line.me https://access.line.me; frame-ancestors 'self' https://liff.line.me; base-uri 'self'; form-action 'self'; object-src 'none'"
+      },
+      "continue": true
+    },
+    { "src": "^/landing$", "status": 404, "dest": "/404.html" },
+    { "src": "^/(.*)", "dest": "/index.html" }
   ]
 }
